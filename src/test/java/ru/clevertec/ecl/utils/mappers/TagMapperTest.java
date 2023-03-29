@@ -1,10 +1,9 @@
 package ru.clevertec.ecl.utils.mappers;
 
 import jakarta.validation.ConstraintViolationException;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.mapstruct.factory.Mappers;
 import ru.clevertec.ecl.dto.TagDTO;
 import ru.clevertec.ecl.models.Tag;
 
@@ -15,10 +14,14 @@ import static generators.factories.TagFactory.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-@ExtendWith(SpringExtension.class)
 class TagMapperTest {
-    @Autowired
+
     private TagMapper mapper;
+
+    @BeforeEach
+    void setUp() {
+        mapper = Mappers.getMapper(TagMapper.class);
+    }
 
     @Test
     void checkTagToDTOShouldReturnCorrectDTO() {

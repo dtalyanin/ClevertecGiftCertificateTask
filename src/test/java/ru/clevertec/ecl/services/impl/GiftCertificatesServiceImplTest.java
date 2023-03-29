@@ -6,7 +6,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import ru.clevertec.ecl.dao.GiftCertificatesDAO;
 import ru.clevertec.ecl.dao.GiftCertificatesTagsDAO;
@@ -44,7 +43,6 @@ class GiftCertificatesServiceImplTest {
     @Mock
     private GiftCertificatesTagsDAO certificatesTagsDAO;
     @InjectMocks
-    @Autowired
     private GiftCertificatesServiceImpl service;
 
     @Test

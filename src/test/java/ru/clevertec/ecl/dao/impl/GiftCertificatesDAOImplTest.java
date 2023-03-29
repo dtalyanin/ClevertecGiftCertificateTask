@@ -1,13 +1,11 @@
 package ru.clevertec.ecl.dao.impl;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 import ru.clevertec.ecl.configuration.TestConfig;
 import ru.clevertec.ecl.dao.GiftCertificatesDAO;
@@ -25,7 +23,6 @@ import static generators.factories.SortCriteriaFactory.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-@ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = TestConfig.class)
 @ActiveProfiles("test")
 @Transactional

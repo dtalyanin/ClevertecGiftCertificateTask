@@ -1,12 +1,10 @@
 package ru.clevertec.ecl.dao.impl;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 import ru.clevertec.ecl.configuration.TestConfig;
 
@@ -14,13 +12,11 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = TestConfig.class)
 @ActiveProfiles("test")
 @Transactional
 @Rollback
 class GitCertificatesTagsDAOImplTest {
-
     @Autowired
     private GitCertificatesTagsDAOImpl dao;
 

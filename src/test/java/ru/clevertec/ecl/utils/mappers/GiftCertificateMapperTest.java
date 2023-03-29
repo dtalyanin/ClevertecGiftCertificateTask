@@ -1,12 +1,11 @@
 package ru.clevertec.ecl.utils.mappers;
 
 import jakarta.validation.ConstraintViolationException;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.mapstruct.factory.Mappers;
 import ru.clevertec.ecl.dto.GiftCertificateDTO;
 import ru.clevertec.ecl.dto.ModGiftCertificateDTO;
 import ru.clevertec.ecl.models.GiftCertificate;
@@ -21,10 +20,14 @@ import static generators.factories.ModGiftCertificateDTOFactory.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-@ExtendWith(SpringExtension.class)
 class GiftCertificateMapperTest {
-    @Autowired
+
     private GiftCertificateMapper mapper;
+
+    @BeforeEach
+    void setUp() {
+        mapper = Mappers.getMapper(GiftCertificateMapper.class);
+    }
 
     @Test
     void checkGiftCertificateToDTOShouldReturnNull() {

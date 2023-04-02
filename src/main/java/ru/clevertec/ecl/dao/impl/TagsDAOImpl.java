@@ -1,5 +1,9 @@
 package ru.clevertec.ecl.dao.impl;
 
+import jakarta.persistence.NoResultException;
+import jakarta.persistence.Query;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
@@ -20,34 +24,33 @@ import static ru.clevertec.ecl.utils.constants.TagsSQL.*;
 public class TagsDAOImpl implements TagsDAO {
 
     private final JdbcTemplate template;
+    private final SessionFactory factory;
 
     @Autowired
-    public TagsDAOImpl(JdbcTemplate template) {
-        this.template = template;
+    public TagsDAOImpl(SessionFactory factory) {
+        this.template = null;
+        this.factory = factory;
     }
 
     @Override
     public List<Tag> getAllTags() {
-        return template.query(SELECT_ALL_TAGS, new BeanPropertyRowMapper<>(Tag.class));
+        return factory.getCurrentSession().createQuery("SELECT t FROM Tag t", Tag.class).list();
     }
 
     @Override
     public Optional<Tag> getTagById(long id) {
-        Tag tag;
-        try {
-            tag = template.queryForObject(SELECT_TAG_BY_ID, new BeanPropertyRowMapper<>(Tag.class), id);
-        } catch (EmptyResultDataAccessException e) {
-            tag = null;
-        }
-        return Optional.ofNullable(tag);
+        return Optional.ofNullable(factory.getCurrentSession().get(Tag.class, id));
     }
 
     @Override
     public Optional<Tag> getTagByName(String name) {
         Tag tag;
+        Query query = factory.getCurrentSession()
+                .createQuery("SELECT t FROM Tag t WHERE name = :name", Tag.class)
+                .setParameter("name", name);
         try {
-            tag = template.queryForObject(SELECT_TAG_BY_NAME, new BeanPropertyRowMapper<>(Tag.class), name);
-        } catch (EmptyResultDataAccessException e) {
+            tag = (Tag) query.getSingleResult();
+        } catch (NoResultException e) {
             tag = null;
         }
         return Optional.ofNullable(tag);
@@ -55,23 +58,26 @@ public class TagsDAOImpl implements TagsDAO {
 
     @Override
     public long addTag(Tag tag) {
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        template.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(INSERT_NEW_TAG, new String[]{"id"});
-            ps.setString(1, tag.getName());
-            return ps;
-        }, keyHolder);
-        return keyHolder.getKey().longValue();
+        factory.getCurrentSession().persist(tag);
+        return tag.getId();
 
     }
 
     @Override
     public int updateTag(long id, Tag tag) {
+        tag.setId(id);
         return template.update(UPDATE_TAG, tag.getName(), id);
     }
 
     @Override
     public int deleteTag(long id) {
-        return template.update(DELETE_TAG_BY_ID, id);
+        Tag tag = factory.getCurrentSession().get(Tag.class, id);
+        factory.getCurrentSession().remove(tag);
+//        Tag tag = new Tag(id, null);
+//        factory.getCurrentSession().persist(tag);
+//        Query query = factory.getCurrentSession().
+//                createQuery("DELETE Tag WHERE id = :id", Tag.class);
+//        query.setParameter("id", id);
+        return 1;
     }
 }

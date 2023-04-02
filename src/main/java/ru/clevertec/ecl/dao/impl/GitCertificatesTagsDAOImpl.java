@@ -14,9 +14,8 @@ import static ru.clevertec.ecl.utils.constants.GiftCertificatesTagsSQL.*;
 public class GitCertificatesTagsDAOImpl implements GiftCertificatesTagsDAO {
     private final JdbcTemplate template;
 
-    @Autowired
-    public GitCertificatesTagsDAOImpl(JdbcTemplate template) {
-        this.template = template;
+    public GitCertificatesTagsDAOImpl() {
+        this.template = null;
     }
 
     @Override

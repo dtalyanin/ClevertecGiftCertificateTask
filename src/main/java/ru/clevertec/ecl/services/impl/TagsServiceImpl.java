@@ -1,5 +1,6 @@
 package ru.clevertec.ecl.services.impl;
 
+import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
@@ -52,7 +53,7 @@ public class TagsServiceImpl implements TagsService {
         try {
             long generatedId = dao.addTag(tag);
             return new ModificationResponse(generatedId, "Tag added successfully");
-        } catch (DuplicateKeyException e) {
+        } catch (ConstraintViolationException e) {
             throw new ItemExistException("Cannot add: tag with name '" + tag.getName() +
                     "' already exist in database", ErrorCode.TAG_NAME_EXIST);
         }

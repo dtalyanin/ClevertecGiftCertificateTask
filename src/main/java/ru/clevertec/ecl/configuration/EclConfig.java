@@ -1,28 +1,44 @@
 package ru.clevertec.ecl.configuration;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.*;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
+import org.springframework.orm.hibernate5.HibernateTransactionManager;
+import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import javax.sql.DataSource;
+import java.util.Properties;
 
 @Configuration
 @EnableWebMvc
 @ComponentScan("ru.clevertec.ecl")
 @PropertySource("classpath:application.properties")
+@EnableTransactionManagement
 public class EclConfig {
-    @Value("${db-driver-class-name}")
+    @Value("${hibernate.driver_class_name}")
     private String driverClassName;
-    @Value("${db-url}")
+    @Value("${hibernate.url}")
     private String url;
-    @Value("${db-username}")
+    @Value("${hibernate.username}")
     private String userName;
-    @Value("${db-password}")
+    @Value("${hibernate.password}")
     private String password;
+    @Value("${hibernate.dialect}")
+    private String dialect;
+    @Value("${hibernate.show_sql}")
+    private String showSQL;
+
+    @Bean
+    public static PropertySourcesPlaceholderConfigurer placeholderConfigurer() {
+        return new PropertySourcesPlaceholderConfigurer();
+    }
 
     @Bean
     public DataSource dataSource() {
@@ -35,17 +51,39 @@ public class EclConfig {
     }
 
     @Bean
-    public JdbcTemplate jdbcTemplate() {
-        return new JdbcTemplate(dataSource());
+    public LocalSessionFactoryBean sessionFactory() {
+        LocalSessionFactoryBean sessionFactory = new LocalSessionFactoryBean();
+        sessionFactory.setDataSource(dataSource());
+        sessionFactory.setPackagesToScan("ru.clevertec.ecl.models");
+        sessionFactory.setHibernateProperties(hibernateProperties());
+        return sessionFactory;
     }
 
     @Bean
-    public static PropertySourcesPlaceholderConfigurer placeholderConfigurer() {
-        return new PropertySourcesPlaceholderConfigurer();
+    public PlatformTransactionManager hibernateTransactionManager() {
+        return new HibernateTransactionManager(sessionFactory().getObject());
     }
 
-    @Bean
-    public DataSourceTransactionManager transactionManager() {
-        return new DataSourceTransactionManager(dataSource());
+    private Properties hibernateProperties() {
+        Properties properties = new Properties();
+        properties.put("hibernate.show_sql", showSQL);
+        properties.put("hibernate.dialect", dialect);
+        return properties;
     }
+
+//    @Bean
+//    public SessionFactory sessionFactory() {
+//        org.hibernate.cfg.Configuration configuration = new org.hibernate.cfg.Configuration();
+//        return configuration.configure()
+//                .addAnnotatedClass(Tag.class)
+//                .buildSessionFactory();
+//
+//    }
+//
+//    @Bean
+//    public PlatformTransactionManager hibernateTransactionManager() {
+//        HibernateTransactionManager transactionManager = new HibernateTransactionManager();
+//        transactionManager.setSessionFactory(sessionFactory());
+//        return transactionManager;
+//    }
 }

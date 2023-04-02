@@ -1,5 +1,6 @@
 package ru.clevertec.ecl.dao.impl;
 
+import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -27,10 +28,12 @@ import static ru.clevertec.ecl.utils.constants.GiftCertificatesSQL.*;
 public class GiftCertificatesDAOImpl implements GiftCertificatesDAO {
 
     private final JdbcTemplate template;
+    private final SessionFactory factory;
 
     @Autowired
-    public GiftCertificatesDAOImpl(JdbcTemplate template) {
-        this.template = template;
+    public GiftCertificatesDAOImpl(SessionFactory factory) {
+        this.template = null;
+        this.factory = factory;
     }
 
     @Override

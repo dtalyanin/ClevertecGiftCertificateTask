@@ -1,8 +1,10 @@
 package ru.clevertec.ecl.services.impl;
 
+import org.hibernate.PropertyValueException;
 import org.hibernate.exception.ConstraintViolationException;
+import org.hibernate.exception.DataException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DuplicateKeyException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.clevertec.ecl.dao.TagsDAO;
@@ -84,13 +86,14 @@ public class TagsServiceImpl implements TagsService {
     public ModificationResponse updateTag(long id, TagDTO dto) {
         Tag tag = mapper.dtoToTag(dto);
         try {
-            int updatedRows = dao.updateTag(id, tag);
-            if (updatedRows == 0) {
+            boolean tagUpdated = dao.updateTag(id, tag);
+            if (!tagUpdated) {
                 throw new ItemNotFoundException("Cannot update: tag with ID " + id + " not found",
                         ErrorCode.TAG_ID_NOT_FOUND);
             }
             return new ModificationResponse(id, "Tag updated successfully");
-        } catch (DuplicateKeyException e) {
+        } catch (PropertyValueException | ConstraintViolationException | DataException e) {
+            System.out.println(e.getClass());
             throw new ItemExistException("Cannot update: tag with name '" + tag.getName() +
                     "' already exist in database", ErrorCode.TAG_NAME_EXIST);
         }
@@ -99,8 +102,8 @@ public class TagsServiceImpl implements TagsService {
     @Override
     @Transactional
     public ModificationResponse deleteTag(long id) {
-        int deletedRows = dao.deleteTag(id);
-        if (deletedRows == 0) {
+        boolean tagDeleted = dao.deleteTag(id);
+        if (!tagDeleted) {
             throw new ItemNotFoundException("Cannot delete: tag with ID " + id + " not found",
                     ErrorCode.TAG_ID_NOT_FOUND);
         }

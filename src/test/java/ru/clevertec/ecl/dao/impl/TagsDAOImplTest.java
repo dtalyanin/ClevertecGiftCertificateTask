@@ -82,21 +82,19 @@ class TagsDAOImplTest {
     }
 
     @Test
-    void checkUpdateTagShouldReturnUpdatedRowsCount1() {
+    void checkUpdateTagShouldUpdateTagAndReturnTrue() {
         Tag expectedTag = new Tag(1, "Test tag updated");
-        int actualUpdatedRows = dao.updateTag(1, expectedTag);
+        boolean actualUpdatedRows = dao.updateTag(1, expectedTag);
         Tag actualTag = dao.getTagById(1L).get();
-        int expectedUpdatedRows = 1;
-        assertThat(actualUpdatedRows).isEqualTo(expectedUpdatedRows);
+        assertThat(actualUpdatedRows).isTrue();
         assertThat(actualTag).isEqualTo(expectedTag);
     }
 
     @Test
-    void checkUpdateTagShouldReturnNoUpdatedRows() {
+    void checkUpdateTagShouldNotUpdateAndReturnFalse() {
         Tag expectedTag = new Tag(1, "Test tag updated");
-        int actualUpdatedRows = dao.updateTag(4L, expectedTag);
-        int expectedUpdatedRows = 0;
-        assertThat(actualUpdatedRows).isEqualTo(expectedUpdatedRows);
+        boolean actualUpdatedRows = dao.updateTag(4L, expectedTag);
+        assertThat(actualUpdatedRows).isFalse();
     }
 
     @Test
@@ -107,18 +105,16 @@ class TagsDAOImplTest {
     }
 
     @Test
-    void checkDeleteTagReturnDeletedRowsCount1() {
-        int actualDeletedRows = dao.deleteTag(1L);
-        int expectedDeletedRows = 1;
+    void checkDeleteTagShouldDeleteSuccessfulAndReturnTrue() {
+        boolean actualDeletedRows = dao.deleteTag(1L);
         Optional<Tag> tagAfterDeleting = dao.getTagById(1L);
-        assertThat(actualDeletedRows).isEqualTo(expectedDeletedRows);
+        assertThat(actualDeletedRows).isTrue();
         assertThat(tagAfterDeleting).isEmpty();
     }
 
     @Test
-    void checkDeleteTagReturnNoDeletedRows() {
-        int actualDeletedRows = dao.deleteTag(4L);
-        int expectedDeletedRows = 0;
-        assertThat(actualDeletedRows).isEqualTo(expectedDeletedRows);
+    void checkDeleteTagShouldNotDeleteAndReturnFalse() {
+        boolean actualDeletedRows = dao.deleteTag(4L);
+        assertThat(actualDeletedRows).isFalse();
     }
 }

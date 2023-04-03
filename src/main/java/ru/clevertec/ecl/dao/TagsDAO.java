@@ -10,6 +10,6 @@ public interface TagsDAO {
     Optional<Tag> getTagById(long id);
     Optional<Tag> getTagByName(String name);
     long addTag(Tag tag);
-    int updateTag(long id, Tag tag);
-    int deleteTag(long id);
+    boolean updateTag(long id, Tag tag);
+    boolean deleteTag(long id);
 }

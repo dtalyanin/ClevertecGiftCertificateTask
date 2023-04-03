@@ -124,7 +124,7 @@ class TagsServiceImplTest {
 
     @Test
     void checkUpdateTagShouldReturnResponseWithUpdatedId() {
-        when(dao.updateTag(anyLong(), any(Tag.class))).thenReturn(1);
+        when(dao.updateTag(anyLong(), any(Tag.class))).thenReturn(true);
         ModificationResponse actual = service.updateTag(5L, getSimpleTagDTO());
         ModificationResponse expected = new ModificationResponse(5L, "Tag updated successfully");
         assertThat(actual).isEqualTo(expected);
@@ -140,7 +140,7 @@ class TagsServiceImplTest {
 
     @Test
     void checkUpdateTagShouldThrowExceptionIdNotFound() {
-        when(dao.updateTag(anyLong(), any(Tag.class))).thenReturn(0);
+        when(dao.updateTag(anyLong(), any(Tag.class))).thenReturn(false);
         assertThatThrownBy(() -> service.updateTag(1L, getSimpleTagDTO()))
                 .isInstanceOf(ItemNotFoundException.class)
                 .hasMessage("Cannot update: tag with ID 1 not found");
@@ -158,7 +158,7 @@ class TagsServiceImplTest {
 
     @Test
     void checkDeleteTagShouldReturnResponseWithDeletedId() {
-        when(dao.deleteTag(anyLong())).thenReturn(1);
+        when(dao.deleteTag(anyLong())).thenReturn(true);
         ModificationResponse actual = service.deleteTag(5L);
         ModificationResponse expected = new ModificationResponse(5L, "Tag deleted successfully");
         assertThat(actual).isEqualTo(expected);
@@ -167,7 +167,7 @@ class TagsServiceImplTest {
 
     @Test
     void checkDeleteTagShouldThrowExceptionIdNotFound() {
-        when(dao.deleteTag(anyLong())).thenReturn(0);
+        when(dao.deleteTag(anyLong())).thenReturn(false);
         assertThatThrownBy(() -> service.deleteTag(1L))
                 .isInstanceOf(ItemNotFoundException.class)
                 .hasMessage("Cannot delete: tag with ID 1 not found");

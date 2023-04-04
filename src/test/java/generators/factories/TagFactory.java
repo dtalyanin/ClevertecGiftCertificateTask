@@ -3,6 +3,7 @@ package generators.factories;
 import ru.clevertec.ecl.models.Tag;
 
 import java.util.List;
+import java.util.Set;
 
 public class TagFactory {
     public static Tag getSimpleTag() {
@@ -26,8 +27,8 @@ public class TagFactory {
         return List.of(getSimpleTag(), getSimpleTag());
     }
 
-    public static List<Tag> getDifferentTags() {
-        return List.of(getSimpleTag(), getSimpleTag2(), getSimpleTag3());
+    public static Set<Tag> getDifferentTags() {
+        return Set.of(getSimpleTag(), getSimpleTag2(), getSimpleTag3());
     }
 
     public static List<Tag> getDifferentTagsWithoutId() {

@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import static generators.factories.TagFactory.*;
 
@@ -34,7 +35,7 @@ public class GiftCertificateFactory {
                 .id(2L)
                 .name("Test 2")
                 .description("Test description 2")
-                .tags(List.of(getSimpleTag(), getSimpleTag2()))
+                .tags(Set.of(getSimpleTag(), getSimpleTag2()))
                 .price(2000L)
                 .duration(Duration.ofDays(2))
                 .createDate(LocalDateTime.of(2023, 1, 1, 1, 0 ,0))
@@ -47,7 +48,7 @@ public class GiftCertificateFactory {
                 .id(3L)
                 .name("Test 3")
                 .description("Test description 3")
-                .tags(Collections.emptyList())
+                .tags(Collections.emptySet())
                 .price(3000L)
                 .duration(Duration.ofDays(3))
                 .createDate(LocalDateTime.of(2023, 1, 3, 1, 0 ,0))

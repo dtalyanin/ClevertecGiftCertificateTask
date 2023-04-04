@@ -1,38 +1,33 @@
 package ru.clevertec.ecl.dao.impl;
 
-//import jakarta.persistence.NoResultException;
-//import jakarta.persistence.Query;
-
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.Query;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import ru.clevertec.ecl.dao.TagsDAO;
-import ru.clevertec.ecl.exceptions.ItemExistException;
 import ru.clevertec.ecl.models.Tag;
-import ru.clevertec.ecl.models.codes.ErrorCode;
 
 import java.util.List;
 import java.util.Optional;
 
+import static ru.clevertec.ecl.utils.constants.TagsParams.TAGE_ID;
+import static ru.clevertec.ecl.utils.constants.TagsParams.TAGE_NAME;
+import static ru.clevertec.ecl.utils.constants.TagsSQL.*;
+
 @Repository
 public class TagsDAOImpl implements TagsDAO {
 
-    private final JdbcTemplate template;
     private final SessionFactory factory;
 
     @Autowired
     public TagsDAOImpl(SessionFactory factory) {
-        this.template = null;
         this.factory = factory;
     }
 
     @Override
     public List<Tag> getAllTags() {
-        return factory.getCurrentSession().createQuery("SELECT t FROM Tag t", Tag.class).list();
+        return factory.getCurrentSession().createQuery(SELECT_ALL_TAGS, Tag.class).list();
     }
 
     @Override
@@ -44,8 +39,8 @@ public class TagsDAOImpl implements TagsDAO {
     public Optional<Tag> getTagByName(String name) {
         Tag tag;
         Query query = factory.getCurrentSession()
-                .createQuery("SELECT t FROM Tag t WHERE name = :name", Tag.class)
-                .setParameter("name", name);
+                .createQuery(SELECT_TAG_BY_NAME, Tag.class)
+                .setParameter(TAGE_NAME, name);
         try {
             tag = (Tag) query.getSingleResult();
         } catch (NoResultException e) {
@@ -55,9 +50,9 @@ public class TagsDAOImpl implements TagsDAO {
     }
 
     @Override
-    public long addTag(Tag tag) {
+    public Tag addTag(Tag tag) {
         factory.getCurrentSession().persist(tag);
-        return tag.getId();
+        return tag;
 
     }
 
@@ -65,15 +60,10 @@ public class TagsDAOImpl implements TagsDAO {
     public boolean updateTag(long id, Tag tag) {
         Optional<Tag> currentTag = getTagById(id);
         if (currentTag.isPresent()) {
-            try {
-                tag.setId(id);
-                factory.getCurrentSession().merge(tag);
-                return true;
-            } catch (DataIntegrityViolationException e) {
-                System.out.println(e.getClass());
-                throw new ItemExistException("Cannot update: tag with name '" + tag.getName() +
-                        "' already exist in database", ErrorCode.TAG_NAME_EXIST);
-            }
+            tag.setId(id);
+            factory.getCurrentSession().merge(tag);
+            factory.getCurrentSession().flush();
+            return true;
         } else {
             return false;
         }
@@ -82,8 +72,8 @@ public class TagsDAOImpl implements TagsDAO {
     @Override
     public boolean deleteTag(long id) {
         return factory.getCurrentSession()
-                .createQuery("DELETE Tag WHERE id = :id")
-                .setParameter("id", id)
+                .createMutationQuery(DELETE_TAG_BY_ID)
+                .setParameter(TAGE_ID, id)
                 .executeUpdate() != 0;
     }
 }

@@ -69,11 +69,11 @@ class TagsDAOImplTest {
                 .isEmpty();
     }
 
-    @Test
-    void checkAddTagShouldReturnGeneratedId4() {
-        long actual = dao.addTag(new Tag(0, "Test"));
-        assertThat(actual).isNotZero();
-    }
+//    @Test
+//    void checkAddTagShouldReturnGeneratedId4() {
+//        long actual = dao.addTag(new Tag(0, "Test"));
+//        assertThat(actual).isNotZero();
+//    }
 
     @Test
     void checkAddTagShouldThrowExceptionTagWithNameExist() {

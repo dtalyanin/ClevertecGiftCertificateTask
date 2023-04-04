@@ -9,8 +9,9 @@ import ru.clevertec.ecl.models.Tag;
 
 import java.util.List;
 
-@Validated
+
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
+@Validated
 public interface TagMapper {
     TagDTO tagToDTO(Tag tag);
     @Valid Tag dtoToTag(TagDTO dto);

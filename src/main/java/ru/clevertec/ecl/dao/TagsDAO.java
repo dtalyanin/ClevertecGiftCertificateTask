@@ -9,7 +9,7 @@ public interface TagsDAO {
     List<Tag> getAllTags();
     Optional<Tag> getTagById(long id);
     Optional<Tag> getTagByName(String name);
-    long addTag(Tag tag);
+    Tag addTag(Tag tag);
     boolean updateTag(long id, Tag tag);
     boolean deleteTag(long id);
 }

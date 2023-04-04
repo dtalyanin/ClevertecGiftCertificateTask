@@ -1,23 +1,22 @@
 package ru.clevertec.ecl.services.impl;
 
-import org.hibernate.PropertyValueException;
 import org.hibernate.exception.ConstraintViolationException;
-import org.hibernate.exception.DataException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.clevertec.ecl.dao.TagsDAO;
 import ru.clevertec.ecl.dto.TagDTO;
 import ru.clevertec.ecl.exceptions.ItemExistException;
 import ru.clevertec.ecl.exceptions.ItemNotFoundException;
+import ru.clevertec.ecl.models.Tag;
 import ru.clevertec.ecl.models.codes.ErrorCode;
 import ru.clevertec.ecl.models.responses.ModificationResponse;
-import ru.clevertec.ecl.models.Tag;
 import ru.clevertec.ecl.services.TagsService;
 import ru.clevertec.ecl.utils.mappers.TagMapper;
 
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -54,8 +53,8 @@ public class TagsServiceImpl implements TagsService {
     public ModificationResponse addTag(TagDTO dto) {
         Tag tag = mapper.dtoToTag(dto);
         try {
-            long generatedId = dao.addTag(tag);
-            return new ModificationResponse(generatedId, "Tag added successfully");
+            dao.addTag(tag);
+            return new ModificationResponse(tag.getId(), "Tag added successfully");
         } catch (ConstraintViolationException e) {
             throw new ItemExistException("Cannot add: tag with name '" + tag.getName() +
                     "' already exist in database", ErrorCode.TAG_NAME_EXIST);
@@ -65,14 +64,15 @@ public class TagsServiceImpl implements TagsService {
     @Override
     @Transactional
     public Set<Tag> addAllTagsIfNotExist(Set<Tag> tagsToAdd) {
-        return tagsToAdd.stream().map(this::createTagIfNotExist).collect(Collectors.toSet());
+        return tagsToAdd.stream()
+                .map(this::createTagIfNotExist)
+                .collect(Collectors.toSet());
     }
 
     private Tag createTagIfNotExist(Tag tag) {
         Optional<Tag> oTag = dao.getTagByName(tag.getName());
         if (oTag.isEmpty()) {
-            dao.addTag(tag);
-            return tag;
+            return dao.addTag(tag);
         } else {
             return oTag.get();
         }
@@ -89,8 +89,7 @@ public class TagsServiceImpl implements TagsService {
                         ErrorCode.TAG_ID_NOT_FOUND);
             }
             return new ModificationResponse(id, "Tag updated successfully");
-        } catch (PropertyValueException | ConstraintViolationException | DataException e) {
-            System.out.println(e.getClass());
+        } catch (ConstraintViolationException e) {
             throw new ItemExistException("Cannot update: tag with name '" + tag.getName() +
                     "' already exist in database", ErrorCode.TAG_NAME_EXIST);
         }

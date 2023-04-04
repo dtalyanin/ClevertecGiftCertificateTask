@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.Set;
 
 @Data
-@Builder
 @NoArgsConstructor
 @Validated
 @Entity
@@ -28,7 +27,6 @@ public class GiftCertificate {
     private String name;
     @NotBlank(message = "Gift certificate description must contain at least 1 character")
     private  String description;
-    @Builder.Default
     @ManyToMany(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
     @EqualsAndHashCode.Exclude
     @JoinTable(name = "gift_certificates_tags",

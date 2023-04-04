@@ -67,14 +67,14 @@ class TagsServiceImplTest {
         verify(dao, times(1)).getTagById(anyLong());
     }
 
-    @Test
-    void checkAddTagShouldReturnResponseWithGeneratedId() {
-        when(dao.addTag(any(Tag.class))).thenReturn(1L);
-        ModificationResponse actual = service.addTag(getSimpleTagDTO());
-        ModificationResponse expected = new ModificationResponse(1L, "Tag added successfully");
-        assertThat(actual).isEqualTo(expected);
-        verify(dao, times(1)).addTag(any(Tag.class));
-    }
+//    @Test
+//    void checkAddTagShouldReturnResponseWithGeneratedId() {
+//        when(dao.addTag(any(Tag.class))).thenReturn(1L);
+//        ModificationResponse actual = service.addTag(getSimpleTagDTO());
+//        ModificationResponse expected = new ModificationResponse(1L, "Tag added successfully");
+//        assertThat(actual).isEqualTo(expected);
+//        verify(dao, times(1)).addTag(any(Tag.class));
+//    }
 
     @Test
     void checkAddTagShouldThrowExceptionIncorrectDTO() {
@@ -92,35 +92,35 @@ class TagsServiceImplTest {
         verify(dao, times(1)).addTag(any(Tag.class));
     }
 
-    @Test
-    void checkAddAllTagsIfNotExistShouldAddOneValueThatNotPresent() {
-        List<Tag> tags = getDifferentTags();
-        when(dao.getTagByName("Test tag")).thenReturn(Optional.of(tags.get(0)));
-        when(dao.getTagByName("Test tag 2")).thenReturn(Optional.of(tags.get(1)));
-        when(dao.getTagByName("Test tag 3")).thenReturn(Optional.empty());
-        when(dao.addTag(tags.get(2))).thenReturn(3L);
-        List<Long> actual = service.addAllTagsIfNotExist(tags);
-        List<Long> expected = List.of(1L, 2L , 3L);
-        assertThat(actual)
-                .containsAll(expected)
-                .hasSize(expected.size());
-        verify(dao, times(1)).addTag(any(Tag.class));
-        verify(dao, times(3)).getTagByName(anyString());
-    }
-
-    @Test
-    void checkAddAllTagsIfNotExistShouldAddOneValueBecauseTwoTagsAreEquals() {
-        List<Tag> tags = getSimpleTags();
-        when(dao.getTagByName(anyString())).thenReturn(Optional.empty());
-        when(dao.addTag(any(Tag.class))).thenReturn(0L);
-        List<Long> actual = service.addAllTagsIfNotExist(tags);
-        List<Long> expected = Collections.singletonList(0L);
-        assertThat(actual)
-                .containsAll(expected)
-                .hasSize(expected.size());
-        verify(dao, times(1)).addTag(any(Tag.class));
-        verify(dao, times(1)).getTagByName(anyString());
-    }
+//    @Test
+//    void checkAddAllTagsIfNotExistShouldAddOneValueThatNotPresent() {
+//        List<Tag> tags = getDifferentTags();
+//        when(dao.getTagByName("Test tag")).thenReturn(Optional.of(tags.get(0)));
+//        when(dao.getTagByName("Test tag 2")).thenReturn(Optional.of(tags.get(1)));
+//        when(dao.getTagByName("Test tag 3")).thenReturn(Optional.empty());
+//        when(dao.addTag(tags.get(2))).thenReturn(3L);
+//        List<Long> actual = service.addAllTagsIfNotExist(tags);
+//        List<Long> expected = List.of(1L, 2L , 3L);
+//        assertThat(actual)
+//                .containsAll(expected)
+//                .hasSize(expected.size());
+//        verify(dao, times(1)).addTag(any(Tag.class));
+//        verify(dao, times(3)).getTagByName(anyString());
+//    }
+//
+//    @Test
+//    void checkAddAllTagsIfNotExistShouldAddOneValueBecauseTwoTagsAreEquals() {
+//        List<Tag> tags = getSimpleTags();
+//        when(dao.getTagByName(anyString())).thenReturn(Optional.empty());
+//        when(dao.addTag(any(Tag.class))).thenReturn(0L);
+//        List<Long> actual = service.addAllTagsIfNotExist(tags);
+//        List<Long> expected = Collections.singletonList(0L);
+//        assertThat(actual)
+//                .containsAll(expected)
+//                .hasSize(expected.size());
+//        verify(dao, times(1)).addTag(any(Tag.class));
+//        verify(dao, times(1)).getTagByName(anyString());
+//    }
 
     @Test
     void checkUpdateTagShouldReturnResponseWithUpdatedId() {

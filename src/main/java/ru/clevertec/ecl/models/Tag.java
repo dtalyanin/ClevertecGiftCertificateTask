@@ -5,13 +5,14 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
-@Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Getter
+@Setter
 @Entity
+@EqualsAndHashCode
 @Table(name = "tags")
 public class Tag {
     @Id
@@ -21,7 +22,6 @@ public class Tag {
     @NotBlank(message = "Tag name must contain at least 1 character")
     @Column(name = "name")
     private String name;
-    @ToString.Exclude
     @EqualsAndHashCode.Exclude
     @ManyToMany(mappedBy = "tags")
     private Set<GiftCertificate> giftCertificates = new HashSet<>();

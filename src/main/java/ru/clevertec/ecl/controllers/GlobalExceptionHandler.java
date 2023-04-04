@@ -2,6 +2,7 @@ package ru.clevertec.ecl.controllers;
 
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -14,11 +15,16 @@ import ru.clevertec.ecl.models.responses.ErrorResponse;
 import ru.clevertec.ecl.models.GiftCertificate;
 import ru.clevertec.ecl.models.Tag;
 
+import java.util.stream.Collectors;
+
 @ControllerAdvice
 public class GlobalExceptionHandler {
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<ErrorResponse> findValidationExceptionInParameters(ConstraintViolationException e) {
         ConstraintViolation<?> constraintViolation = e.getConstraintViolations().iterator().next();
+        String message = e.getConstraintViolations().stream()
+                .map(ConstraintViolation::getMessage)
+                .collect(Collectors.joining(", "));
         ErrorCode errorCode;
         if (constraintViolation.getLeafBean().getClass() == GiftCertificate.class) {
             errorCode = ErrorCode.INVALID_CERTIFICATE_FIELD_VALUE;
@@ -27,7 +33,7 @@ public class GlobalExceptionHandler {
         } else {
             errorCode = ErrorCode.INVALID_FIELD_VALUE;
         }
-        ErrorResponse errorResponse = new ErrorResponse(constraintViolation.getMessage(), errorCode.getCode());
+        ErrorResponse errorResponse = new ErrorResponse(message, errorCode.getCode());
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 

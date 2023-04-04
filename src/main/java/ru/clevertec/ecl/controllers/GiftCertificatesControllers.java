@@ -10,6 +10,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import ru.clevertec.ecl.dto.GiftCertificateDTO;
 import ru.clevertec.ecl.dto.ModGiftCertificateDTO;
 import ru.clevertec.ecl.models.criteries.FilterCriteria;
+import ru.clevertec.ecl.models.criteries.PaginationCriteria;
 import ru.clevertec.ecl.models.responses.ModificationResponse;
 import ru.clevertec.ecl.models.criteries.SortCriteria;
 import ru.clevertec.ecl.services.GiftCertificatesService;
@@ -30,8 +31,9 @@ public class GiftCertificatesControllers {
     }
 
     @GetMapping
-    ResponseEntity<List<GiftCertificateDTO>> getAllGiftCertificates(FilterCriteria filter, @Valid SortCriteria sort) {
-        return ResponseEntity.ok(service.getAllGiftCertificates(filter, sort));
+    ResponseEntity<List<GiftCertificateDTO>> getAllGiftCertificates(FilterCriteria filter, @Valid SortCriteria sorting,
+                                                                    @Valid PaginationCriteria pagination) {
+        return ResponseEntity.ok(service.getAllGiftCertificates(filter, sorting, pagination));
     }
 
     @GetMapping("/{id}")

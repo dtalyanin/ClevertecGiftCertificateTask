@@ -1,10 +1,13 @@
 package ru.clevertec.ecl.dao.impl;
 
+//import jakarta.persistence.NoResultException;
+//import jakarta.persistence.Query;
+import jakarta.persistence.NoResultException;
+import jakarta.persistence.Query;
+import jakarta.persistence.criteria.*;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import ru.clevertec.ecl.dao.GiftCertificatesDAO;
 import ru.clevertec.ecl.models.*;
@@ -12,7 +15,6 @@ import ru.clevertec.ecl.models.criteries.FilterCriteria;
 import ru.clevertec.ecl.models.criteries.SQLFilter;
 import ru.clevertec.ecl.models.criteries.SortCriteria;
 
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
@@ -39,122 +41,85 @@ public class GiftCertificatesDAOImpl implements GiftCertificatesDAO {
     @Override
     public List<GiftCertificate> getAllGiftCertificates(FilterCriteria filterCriteria, SortCriteria sortCriteria) {
         StringBuilder sqlWithFilterAndSoring = new StringBuilder(SELECT_ALL_GIFT_CERTIFICATES_WITH_TAGS);
-        SQLFilter sqlFilter = getFilterSQL(filterCriteria);
-        sqlWithFilterAndSoring.append(sqlFilter.getSql());
-        sqlWithFilterAndSoring.append(getSortingOrder(sortCriteria));
-        return template.query(sqlWithFilterAndSoring.toString(), rs -> {
-            Map<Long, GiftCertificateBuilder> giftCertificatesBuilders = new LinkedHashMap<>();
-            GiftCertificateBuilder builder;
-            while (rs.next()) {
-                long certificateId = rs.getLong("gc_id");
-                builder = giftCertificatesBuilders.get(certificateId);
-                if (builder == null) {
-                    builder = createBuilderWithValues(rs, certificateId);
-                    giftCertificatesBuilders.put(certificateId, builder);
-                }
-                addTagToBuilder(rs, builder);
-            }
-            return giftCertificatesBuilders.values().stream()
-                    .map(GiftCertificateBuilder::build)
-                    .toList();
-        }, sqlFilter.getFilteringFields().toArray());
+        CriteriaBuilder cb = factory.getCurrentSession().getCriteriaBuilder();
+        CriteriaQuery<GiftCertificate> cr = cb.createQuery(GiftCertificate.class);
+        Root<GiftCertificate> r = cr.from(GiftCertificate.class);
+        Fetch<GiftCertificate, Tag> fetch = r.fetch("tags", JoinType.LEFT);
+        List<Order> orders = getSortingOrder(sortCriteria, cb, r);
+        Predicate[] predicates = getFilterSQL(filterCriteria, cb, r);
+        cr.select(r).where(predicates);
+        cr.orderBy(orders);
+// here join with the root instead of the fetch
+// casting the fetch to the join could cause portability problems
+// plus, not nice
+
+//        sqlWithFilterAndSoring.append(sqlFilter.getSql());
+//        sqlWithFilterAndSoring.append(getSortingOrder(sortCriteria, cb));
+
+//        return factory.getCurrentSession()
+//                .createQuery("SELECT gc FROM GiftCertificate gc LEFT JOIN FETCH gc.tags", GiftCertificate.class)
+//                .list();
+        return factory.getCurrentSession().createQuery(cr).list();
     }
 
     @Override
     public Optional<GiftCertificate> getGiftCertificateById(long id) {
-        return Optional.ofNullable(template.query(SELECT_GIFT_CERTIFICATE_WITH_TAGS_BY_ID, rs -> {
-            GiftCertificate giftCertificate = null;
-            GiftCertificateBuilder builder = null;
-            while (rs.next()) {
-                if (builder == null) {
-                    long certificateId = rs.getLong("gc_id");
-                    builder = createBuilderWithValues(rs, certificateId);
-                }
-                addTagToBuilder(rs, builder);
-            }
-            if (builder != null) {
-                giftCertificate = builder.build();
-            }
-            return giftCertificate;
-        }, id));
+        Query query = factory.getCurrentSession()
+                .createQuery("SELECT gc FROM GiftCertificate gc LEFT JOIN FETCH gc.tags WHERE gc.id = :id",
+                        GiftCertificate.class)
+                .setParameter("id", id);
+        GiftCertificate giftCertificate;
+        try {
+            giftCertificate = (GiftCertificate) query.getSingleResult();
+        } catch (NoResultException e) {
+            giftCertificate = null;
+        }
+        return Optional.ofNullable(giftCertificate);
     }
 
     @Override
     public long addGiftCertificate(GiftCertificate giftCertificate) {
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        template.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(INSERT_NEW_GIFT_CERTIFICATE, new String[]{"id"});
-            ps.setString(1, giftCertificate.getName());
-            ps.setString(2, giftCertificate.getDescription());
-            ps.setLong(3, giftCertificate.getPrice());
-            ps.setLong(4, (int) giftCertificate.getDuration().toDays());
-            Timestamp created = convertLocalDateTimeToTimestamp(LocalDateTime.now());
-            ps.setTimestamp(5, created);
-            ps.setTimestamp(6, created);
-            return ps;
-        }, keyHolder);
-        return keyHolder.getKey().longValue();
-
+        factory.getCurrentSession().persist(giftCertificate);
+        return giftCertificate.getId();
     }
 
     @Override
     public int updateGiftCertificate(long id, GiftCertificate certificate) {
-        return template.update(UPDATE_GIFT_CERTIFICATE,
-                certificate.getName(),
-                certificate.getDescription(),
-                certificate.getPrice(),
-                (int) certificate.getDuration().toDays(),
-                convertLocalDateTimeToTimestamp(certificate.getCreateDate()),
-                convertLocalDateTimeToTimestamp(certificate.getLastUpdateDate()),
-                id);
+        factory.getCurrentSession().merge(certificate);
+        return 1;
     }
 
     @Override
     public int deleteGiftCertificate(long id) {
-        return template.update(DELETE_GIFT_CERTIFICATE_BY_ID, id);
+        return factory.getCurrentSession()
+                .createMutationQuery("DELETE GiftCertificate gc WHERE gc.id = :id")
+                .setParameter("id", id)
+                .executeUpdate();
     }
 
-    private SQLFilter getFilterSQL(FilterCriteria filter) {
-        List<Object> fieldsValues = new ArrayList<>();
-        StringBuilder sb = new StringBuilder();
+    private Predicate[] getFilterSQL(FilterCriteria filter, CriteriaBuilder cb, Root<GiftCertificate> r) {
+        List<Predicate> fieldsValues = new ArrayList<>();
         if (filter != null) {
             if (filter.getTag() != null) {
-                sb.append(FILTER_BY_TAG_NAME);
-                fieldsValues.add(filter.getTag());
+                fieldsValues.add(cb.equal(r.get("tags").get("name"), filter.getTag()));
             }
             if (filter.getName() != null) {
-                sb.append(getAndClauseIfAdditionalFilter(sb));
-                sb.append(FILTER_BY_GIFT_CERTIFICATE_NAME);
-                fieldsValues.add("%" + filter.getName() + "%");
+                fieldsValues.add(cb.like(cb.lower(r.get("name")), '%' + filter.getName().toLowerCase() + '%'));
             }
             if (filter.getDescription() != null) {
-                sb.append(getAndClauseIfAdditionalFilter(sb));
-                sb.append(FILTER_BY_GIFT_CERTIFICATE_DESCRIPTION);
-                fieldsValues.add("%" + filter.getDescription() + "%");
-            }
-            if (!sb.isEmpty()) {
-                sb.insert(0, " WHERE ");
+                fieldsValues.add(cb.like(cb.lower(r.get("description")), '%' + filter.getDescription().toLowerCase() + '%'));
             }
         }
-        return new SQLFilter(sb.toString(), fieldsValues);
+        return fieldsValues.toArray(new Predicate[fieldsValues.size()]);
     }
 
-    private String getAndClauseIfAdditionalFilter(StringBuilder sb) {
-        return sb.isEmpty() ? "" : " AND ";
-    }
-
-    private String getSortingOrder(SortCriteria criteria) {
-        String sortingOrder = "";
+    private List<Order> getSortingOrder(SortCriteria criteria, CriteriaBuilder cb, Root<GiftCertificate> r) {
+        List<Order> sortingOrder = new ArrayList<>();
         if (criteria != null && criteria.getSort() != null && criteria.getSort().size() != 0) {
-            String sorting = criteria.getSort().stream()
+            sortingOrder = criteria.getSort().stream()
                     .map(this::getSplitParams)
                     .filter(this::isValidParams)
-                    .map(this::getFieldAndItsOrder)
-                    .filter(s -> !s.isBlank())
-                    .collect(Collectors.joining(", "));
-            if (!sorting.isBlank()) {
-                sortingOrder = " ORDER BY " + sorting;
-            }
+                    .map(params -> getFieldAndItsOrder(params, cb, r)).toList();
         }
         return sortingOrder;
     }
@@ -167,17 +132,20 @@ public class GiftCertificatesDAOImpl implements GiftCertificatesDAO {
         return params.size() > 0 && params.get(0).matches("[A-Za-z]+");
     }
 
-    private String getFieldAndItsOrder(List<String> params) {
-        StringBuilder sb = new StringBuilder();
+    private Order getFieldAndItsOrder(List<String> params, CriteriaBuilder cb, Root<GiftCertificate> r) {
+        Order order;
+        Path<?> path = null;
         if ("name".equalsIgnoreCase(params.get(0))) {
-            sb.append("gc_name");
+            path = r.get("name");
         } else if ("date".equalsIgnoreCase(params.get(0))) {
-            sb.append("create_date");
+            path = r.get("createDate");
         }
-        if (!sb.isEmpty() && params.size() > 1 && "desc".equalsIgnoreCase(params.get(1))) {
-            sb.append(" DESC");
+        if (path != null && params.size() > 1 && "desc".equalsIgnoreCase(params.get(1))) {
+            order = cb.desc(path);
+        } else {
+            order = cb.asc(path);
         }
-        return sb.toString();
+        return order;
     }
 
     private GiftCertificateBuilder createBuilderWithValues(ResultSet rs, long id) throws SQLException {
@@ -198,7 +166,6 @@ public class GiftCertificatesDAOImpl implements GiftCertificatesDAO {
             Tag tag = new Tag();
             tag.setId(tagId);
             tag.setName(rs.getString("t_name"));
-            builder.tag(tag);
         }
     }
 

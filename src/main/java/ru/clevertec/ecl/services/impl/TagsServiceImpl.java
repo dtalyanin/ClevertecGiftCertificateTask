@@ -18,6 +18,7 @@ import ru.clevertec.ecl.services.TagsService;
 import ru.clevertec.ecl.utils.mappers.TagMapper;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class TagsServiceImpl implements TagsService {
@@ -63,22 +64,18 @@ public class TagsServiceImpl implements TagsService {
 
     @Override
     @Transactional
-    public List<Long> addAllTagsIfNotExist(List<Tag> tags) {
-        Set<Tag> tagsSet = new HashSet<>(tags);
-        List<Long> ids = new ArrayList<>();
-        tagsSet.stream()
-                .filter(tag -> {
-                    Optional<Tag> oTag = dao.getTagByName(tag.getName());
-                    if (oTag.isEmpty()) {
-                        return true;
-                    } else {
-                        ids.add(oTag.get().getId());
-                        return false;
-                    }
-                })
-                .map(dao::addTag)
-                .forEach(ids::add);
-        return ids;
+    public Set<Tag> addAllTagsIfNotExist(Set<Tag> tagsToAdd) {
+        return tagsToAdd.stream().map(this::createTagIfNotExist).collect(Collectors.toSet());
+    }
+
+    private Tag createTagIfNotExist(Tag tag) {
+        Optional<Tag> oTag = dao.getTagByName(tag.getName());
+        if (oTag.isEmpty()) {
+            dao.addTag(tag);
+            return tag;
+        } else {
+            return oTag.get();
+        }
     }
 
     @Override

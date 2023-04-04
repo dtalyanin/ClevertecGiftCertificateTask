@@ -8,6 +8,7 @@ import ru.clevertec.ecl.dao.GiftCertificatesDAO;
 import ru.clevertec.ecl.dao.GiftCertificatesTagsDAO;
 import ru.clevertec.ecl.dto.GiftCertificateDTO;
 import ru.clevertec.ecl.dto.ModGiftCertificateDTO;
+import ru.clevertec.ecl.dto.TagDTO;
 import ru.clevertec.ecl.exceptions.EmptyItemException;
 import ru.clevertec.ecl.exceptions.ItemExistException;
 import ru.clevertec.ecl.exceptions.ItemNotFoundException;
@@ -21,9 +22,7 @@ import ru.clevertec.ecl.services.TagsService;
 import ru.clevertec.ecl.utils.mappers.GiftCertificateMapper;
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Stream;
 
 @Service
@@ -67,11 +66,11 @@ public class GiftCertificatesServiceImpl implements GiftCertificatesService {
     public ModificationResponse addGiftCertificate(GiftCertificateDTO dto) {
         GiftCertificate certificate = mapper.dtoToGiftCertificate(dto);
         try {
+            LocalDateTime now = LocalDateTime.now();
+            certificate.setTags(tagsService.addAllTagsIfNotExist(certificate.getTags()));
+            certificate.setCreateDate(now);
+            certificate.setLastUpdateDate(now);
             long generatedId = dao.addGiftCertificate(certificate);
-            if (certificate.getTags() != null) {
-                List<Long> tagsIds = tagsService.addAllTagsIfNotExist(certificate.getTags());
-                certificatesTagsDAO.addGiftCertificateTags(generatedId, tagsIds);
-            }
             return new ModificationResponse(generatedId, "Gift certificate added successfully");
         } catch (DuplicateKeyException e) {
             throw new ItemExistException("Cannot add: gift certificate with similar " +
@@ -88,15 +87,18 @@ public class GiftCertificatesServiceImpl implements GiftCertificatesService {
             throw new ItemNotFoundException("Cannot update: gift certificate with ID " + id + " not found",
                     ErrorCode.CERTIFICATE_ID_NOT_FOUND);
         }
+        Set<Tag> existingTagsBefore = oCertificate.get().getTags();
+        System.out.println(existingTagsBefore);
         GiftCertificate certificate = mapper.modDTOToGiftCertificate(dto, oCertificate.get());
+        certificate.setTags(tagsService.addAllTagsIfNotExist(certificate.getTags()));
         certificate.setLastUpdateDate(LocalDateTime.now());
         try {
             dao.updateGiftCertificate(id, certificate);
-            if (dto.getTags() != null) {
-                List<Long> tagsIds = tagsService.addAllTagsIfNotExist(certificate.getTags());
-                certificatesTagsDAO.deleteGiftCertificateTags(id);
-                certificatesTagsDAO.addGiftCertificateTags(id, tagsIds);
-            }
+//            if (dto.getTags() != null) {
+//                List<Long> tagsIds = tagsService.addAllTagsIfNotExist(certificate.getTags());
+//                certificatesTagsDAO.deleteGiftCertificateTags(id);
+//                certificatesTagsDAO.addGiftCertificateTags(id, tagsIds);
+//            }
             return new ModificationResponse(id, "Gift certificate updated successfully");
         } catch (DuplicateKeyException e) {
             throw new ItemExistException("Cannot update: gift certificate with similar " +

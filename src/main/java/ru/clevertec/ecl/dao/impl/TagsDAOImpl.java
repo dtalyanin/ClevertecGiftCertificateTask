@@ -1,32 +1,22 @@
 package ru.clevertec.ecl.dao.impl;
 
+//import jakarta.persistence.NoResultException;
+//import jakarta.persistence.Query;
+
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.Query;
-import org.hibernate.PropertyValueException;
-import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.exception.ConstraintViolationException;
-import org.hibernate.exception.DataException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import ru.clevertec.ecl.dao.TagsDAO;
 import ru.clevertec.ecl.exceptions.ItemExistException;
-import ru.clevertec.ecl.exceptions.ItemNotFoundException;
 import ru.clevertec.ecl.models.Tag;
 import ru.clevertec.ecl.models.codes.ErrorCode;
-import ru.clevertec.ecl.models.responses.ModificationResponse;
 
-import java.sql.PreparedStatement;
 import java.util.List;
 import java.util.Optional;
-
-import static ru.clevertec.ecl.utils.constants.TagsSQL.*;
 
 @Repository
 public class TagsDAOImpl implements TagsDAO {

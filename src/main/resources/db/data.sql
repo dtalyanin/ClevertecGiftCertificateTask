@@ -2,16 +2,16 @@ INSERT INTO gift_certificates (name, description, price, duration, create_date, 
 VALUES ('SweetBar', 'A wonderful gift for lovers of sweets will be a gift certificate for our sweets. ' ||
                     'Let the sweet tooth choose the sweets they prefer on their own. ' ||
                     'Pleasant impressions from the choice of sweets and a guarantee of a delicious evening!',
-        5000, 30, '2023-03-23 18:00:00.000000', '2023-03-23 18:00:00.000000'),
+        5000, 2592000000000000, '2023-03-23 18:00:00.000000', '2023-03-23 18:00:00.000000'),
        ('OZ', 'OZ gift certificates are always a relevant and desired gift, ' ||
               'because a loved one gets the freedom of choice!',
-        10000, 360, '2023-03-01 11:00:00.000000', '2023-03-23 15:00:00.000000'),
+        10000, 31536000000000000, '2023-03-01 11:00:00.000000', '2023-03-23 15:00:00.000000'),
        ('Yves Rocher', 'Issue a certificate in the form of a postcard. A great opportunity to make the needed and ' ||
                        'desired gift. Saves time choosing and searching for a gift.',
-        20000, 180, '2023-03-01 11:00:00.000000', '2023-03-01 11:00:00.000000'),
+        20000, 15552000000000000, '2023-03-01 11:00:00.000000', '2023-03-01 11:00:00.000000'),
        ('VR', 'Are you looking for an interesting place to relax with family and friends? ' ||
               'Used certificate for games in the club. it is a storm of emotions and a sea of positive!',
-        5000, 30, '2023-03-23 18:00:00.000000', '2023-03-23 18:00:00.000000')
+        5000, 2592000000000000, '2023-03-23 18:00:00.000000', '2023-03-23 18:00:00.000000')
 ON CONFLICT DO NOTHING;
 
 INSERT INTO tags (name)

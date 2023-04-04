@@ -1,23 +1,37 @@
 package ru.clevertec.ecl.utils.mappers;
 
+import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Valid;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
 import org.mapstruct.*;
 import org.springframework.validation.annotation.Validated;
 import ru.clevertec.ecl.dto.GiftCertificateDTO;
 import ru.clevertec.ecl.dto.ModGiftCertificateDTO;
+import ru.clevertec.ecl.exceptions.InvalidItemException;
 import ru.clevertec.ecl.models.GiftCertificate;
+import ru.clevertec.ecl.models.codes.ErrorCode;
 
 import java.math.BigDecimal;
 import java.time.Duration;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Validated
 @Mapper(componentModel = "spring",
+        uses = TagMapperImpl.class,
         unmappedTargetPolicy = ReportingPolicy.IGNORE,
         nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS,
         nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 public abstract class GiftCertificateMapper {
     private static final BigDecimal COINS = BigDecimal.valueOf(100);
+
+    private final Validator validator;
+
+    public GiftCertificateMapper() {
+        this.validator = Validation.buildDefaultValidatorFactory().getValidator();
+    }
 
     @Mapping(source = "price", target = "price", qualifiedByName = "priceInRubles")
     @Mapping(source = "duration", target = "duration", qualifiedByName = "days")
@@ -35,7 +49,7 @@ public abstract class GiftCertificateMapper {
                                                                    @MappingTarget GiftCertificate updated);
 
     @Named("priceInRubles")
-    public BigDecimal convertPriceFromCoinsToPriceInRubles(Long price) {
+    protected BigDecimal convertPriceFromCoinsToPriceInRubles(Long price) {
         BigDecimal rubles = null;
         if (price != null) {
             rubles = BigDecimal.valueOf(price, 2);
@@ -68,5 +82,17 @@ public abstract class GiftCertificateMapper {
             duration = Duration.ofDays(days);
         }
         return duration;
+    }
+
+    @AfterMapping
+    protected void validateGiftCertificate(@MappingTarget GiftCertificate giftCertificate) {
+        Set<ConstraintViolation<GiftCertificate>> violations = validator.validate(giftCertificate);
+        System.out.println(violations.size());
+        if (violations.size() != 0) {
+            throw new InvalidItemException(violations.stream()
+                    .map(ConstraintViolation::getMessage)
+                    .collect(Collectors.joining(", ")),
+                    ErrorCode.INVALID_CERTIFICATE_FIELD_VALUE);
+        }
     }
 }

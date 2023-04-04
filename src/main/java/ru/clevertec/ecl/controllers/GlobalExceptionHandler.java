@@ -7,9 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import ru.clevertec.ecl.exceptions.EmptyItemException;
-import ru.clevertec.ecl.exceptions.ItemExistException;
-import ru.clevertec.ecl.exceptions.ItemNotFoundException;
+import ru.clevertec.ecl.exceptions.*;
 import ru.clevertec.ecl.models.codes.ErrorCode;
 import ru.clevertec.ecl.models.responses.ErrorResponse;
 import ru.clevertec.ecl.models.GiftCertificate;
@@ -49,8 +47,8 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorResponse, HttpStatus.UNPROCESSABLE_ENTITY);
     }
 
-    @ExceptionHandler(EmptyItemException.class)
-    public ResponseEntity<ErrorResponse> handleDBException(EmptyItemException e) {
+    @ExceptionHandler({EmptyItemException.class, InvalidItemException.class})
+    public ResponseEntity<ErrorResponse> handleDBException(ItemException e) {
         ErrorResponse errorResponse = new ErrorResponse(e.getMessage(), e.getErrorCode().getCode());
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }

@@ -27,12 +27,12 @@ public class TagFactory {
         return List.of(getSimpleTag(), getSimpleTag());
     }
 
-    public static Set<Tag> getDifferentTags() {
-        return Set.of(getSimpleTag(), getSimpleTag2(), getSimpleTag3());
+    public static List<Tag> getDifferentTags() {
+        return List.of(getSimpleTag(), getSimpleTag2(), getSimpleTag3());
     }
 
-    public static List<Tag> getDifferentTagsWithoutId() {
-        return List.of(new Tag(0, "Test tag"), new Tag(0, "Test tag 2"),
+    public static Set<Tag> getDifferentTagsWithoutId() {
+        return Set.of(new Tag(0, "Test tag"), new Tag(0, "Test tag 2"),
                 new Tag(0, "Test tag 3"));
     }
 }

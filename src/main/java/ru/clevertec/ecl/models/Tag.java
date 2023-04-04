@@ -12,6 +12,7 @@ import java.util.Set;
 @Getter
 @Setter
 @Entity
+@ToString
 @EqualsAndHashCode
 @Table(name = "tags")
 public class Tag {
@@ -22,12 +23,8 @@ public class Tag {
     @NotBlank(message = "Tag name must contain at least 1 character")
     @Column(name = "name")
     private String name;
+    @ToString.Exclude
     @EqualsAndHashCode.Exclude
     @ManyToMany(mappedBy = "tags")
     private Set<GiftCertificate> giftCertificates = new HashSet<>();
-
-    public Tag(long id, String name) {
-        this.id = id;
-        this.name = name;
-    }
 }

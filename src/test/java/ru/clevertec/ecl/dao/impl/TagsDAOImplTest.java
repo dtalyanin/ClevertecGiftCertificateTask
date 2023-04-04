@@ -2,7 +2,7 @@ package ru.clevertec.ecl.dao.impl;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DuplicateKeyException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
@@ -11,6 +11,7 @@ import ru.clevertec.ecl.configuration.TestConfig;
 import ru.clevertec.ecl.dao.TagsDAO;
 import ru.clevertec.ecl.models.Tag;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -69,39 +70,39 @@ class TagsDAOImplTest {
                 .isEmpty();
     }
 
-//    @Test
-//    void checkAddTagShouldReturnGeneratedId4() {
-//        long actual = dao.addTag(new Tag(0, "Test"));
-//        assertThat(actual).isNotZero();
-//    }
+    @Test
+    void checkAddTagShouldReturnGeneratedId4() {
+        long actual = dao.addTag(new Tag(0, "Test new", Collections.emptySet())).getId();
+        assertThat(actual).isNotZero();
+    }
 
     @Test
     void checkAddTagShouldThrowExceptionTagWithNameExist() {
-        assertThatThrownBy(() -> dao.addTag(getSimpleTag()))
-                .isInstanceOf(DuplicateKeyException.class);
+        assertThatThrownBy(() -> dao.addTag(new Tag(0, "Test tag", Collections.emptySet())))
+                .isInstanceOf(DataIntegrityViolationException.class);
     }
 
     @Test
     void checkUpdateTagShouldUpdateTagAndReturnTrue() {
-        Tag expectedTag = new Tag(1, "Test tag updated");
-        boolean actualUpdatedRows = dao.updateTag(1, expectedTag);
+        Tag expectedTag = new Tag(1, "Test tag updated", Collections.emptySet());
+        boolean tagUpdated = dao.updateTag(1, expectedTag);
         Tag actualTag = dao.getTagById(1L).get();
-        assertThat(actualUpdatedRows).isTrue();
+        assertThat(tagUpdated).isTrue();
         assertThat(actualTag).isEqualTo(expectedTag);
     }
 
     @Test
     void checkUpdateTagShouldNotUpdateAndReturnFalse() {
-        Tag expectedTag = new Tag(1, "Test tag updated");
-        boolean actualUpdatedRows = dao.updateTag(4L, expectedTag);
-        assertThat(actualUpdatedRows).isFalse();
+        Tag expectedTag = new Tag(1, "Test tag updated", Collections.emptySet());
+        boolean tagUpdated = dao.updateTag(4L, expectedTag);
+        assertThat(tagUpdated).isFalse();
     }
 
     @Test
     void checkUpdateTagShouldThrowExceptionTagWithNameExist() {
         Tag updatedValue = getSimpleTag();
         assertThatThrownBy(() -> dao.updateTag(2L, updatedValue))
-                .isInstanceOf(DuplicateKeyException.class);
+                .isInstanceOf(DataIntegrityViolationException.class);
     }
 
     @Test

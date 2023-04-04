@@ -1,13 +1,15 @@
 package ru.clevertec.ecl.utils.mappers;
 
-import jakarta.validation.ConstraintViolationException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.mapstruct.factory.Mappers;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import ru.clevertec.ecl.dto.GiftCertificateDTO;
 import ru.clevertec.ecl.dto.ModGiftCertificateDTO;
+import ru.clevertec.ecl.exceptions.InvalidItemException;
 import ru.clevertec.ecl.models.GiftCertificate;
 
 import java.math.BigDecimal;
@@ -20,6 +22,7 @@ import static generators.factories.ModGiftCertificateDTOFactory.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+@ExtendWith(SpringExtension.class)
 class GiftCertificateMapperTest {
 
     private GiftCertificateMapper mapper;
@@ -45,7 +48,7 @@ class GiftCertificateMapperTest {
 
     @Test
     void checkGiftCertificateToDTOShouldReturnCorrectDTO() {
-        GiftCertificate certificate = getSimpleGiftCertificate();
+        GiftCertificate certificate = getSimpleGiftCertificateWithTags();
         GiftCertificateDTO actual = mapper.giftCertificateToDTO(certificate);
         GiftCertificateDTO expected = getSimpleGiftCertificateDTO();
         assertThat(actual).isEqualTo(expected);
@@ -61,14 +64,14 @@ class GiftCertificateMapperTest {
     void checkDTOToGiftCertificateShouldThrowExceptionInvalidFields() {
         GiftCertificateDTO certificateDTO = getGiftCertificateDTOWithoutFields();
         assertThatThrownBy(() -> mapper.dtoToGiftCertificate(certificateDTO))
-                .isInstanceOf(ConstraintViolationException.class);
+                .isInstanceOf(InvalidItemException.class);
     }
 
     @Test
     void checkDTOToGiftCertificateShouldReturnCorrectCertificate() {
         GiftCertificateDTO certificateDTO = getSimpleGiftCertificateDTO();
         GiftCertificate actual = mapper.dtoToGiftCertificate(certificateDTO);
-        GiftCertificate expected = getSimpleGiftCertificateWithoutId();
+        GiftCertificate expected = getSimpleGiftCertificateWithNullId();
         assertThat(actual).isEqualTo(expected);
     }
 

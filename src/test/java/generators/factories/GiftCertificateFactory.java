@@ -5,7 +5,9 @@ import ru.clevertec.ecl.models.GiftCertificate;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 
 import static generators.factories.TagFactory.*;
 
@@ -26,6 +28,12 @@ public class GiftCertificateFactory {
 
     public static GiftCertificate getSimpleGiftCertificate() {
         return GiftCertificateBuilder.builder().build();
+    }
+
+    public static GiftCertificate getSimpleGiftCertificateWithTags() {
+        return GiftCertificateBuilder.builder()
+                .tags(getDifferentTagsSet())
+                .build();
     }
 
     public static GiftCertificate getSimpleGiftCertificate2() {
@@ -57,27 +65,44 @@ public class GiftCertificateFactory {
     public static GiftCertificate getSimpleGiftCertificateWithoutId() {
         return GiftCertificateBuilder.builder()
                 .id(0L)
-                .tags(getDifferentTagsWithoutId())
+                .tags(getDifferentTagsWithoutIdSet())
+                .build();
+    }
+
+    public static GiftCertificate getSimpleGiftCertificateWithNullId() {
+        return GiftCertificateBuilder.builder()
+                .id(null)
+                .tags(getDifferentTagsWithoutIdSet())
                 .build();
     }
 
     public static GiftCertificate getGiftCertificateWithAllUpdatedFields() {
         return GiftCertificateBuilder.builder()
-                .tags(new HashSet<>(getDifferentTags()))
+                .name("Test mod")
+                .description("Test description mod")
+                .tags(Collections.emptySet())
+                .price(2000L)
+                .duration(Duration.ofDays(2))
+                .build();
+    }
+
+
+    public static GiftCertificate getGiftCertificateForUpdate() {
+        return GiftCertificateBuilder.builder()
+                .name("New test")
+                .tags(Collections.emptySet())
                 .build();
     }
 
     public static GiftCertificate getGiftCertificateWithUpdatedOnlyNamePriceDuration() {
         return GiftCertificateBuilder.builder()
-                .id(null)
-                .description(null)
-                .tags(null)
-                .createDate(null)
-                .lastUpdateDate(null)
+                .name("Test mod")
+                .price(2000L)
+                .duration(Duration.ofDays(2))
                 .build();
     }
 
     public static List<GiftCertificate> getSimpleGiftCertificates() {
-        return List.of(getSimpleGiftCertificate(), getSimpleGiftCertificate());
+        return List.of(getSimpleGiftCertificate(), getSimpleGiftCertificate2(), getSimpleGiftCertificate3());
     }
 }

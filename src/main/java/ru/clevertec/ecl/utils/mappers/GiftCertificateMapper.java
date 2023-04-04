@@ -1,11 +1,9 @@
 package ru.clevertec.ecl.utils.mappers;
 
 import jakarta.validation.ConstraintViolation;
-import jakarta.validation.Valid;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import org.mapstruct.*;
-import org.springframework.validation.annotation.Validated;
 import ru.clevertec.ecl.dto.GiftCertificateDTO;
 import ru.clevertec.ecl.dto.ModGiftCertificateDTO;
 import ru.clevertec.ecl.exceptions.InvalidItemException;
@@ -18,7 +16,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-@Validated
 @Mapper(componentModel = "spring",
         uses = TagMapperImpl.class,
         unmappedTargetPolicy = ReportingPolicy.IGNORE,
@@ -39,13 +36,13 @@ public abstract class GiftCertificateMapper {
 
     @Mapping(source = "price", target = "price", qualifiedByName = "priceInCoins")
     @Mapping(source = "duration", target = "duration", qualifiedByName = "duration")
-    public abstract @Valid GiftCertificate dtoToGiftCertificate(GiftCertificateDTO dto);
+    public abstract GiftCertificate dtoToGiftCertificate(GiftCertificateDTO dto);
 
     public abstract List<GiftCertificateDTO> allGiftCertificateToDTO(List<GiftCertificate> giftCertificates);
 
     @Mapping(source = "price", target = "price", qualifiedByName = "priceInCoins")
     @Mapping(source = "duration", target = "duration", qualifiedByName = "duration")
-    public abstract @Valid GiftCertificate modDTOToGiftCertificate(ModGiftCertificateDTO dto,
+    public abstract GiftCertificate modDTOToGiftCertificate(ModGiftCertificateDTO dto,
                                                                    @MappingTarget GiftCertificate updated);
 
     @Named("priceInRubles")

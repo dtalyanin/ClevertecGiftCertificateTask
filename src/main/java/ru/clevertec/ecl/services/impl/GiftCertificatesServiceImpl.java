@@ -43,7 +43,8 @@ public class GiftCertificatesServiceImpl implements GiftCertificatesService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<GiftCertificateDTO> getAllGiftCertificates(FilterCriteria filter, SortCriteria sorting, PaginationCriteria pagination) {
+    public List<GiftCertificateDTO> getAllGiftCertificates(FilterCriteria filter, SortCriteria sorting,
+                                                           PaginationCriteria pagination) {
         List<GiftCertificate> giftCertificates = dao.getAllGiftCertificates(filter, sorting, pagination);
         return mapper.allGiftCertificateToDTO(giftCertificates);
     }
@@ -91,13 +92,11 @@ public class GiftCertificatesServiceImpl implements GiftCertificatesService {
         certificate.setTags(tags);
         certificate.setLastUpdateDate(LocalDateTime.now());
         try {
-            System.out.println(2);
             dao.updateGiftCertificate(id, certificate);
             return new ModificationResponse(id, "Gift certificate updated successfully");
-        } catch (Exception e) {
-            System.out.println(e.getClass());
+        } catch (ConstraintViolationException e) {
             throw new ItemExistException("Cannot update: gift certificate with similar " +
-                    "parameters already exist in database", ErrorCode.CERTIFICATE_EXIST);
+                    "name, description, price and duration already exist in database", ErrorCode.CERTIFICATE_EXIST);
         }
     }
 

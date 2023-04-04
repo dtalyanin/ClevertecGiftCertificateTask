@@ -2,16 +2,15 @@ package ru.clevertec.ecl.controllers;
 
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import ru.clevertec.ecl.exceptions.*;
-import ru.clevertec.ecl.models.codes.ErrorCode;
-import ru.clevertec.ecl.models.responses.ErrorResponse;
 import ru.clevertec.ecl.models.GiftCertificate;
 import ru.clevertec.ecl.models.Tag;
+import ru.clevertec.ecl.models.codes.ErrorCode;
+import ru.clevertec.ecl.models.responses.ErrorResponse;
 
 import java.util.stream.Collectors;
 

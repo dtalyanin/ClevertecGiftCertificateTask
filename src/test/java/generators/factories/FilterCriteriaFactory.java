@@ -22,4 +22,8 @@ public class FilterCriteriaFactory {
                 .description("ion 2")
                 .build();
     }
+
+    public static FilterCriteria getEmptyFilter() {
+        return FilterCriteria.builder().build();
+    }
 }

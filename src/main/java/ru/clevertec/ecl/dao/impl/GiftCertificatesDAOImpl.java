@@ -16,8 +16,7 @@ import ru.clevertec.ecl.models.criteries.SortCriteria;
 import java.util.List;
 import java.util.Optional;
 
-import static ru.clevertec.ecl.utils.SQLHelper.getSQLFilter;
-import static ru.clevertec.ecl.utils.SQLHelper.getSQLOrder;
+import static ru.clevertec.ecl.utils.SQLHelper.*;
 import static ru.clevertec.ecl.utils.constants.GiftCertificateParams.CERTIFICATE_ID;
 import static ru.clevertec.ecl.utils.constants.GiftCertificatesSQL.*;
 

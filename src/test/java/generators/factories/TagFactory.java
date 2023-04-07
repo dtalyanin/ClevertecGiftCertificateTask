@@ -12,7 +12,7 @@ public class TagFactory {
     }
 
     public static Tag getSimpleTagWithoutId() {
-        return new Tag(0, "Test tag", Collections.emptySet());
+        return new Tag(0L, "Test tag", Collections.emptySet());
     }
 
     public static Tag getSimpleTag2() {
@@ -32,8 +32,8 @@ public class TagFactory {
     }
 
     public static List<Tag> getDifferentTagsWithoutId() {
-        return List.of(getSimpleTagWithoutId(), new Tag(0, "Test tag 2", Collections.emptySet()),
-                new Tag(0, "Test tag 3", Collections.emptySet()));
+        return List.of(getSimpleTagWithoutId(), new Tag(0L, "Test tag 2", Collections.emptySet()),
+                new Tag(0L, "Test tag 3", Collections.emptySet()));
     }
 
     public static Set<Tag> getDifferentTagsWithoutIdSet() {

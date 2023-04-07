@@ -7,7 +7,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import ru.clevertec.ecl.dao.TagsDAO;
-import ru.clevertec.ecl.dto.TagDTO;
+import ru.clevertec.ecl.dto.TagDto;
 import ru.clevertec.ecl.exceptions.InvalidItemException;
 import ru.clevertec.ecl.exceptions.ItemExistException;
 import ru.clevertec.ecl.exceptions.ItemNotFoundException;
@@ -39,10 +39,10 @@ class TagsServiceImplTest {
     @Test
     void checkGetAllTagsShouldReturnListOfDTOs() {
         when(dao.getAllTags()).thenReturn(getDifferentTags());
-        when(mapper.allTagsToDTO(anyList())).thenReturn(getSimpleTagDTOs());
+        when(mapper.tagsToDto(anyList())).thenReturn(getSimpleTagDTOs());
 
-        List<TagDTO> actual = service.getAllTags();
-        List<TagDTO> expected = getSimpleTagDTOs();
+        List<TagDto> actual = service.getAllTags();
+        List<TagDto> expected = getSimpleTagDTOs();
 
         assertThat(actual).isEqualTo(expected);
         verify(dao, times(1)).getAllTags();
@@ -51,10 +51,10 @@ class TagsServiceImplTest {
     @Test
     void checkGetAllTagsShouldReturnEmptyListIfNoTags() {
         when(dao.getAllTags()).thenReturn(Collections.emptyList());
-        when(mapper.allTagsToDTO(anyList())).thenReturn(Collections.emptyList());
+        when(mapper.tagsToDto(anyList())).thenReturn(Collections.emptyList());
 
-        List<TagDTO> actual = service.getAllTags();
-        List<TagDTO> expected = Collections.emptyList();
+        List<TagDto> actual = service.getAllTags();
+        List<TagDto> expected = Collections.emptyList();
 
         assertThat(actual).isEqualTo(expected);
         verify(dao, times(1)).getAllTags();
@@ -65,8 +65,8 @@ class TagsServiceImplTest {
         when(dao.getTagById(1)).thenReturn(Optional.of(getSimpleTag()));
         when(mapper.tagToDTO(getSimpleTag())).thenReturn(getSimpleTagDTO());
 
-        TagDTO actual = service.getTagById(1);
-        TagDTO expected = getSimpleTagDTO();
+        TagDto actual = service.getTagById(1);
+        TagDto expected = getSimpleTagDTO();
 
         assertThat(actual).isEqualTo(expected);
         verify(dao, times(1)).getTagById(anyLong());
@@ -85,7 +85,7 @@ class TagsServiceImplTest {
     @Test
     void checkAddTagShouldReturnResponseWithGeneratedId() {
         when(dao.addTag(any(Tag.class))).thenReturn(getSimpleTag());
-        when(mapper.dtoToTag(any(TagDTO.class))).thenReturn(getSimpleTag());
+        when(mapper.dtoToTag(any(TagDto.class))).thenReturn(getSimpleTag());
 
         ModificationResponse actual = service.addTag(getSimpleTagDTO());
         ModificationResponse expected = new ModificationResponse(1L, "Tag added successfully");
@@ -96,7 +96,7 @@ class TagsServiceImplTest {
 
     @Test
     void checkAddTagShouldThrowExceptionIncorrectDTO() {
-        when(mapper.dtoToTag(any(TagDTO.class))).thenThrow(new InvalidItemException("Message",
+        when(mapper.dtoToTag(any(TagDto.class))).thenThrow(new InvalidItemException("Message",
                 ErrorCode.INVALID_TAG_FIELD_VALUE));
 
         assertThatThrownBy(() -> service.addTag(getTagDTOWithoutName()))
@@ -107,7 +107,7 @@ class TagsServiceImplTest {
     @Test
     void checkAddTagShouldThrowExceptionTagExist() {
         when(dao.addTag(any(Tag.class))).thenThrow(new ConstraintViolationException("Message", null, null));
-        when(mapper.dtoToTag(any(TagDTO.class))).thenReturn(getSimpleTag());
+        when(mapper.dtoToTag(any(TagDto.class))).thenReturn(getSimpleTag());
 
         assertThatThrownBy(() -> service.addTag(getSimpleTagDTO()))
                 .isInstanceOf(ItemExistException.class)
@@ -147,7 +147,7 @@ class TagsServiceImplTest {
 
     @Test
     void checkUpdateTagShouldThrowExceptionIncorrectDTO() {
-        when(mapper.dtoToTag(any(TagDTO.class))).thenThrow(new InvalidItemException("Message",
+        when(mapper.dtoToTag(any(TagDto.class))).thenThrow(new InvalidItemException("Message",
                 ErrorCode.INVALID_TAG_FIELD_VALUE));
 
         assertThatThrownBy(() -> service.updateTag(1L, getTagDTOWithoutName()))

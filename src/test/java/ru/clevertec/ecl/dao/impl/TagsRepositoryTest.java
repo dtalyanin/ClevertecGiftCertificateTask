@@ -24,7 +24,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 @ActiveProfiles("test")
 @Transactional
 @Rollback
-class TagsDAOImplTest {
+class TagsRepositoryTest {
 
     @Autowired
     private TagsDAO dao;

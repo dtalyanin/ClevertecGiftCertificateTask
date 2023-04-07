@@ -15,7 +15,7 @@ import java.util.List;
 public class GiftCertificateDTO {
     private String name;
     private String description;
-    private List<TagDTO> tags;
+    private List<TagDto> tags;
     private BigDecimal price;
     private Long duration;
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")

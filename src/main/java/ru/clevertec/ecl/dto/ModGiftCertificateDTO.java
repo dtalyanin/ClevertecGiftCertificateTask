@@ -13,7 +13,7 @@ import java.util.List;
 public class ModGiftCertificateDTO {
     private String name;
     private String description;
-    private List<TagDTO> tags;
+    private List<TagDto> tags;
     private BigDecimal price;
     private Long duration;
 }

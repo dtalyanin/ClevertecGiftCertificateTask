@@ -1,11 +1,11 @@
 package ru.clevertec.ecl.services.impl;
 
-import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.clevertec.ecl.dao.TagsDAO;
-import ru.clevertec.ecl.dto.TagDTO;
+import ru.clevertec.ecl.dao.impl.TagsRepository;
+import ru.clevertec.ecl.dto.TagDto;
 import ru.clevertec.ecl.exceptions.ItemExistException;
 import ru.clevertec.ecl.exceptions.ItemNotFoundException;
 import ru.clevertec.ecl.models.Tag;
@@ -21,44 +21,43 @@ import java.util.stream.Collectors;
 
 @Service
 public class TagsServiceImpl implements TagsService {
-    private final TagsDAO dao;
+    private final TagsRepository repository;
     private final TagMapper mapper;
 
     @Autowired
-    public TagsServiceImpl(TagsDAO dao, TagMapper mapper) {
-        this.dao = dao;
+    public TagsServiceImpl(TagsRepository repository, TagMapper mapper) {
+        this.repository = repository;
         this.mapper = mapper;
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<TagDTO> getAllTags() {
-        List<Tag> allTags = dao.getAllTags();
-        return mapper.allTagsToDTO(allTags);
+    public List<TagDto> getAllTags(Pageable pageable) {
+        List<Tag> allTags = repository.findAll(pageable).getContent();
+        return mapper.tagsToDto(allTags);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public TagDTO getTagById(long id) {
-        Optional<Tag> tag = dao.getTagById(id);
+    public TagDto getTagById(long id) {
+        Optional<Tag> tag = repository.findById(id);
         if (tag.isEmpty()) {
             throw new ItemNotFoundException("Tag with ID " + id + " not found in database",
                     ErrorCode.TAG_ID_NOT_FOUND);
         }
-        return mapper.tagToDTO(tag.get());
+        return mapper.tagToDto(tag.get());
     }
 
     @Override
     @Transactional
-    public ModificationResponse addTag(TagDTO dto) {
+    public ModificationResponse addTag(TagDto dto) {
         Tag tag = mapper.dtoToTag(dto);
-        try {
-            dao.addTag(tag);
-            return new ModificationResponse(tag.getId(), "Tag added successfully");
-        } catch (ConstraintViolationException e) {
+        if (repository.existsByName(tag.getName())) {
             throw new ItemExistException("Cannot add: tag with name '" + tag.getName() +
                     "' already exist in database", ErrorCode.TAG_NAME_EXIST);
         }
+        repository.save(tag);
+        return new ModificationResponse(tag.getId(), "Tag added successfully");
     }
 
     @Override
@@ -70,9 +69,9 @@ public class TagsServiceImpl implements TagsService {
     }
 
     private Tag createTagIfNotExist(Tag tag) {
-        Optional<Tag> oTag = dao.getTagByName(tag.getName());
+        Optional<Tag> oTag = repository.findByName(tag.getName());
         if (oTag.isEmpty()) {
-            return dao.addTag(tag);
+            return repository.save(tag);
         } else {
             return oTag.get();
         }
@@ -80,26 +79,26 @@ public class TagsServiceImpl implements TagsService {
 
     @Override
     @Transactional
-    public ModificationResponse updateTag(long id, TagDTO dto) {
+    public ModificationResponse updateTag(long id, TagDto dto) {
         Tag tag = mapper.dtoToTag(dto);
-        try {
-            boolean tagUpdated = dao.updateTag(id, tag);
-            if (!tagUpdated) {
-                throw new ItemNotFoundException("Cannot update: tag with ID " + id + " not found",
-                        ErrorCode.TAG_ID_NOT_FOUND);
-            }
-            return new ModificationResponse(id, "Tag updated successfully");
-        } catch (ConstraintViolationException e) {
-            throw new ItemExistException("Cannot update: tag with name '" + tag.getName() +
+        if (repository.existsByName(tag.getName())) {
+            throw new ItemExistException("Cannot add: tag with name '" + tag.getName() +
                     "' already exist in database", ErrorCode.TAG_NAME_EXIST);
         }
+        int updatedCount = repository.updateTag(tag.getName(), id);
+        if (updatedCount == 0) {
+            throw new ItemNotFoundException("Cannot update: tag with ID " + id + " not found",
+                    ErrorCode.TAG_ID_NOT_FOUND);
+        }
+        return new ModificationResponse(id, "Tag updated successfully");
+
     }
 
     @Override
     @Transactional
     public ModificationResponse deleteTag(long id) {
-        boolean tagDeleted = dao.deleteTag(id);
-        if (!tagDeleted) {
+        int deletedCount = repository.deleteById(id);
+        if (deletedCount == 0) {
             throw new ItemNotFoundException("Cannot delete: tag with ID " + id + " not found",
                     ErrorCode.TAG_ID_NOT_FOUND);
         }

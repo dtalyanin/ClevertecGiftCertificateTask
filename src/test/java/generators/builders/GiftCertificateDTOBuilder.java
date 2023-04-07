@@ -2,7 +2,7 @@ package generators.builders;
 
 import lombok.NoArgsConstructor;
 import ru.clevertec.ecl.dto.GiftCertificateDTO;
-import ru.clevertec.ecl.dto.TagDTO;
+import ru.clevertec.ecl.dto.TagDto;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -13,7 +13,7 @@ import java.util.List;
 public class GiftCertificateDTOBuilder {
     private String name = "Test";
     private String description = "Test description";
-    private List<TagDTO> tags = new ArrayList<>();
+    private List<TagDto> tags = new ArrayList<>();
     private BigDecimal price = BigDecimal.valueOf(1000, 2);
     private Long duration = 1L;
     private LocalDateTime createDate = LocalDateTime.of(2023, 1, 1, 1, 0 ,0);
@@ -29,12 +29,12 @@ public class GiftCertificateDTOBuilder {
         return this;
     }
 
-    public GiftCertificateDTOBuilder tags(List<TagDTO> tags) {
+    public GiftCertificateDTOBuilder tags(List<TagDto> tags) {
         this.tags = tags;
         return this;
     }
 
-    public GiftCertificateDTOBuilder tag(TagDTO tag) {
+    public GiftCertificateDTOBuilder tag(TagDto tag) {
         tags.add(tag);
         return this;
     }

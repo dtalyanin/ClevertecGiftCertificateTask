@@ -1,38 +1,35 @@
 package ru.clevertec.ecl.controllers;
 
-import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import ru.clevertec.ecl.exceptions.*;
-import ru.clevertec.ecl.models.GiftCertificate;
-import ru.clevertec.ecl.models.Tag;
-import ru.clevertec.ecl.models.codes.ErrorCode;
-import ru.clevertec.ecl.models.responses.ErrorResponse;
-
-import java.util.stream.Collectors;
+import ru.clevertec.ecl.models.responses.errors.ErrorResponse;
+import ru.clevertec.ecl.models.responses.errors.ValidationErrorResponse;
+import ru.clevertec.ecl.utils.ValidationErrorResponsesFactory;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
     @ExceptionHandler(ConstraintViolationException.class)
-    public ResponseEntity<ErrorResponse> findValidationExceptionInParameters(ConstraintViolationException e) {
-        ConstraintViolation<?> constraintViolation = e.getConstraintViolations().iterator().next();
-        String message = e.getConstraintViolations().stream()
-                .map(ConstraintViolation::getMessage)
-                .collect(Collectors.joining(", "));
-        ErrorCode errorCode;
-        if (constraintViolation.getLeafBean().getClass() == GiftCertificate.class) {
-            errorCode = ErrorCode.INVALID_CERTIFICATE_FIELD_VALUE;
-        } else if (constraintViolation.getLeafBean().getClass() == Tag.class) {
-            errorCode = ErrorCode.INVALID_TAG_FIELD_VALUE;
-        } else {
-            errorCode = ErrorCode.INVALID_FIELD_VALUE;
-        }
-        ErrorResponse errorResponse = new ErrorResponse(message, errorCode.getCode());
+    public ResponseEntity<ValidationErrorResponse> findValidationExceptionInParameters(ConstraintViolationException e) {
+        ValidationErrorResponse errorResponse = ValidationErrorResponsesFactory.getResponse(e.getConstraintViolations());
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
+
+//    @ExceptionHandler(MethodArgumentNotValidException.class)
+//    public ResponseEntity<ValidationErrorResponse> findBookException(MethodArgumentNotValidException e) {
+//        FieldError fieldError = e.getFieldErrors().get(0);
+//        ErrorResponse errorResponse = new ErrorResponse(ErrorCode.VALIDATION_ERROR,
+//                fieldError.getField(),
+//                fieldError.getRejectedValue(),
+//                fieldError.getDefaultMessage());
+//        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+//    }
+
 
     @ExceptionHandler(ItemNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleDBException(ItemNotFoundException e) {

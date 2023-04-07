@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mapstruct.factory.Mappers;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import ru.clevertec.ecl.dto.TagDTO;
+import ru.clevertec.ecl.dto.TagDto;
 import ru.clevertec.ecl.exceptions.InvalidItemException;
 import ru.clevertec.ecl.models.Tag;
 
@@ -30,20 +30,20 @@ class TagMapperTest {
     @Test
     void checkTagToDTOShouldReturnCorrectDTO() {
         Tag tag = getSimpleTag();
-        TagDTO actual = mapper.tagToDTO(tag);
-        TagDTO expected = getSimpleTagDTO();
+        TagDto actual = mapper.tagToDTO(tag);
+        TagDto expected = getSimpleTagDTO();
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     void checkTagToDTOShouldReturnNull() {
-        TagDTO actual = mapper.tagToDTO(null);
+        TagDto actual = mapper.tagToDTO(null);
         assertThat(actual).isNull();
     }
 
     @Test
     void checkDTOtoTagShouldReturnCorrectTag() {
-        TagDTO dto = getSimpleTagDTO();
+        TagDto dto = getSimpleTagDTO();
         Tag actual = mapper.dtoToTag(dto);
         Tag expected = getSimpleTagWithoutId();
         assertThat(actual).isEqualTo(expected);
@@ -51,7 +51,7 @@ class TagMapperTest {
 
     @Test
     void checkDTOtoTagShouldThrowExceptionIncorrectName() {
-        TagDTO dto = getTagDTOWithoutName();
+        TagDto dto = getTagDTOWithoutName();
         assertThatThrownBy(() -> mapper.dtoToTag(dto))
                 .isInstanceOf(InvalidItemException.class);
     }
@@ -65,35 +65,35 @@ class TagMapperTest {
     @Test
     void checkAllTagsToDTOShouldReturnCorrectTagsDTO() {
         List<Tag> dtoList = getDifferentTags();
-        List<TagDTO> actual = mapper.allTagsToDTO(dtoList);
-        List<TagDTO> expected = getSimpleTagDTOs();
+        List<TagDto> actual = mapper.tagsToDto(dtoList);
+        List<TagDto> expected = getSimpleTagDTOs();
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     void checkAllTagsToDTOShouldReturnNull() {
-        List<TagDTO> actual = mapper.allTagsToDTO(null);
+        List<TagDto> actual = mapper.tagsToDto(null);
         assertThat(actual).isNull();
     }
 
     @Test
     void checkAllDTOToTagsShouldReturnCorrectTags() {
-        List<TagDTO> dtoList = getSimpleTagDTOs();
-        List<Tag> actual = mapper.allDTOToTags(dtoList);
+        List<TagDto> dtoList = getSimpleTagDTOs();
+        List<Tag> actual = mapper.DtosToTag(dtoList);
         List<Tag> expected = getDifferentTagsWithoutId();
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     void checkAllDTOToTagsShouldThrowExceptionBecauseContainInvalidValue() {
-        List<TagDTO> dtoList = List.of(getSimpleTagDTO(), getTagDTOWithoutName());
-        assertThatThrownBy(() -> mapper.allDTOToTags(dtoList))
+        List<TagDto> dtoList = List.of(getSimpleTagDTO(), getTagDTOWithoutName());
+        assertThatThrownBy(() -> mapper.DtosToTag(dtoList))
                 .isInstanceOf(InvalidItemException.class);
     }
 
     @Test
     void checkAllDTOToTagsShouldReturnNull() {
-        List<Tag> actual = mapper.allDTOToTags(null);
+        List<Tag> actual = mapper.DtosToTag(null);
         assertThat(actual).isNull();
     }
 

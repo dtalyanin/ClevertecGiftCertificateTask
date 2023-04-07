@@ -1,9 +1,11 @@
 package ru.clevertec.ecl.utils.mappers;
 
 import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Valid;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import org.mapstruct.*;
+import org.springframework.validation.annotation.Validated;
 import ru.clevertec.ecl.dto.GiftCertificateDTO;
 import ru.clevertec.ecl.dto.ModGiftCertificateDTO;
 import ru.clevertec.ecl.exceptions.InvalidItemException;
@@ -16,8 +18,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+@Validated
 @Mapper(componentModel = "spring",
-        uses = TagMapperImpl.class,
+        uses = TagMapper.class,
         unmappedTargetPolicy = ReportingPolicy.IGNORE,
         nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS,
         nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
@@ -36,7 +39,7 @@ public abstract class GiftCertificateMapper {
 
     @Mapping(source = "price", target = "price", qualifiedByName = "priceInCoins")
     @Mapping(source = "duration", target = "duration", qualifiedByName = "duration")
-    public abstract GiftCertificate dtoToGiftCertificate(GiftCertificateDTO dto);
+    public abstract @Valid GiftCertificate dtoToGiftCertificate(GiftCertificateDTO dto);
 
     public abstract List<GiftCertificateDTO> allGiftCertificateToDTO(List<GiftCertificate> giftCertificates);
 
@@ -79,17 +82,5 @@ public abstract class GiftCertificateMapper {
             duration = Duration.ofDays(days);
         }
         return duration;
-    }
-
-    @AfterMapping
-    protected void validateGiftCertificate(@MappingTarget GiftCertificate giftCertificate) {
-        Set<ConstraintViolation<GiftCertificate>> violations = validator.validate(giftCertificate);
-        System.out.println(violations.size());
-        if (violations.size() != 0) {
-            throw new InvalidItemException(violations.stream()
-                    .map(ConstraintViolation::getMessage)
-                    .collect(Collectors.joining(", ")),
-                    ErrorCode.INVALID_CERTIFICATE_FIELD_VALUE);
-        }
     }
 }

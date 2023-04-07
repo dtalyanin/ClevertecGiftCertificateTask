@@ -2,7 +2,7 @@ package generators.builders;
 
 import lombok.NoArgsConstructor;
 import ru.clevertec.ecl.dto.ModGiftCertificateDTO;
-import ru.clevertec.ecl.dto.TagDTO;
+import ru.clevertec.ecl.dto.TagDto;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -12,7 +12,7 @@ import java.util.List;
 public class ModGiftCertificateDTOBuilder {
     private String name = "Test mod";
     private String description = "Test description mod";
-    private List<TagDTO> tags = new ArrayList<>();
+    private List<TagDto> tags = new ArrayList<>();
     private BigDecimal price = BigDecimal.valueOf(2000, 2);
     private Long duration = 2L;
 
@@ -26,12 +26,12 @@ public class ModGiftCertificateDTOBuilder {
         return this;
     }
 
-    public ModGiftCertificateDTOBuilder tags(List<TagDTO> tags) {
+    public ModGiftCertificateDTOBuilder tags(List<TagDto> tags) {
         this.tags = tags;
         return this;
     }
 
-    public ModGiftCertificateDTOBuilder tag(TagDTO tag) {
+    public ModGiftCertificateDTOBuilder tag(TagDto tag) {
         tags.add(tag);
         return this;
     }

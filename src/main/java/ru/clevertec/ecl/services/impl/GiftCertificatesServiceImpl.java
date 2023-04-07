@@ -63,7 +63,9 @@ public class GiftCertificatesServiceImpl implements GiftCertificatesService {
     @Override
     @Transactional
     public ModificationResponse addGiftCertificate(GiftCertificateDTO dto) {
+        System.out.println(1);
         GiftCertificate certificate = mapper.dtoToGiftCertificate(dto);
+        System.out.println(2);
         try {
             Set<Tag> tags = tagsService.addAllTagsIfNotExist(certificate.getTags());
             certificate.setTags(tags);

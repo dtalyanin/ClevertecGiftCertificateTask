@@ -13,9 +13,6 @@ public interface TagsRepository extends JpaRepository<Tag, Long> {
     Optional<Tag> findByName(String name);
     boolean existsByName(String name);
     @Modifying
-    @Query("update Tag t set t.name = :name where t.id = :id")
-    int updateTag(String name, long id);
-    @Modifying
     @Query("delete from Tag t where t.id = :id")
     int deleteById(long id);
 }

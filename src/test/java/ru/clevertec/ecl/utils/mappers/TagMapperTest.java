@@ -4,6 +4,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mapstruct.factory.Mappers;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import ru.clevertec.ecl.dto.TagDto;
 import ru.clevertec.ecl.exceptions.InvalidItemException;
@@ -17,27 +19,23 @@ import static generators.factories.TagFactory.*;
 import static org.assertj.core.api.Assertions.*;
 
 
-@ExtendWith(SpringExtension.class)
+@SpringBootTest
 class TagMapperTest {
 
+    @Autowired
     private TagMapper mapper;
 
-    @BeforeEach
-    void setUp() {
-        mapper = Mappers.getMapper(TagMapper.class);
-    }
-
     @Test
-    void checkTagToDTOShouldReturnCorrectDTO() {
+    void checkTagToDtoShouldReturnCorrectDTO() {
         Tag tag = getSimpleTag();
-        TagDto actual = mapper.tagToDTO(tag);
+        TagDto actual = mapper.tagToDto(tag);
         TagDto expected = getSimpleTagDTO();
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
-    void checkTagToDTOShouldReturnNull() {
-        TagDto actual = mapper.tagToDTO(null);
+    void checkTagToDtoShouldReturnNull() {
+        TagDto actual = mapper.tagToDto(null);
         assertThat(actual).isNull();
     }
 

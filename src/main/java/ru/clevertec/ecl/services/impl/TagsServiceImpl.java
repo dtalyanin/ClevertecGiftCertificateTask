@@ -51,11 +51,11 @@ public class TagsServiceImpl implements TagsService {
     @Override
     @Transactional
     public ModificationResponse addTag(TagDto dto) {
-        Tag tag = mapper.dtoToTag(dto);
-        if (repository.existsByName(tag.getName())) {
-            throw new ItemExistException("Cannot add: tag with name '" + tag.getName() +
+        if (repository.existsByName(dto.getName())) {
+            throw new ItemExistException("Cannot add: tag with name '" + dto.getName() +
                     "' already exist in database", ErrorCode.TAG_NAME_EXIST);
         }
+        Tag tag = mapper.dtoToTag(dto);
         repository.save(tag);
         return new ModificationResponse(tag.getId(), "Tag added successfully");
     }
@@ -70,26 +70,22 @@ public class TagsServiceImpl implements TagsService {
 
     private Tag createTagIfNotExist(Tag tag) {
         Optional<Tag> oTag = repository.findByName(tag.getName());
-        if (oTag.isEmpty()) {
-            return repository.save(tag);
-        } else {
-            return oTag.get();
-        }
+        return oTag.orElseGet(() -> repository.save(tag));
     }
 
     @Override
     @Transactional
     public ModificationResponse updateTag(long id, TagDto dto) {
-        Tag tag = mapper.dtoToTag(dto);
-        if (repository.existsByName(tag.getName())) {
-            throw new ItemExistException("Cannot add: tag with name '" + tag.getName() +
+        if (repository.existsByName(dto.getName())) {
+            throw new ItemExistException("Cannot add: tag with name '" + dto.getName() +
                     "' already exist in database", ErrorCode.TAG_NAME_EXIST);
         }
-        int updatedCount = repository.updateTag(tag.getName(), id);
-        if (updatedCount == 0) {
+        Optional<Tag> oTag = repository.findById(id);
+        if (oTag.isEmpty()) {
             throw new ItemNotFoundException("Cannot update: tag with ID " + id + " not found",
                     ErrorCode.TAG_ID_NOT_FOUND);
         }
+        mapper.updateTag(dto, oTag.get());
         return new ModificationResponse(id, "Tag updated successfully");
 
     }

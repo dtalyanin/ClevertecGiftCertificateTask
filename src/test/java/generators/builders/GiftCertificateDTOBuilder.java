@@ -1,7 +1,7 @@
 package generators.builders;
 
 import lombok.NoArgsConstructor;
-import ru.clevertec.ecl.dto.GiftCertificateDTO;
+import ru.clevertec.ecl.dto.GiftCertificateDto;
 import ru.clevertec.ecl.dto.TagDto;
 
 import java.math.BigDecimal;
@@ -59,7 +59,7 @@ public class GiftCertificateDTOBuilder {
         return this;
     }
 
-    public GiftCertificateDTO build() {
-        return new GiftCertificateDTO(name, description, tags, price, duration, createDate, lastUpdateDate);
+    public GiftCertificateDto build() {
+        return new GiftCertificateDto(name, description, tags, price, duration, createDate, lastUpdateDate);
     }
 }

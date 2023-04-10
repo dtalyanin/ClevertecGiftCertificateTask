@@ -1,10 +1,8 @@
 package ru.clevertec.ecl.controllers;
 
-import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -38,7 +36,6 @@ public class TagsController {
      */
     @GetMapping
     public ResponseEntity<List<TagDto>> getAllTags(Pageable pageable) {
-        System.out.println(pageable);
         return ResponseEntity.ok(service.getAllTags(pageable));
     }
 

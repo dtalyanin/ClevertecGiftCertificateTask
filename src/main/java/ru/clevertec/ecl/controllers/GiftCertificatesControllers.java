@@ -7,8 +7,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-import ru.clevertec.ecl.dto.GiftCertificateDTO;
-import ru.clevertec.ecl.dto.ModGiftCertificateDTO;
+import ru.clevertec.ecl.dto.GiftCertificateDto;
+import ru.clevertec.ecl.dto.UpdateGiftCertificateDto;
 import ru.clevertec.ecl.models.criteries.FilterCriteria;
 import ru.clevertec.ecl.models.criteries.PaginationCriteria;
 import ru.clevertec.ecl.models.responses.ModificationResponse;
@@ -31,19 +31,19 @@ public class GiftCertificatesControllers {
     }
 
     @GetMapping
-    ResponseEntity<List<GiftCertificateDTO>> getAllGiftCertificates(FilterCriteria filter, SortCriteria sorting,
+    ResponseEntity<List<GiftCertificateDto>> getAllGiftCertificates(FilterCriteria filter, SortCriteria sorting,
                                                                     @Valid PaginationCriteria pagination) {
-        return ResponseEntity.ok(service.getAllGiftCertificates(filter, sorting, pagination));
+        return ResponseEntity.ok(service.getAllGiftCertificates(null, null, null));
     }
 
     @GetMapping("/{id}")
-    ResponseEntity<GiftCertificateDTO> getGiftCertificateById(
+    ResponseEntity<GiftCertificateDto> getGiftCertificateById(
             @PathVariable @Min(value = 1, message = "Min ID value is 1") long id) {
         return ResponseEntity.ok(service.getGiftCertificateById(id));
     }
 
     @PostMapping
-    public ResponseEntity<ModificationResponse> addGiftCertificate(@RequestBody GiftCertificateDTO dto) {
+    public ResponseEntity<ModificationResponse> addGiftCertificate(@RequestBody GiftCertificateDto dto) {
         ModificationResponse response = service.addGiftCertificate(dto);
         URI uri = ServletUriComponentsBuilder
                 .fromCurrentRequest()
@@ -55,7 +55,7 @@ public class GiftCertificatesControllers {
     @PatchMapping("/{id}")
     public ResponseEntity<ModificationResponse> updateTag(
             @PathVariable @Min(value = 1, message = "Min ID value is 1") long id,
-            @RequestBody ModGiftCertificateDTO dto) {
+            @RequestBody UpdateGiftCertificateDto dto) {
         return ResponseEntity.ok(service.updateGiftCertificate(id, dto));
     }
 

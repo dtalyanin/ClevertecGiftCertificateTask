@@ -1,22 +1,15 @@
 package ru.clevertec.ecl.utils.mappers;
 
-import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Valid;
-import jakarta.validation.Validation;
-import jakarta.validation.Validator;
 import org.mapstruct.*;
 import org.springframework.validation.annotation.Validated;
-import ru.clevertec.ecl.dto.GiftCertificateDTO;
-import ru.clevertec.ecl.dto.ModGiftCertificateDTO;
-import ru.clevertec.ecl.exceptions.InvalidItemException;
+import ru.clevertec.ecl.dto.GiftCertificateDto;
+import ru.clevertec.ecl.dto.UpdateGiftCertificateDto;
 import ru.clevertec.ecl.models.GiftCertificate;
-import ru.clevertec.ecl.models.codes.ErrorCode;
 
 import java.math.BigDecimal;
 import java.time.Duration;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Validated
 @Mapper(componentModel = "spring",
@@ -25,40 +18,38 @@ import java.util.stream.Collectors;
         nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS,
         nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 public abstract class GiftCertificateMapper {
+
     private static final BigDecimal COINS = BigDecimal.valueOf(100);
+    private static final int COINS_IN_RUBLE = 2;
 
-    private final Validator validator;
+    @Mapping(source = "price", target = "price", qualifiedByName = "fromCoinsToRubles")
+    @Mapping(source = "duration", target = "duration", qualifiedByName = "durationToDays")
+    public abstract GiftCertificateDto convertGiftCertificateToDto(GiftCertificate giftCertificate);
 
-    public GiftCertificateMapper() {
-        this.validator = Validation.buildDefaultValidatorFactory().getValidator();
-    }
+    public abstract List<GiftCertificateDto> convertGiftCertificatesToDtos(List<GiftCertificate> giftCertificates);
 
-    @Mapping(source = "price", target = "price", qualifiedByName = "priceInRubles")
-    @Mapping(source = "duration", target = "duration", qualifiedByName = "days")
-    public abstract GiftCertificateDTO giftCertificateToDTO(GiftCertificate giftCertificate);
+    @Mapping(source = "price", target = "price", qualifiedByName = "fromRublesToCoins")
+    @Mapping(source = "duration", target = "duration", qualifiedByName = "daysToDuration")
+    public abstract @Valid GiftCertificate convertDtoToGiftCertificate(GiftCertificateDto dto);
 
-    @Mapping(source = "price", target = "price", qualifiedByName = "priceInCoins")
-    @Mapping(source = "duration", target = "duration", qualifiedByName = "duration")
-    public abstract @Valid GiftCertificate dtoToGiftCertificate(GiftCertificateDTO dto);
+    @Mapping(source = "price", target = "price", qualifiedByName = "fromRublesToCoins")
+    @Mapping(source = "duration", target = "duration", qualifiedByName = "daysToDuration")
+    public abstract GiftCertificate convertUpdateDtoToGiftCertificate(UpdateGiftCertificateDto dto);
 
-    public abstract List<GiftCertificateDTO> allGiftCertificateToDTO(List<GiftCertificate> giftCertificates);
+    public abstract @Valid GiftCertificate updateGiftCertificateFields(GiftCertificate from,
+                                                                       @MappingTarget GiftCertificate to);
 
-    @Mapping(source = "price", target = "price", qualifiedByName = "priceInCoins")
-    @Mapping(source = "duration", target = "duration", qualifiedByName = "duration")
-    public abstract GiftCertificate modDTOToGiftCertificate(ModGiftCertificateDTO dto,
-                                                                   @MappingTarget GiftCertificate updated);
-
-    @Named("priceInRubles")
-    public BigDecimal convertPriceFromCoinsToPriceInRubles(Long price) {
+    @Named("fromCoinsToRubles")
+    protected BigDecimal convertPriceFromCoinsToRubles(Long price) {
         BigDecimal rubles = null;
         if (price != null) {
-            rubles = BigDecimal.valueOf(price, 2);
+            rubles = BigDecimal.valueOf(price, COINS_IN_RUBLE);
         }
         return rubles;
     }
 
-    @Named("priceInCoins")
-    public Long convertPriceFromRublesToPriceInCoins(BigDecimal price) {
+    @Named("fromRublesToCoins")
+    protected Long convertPriceFromRublesToCoins(BigDecimal price) {
         Long coins = null;
         if (price != null) {
             coins = price.multiply(COINS).longValue();
@@ -66,8 +57,8 @@ public abstract class GiftCertificateMapper {
         return coins;
     }
 
-    @Named("days")
-    public Long convertDurationToDays(Duration duration) {
+    @Named("durationToDays")
+    protected Long convertDurationToDays(Duration duration) {
         Long days = null;
         if (duration != null) {
             days = duration.toDays();
@@ -75,8 +66,8 @@ public abstract class GiftCertificateMapper {
         return days;
     }
 
-    @Named("duration")
-    public Duration convertDaysToDuration(Long days) {
+    @Named("daysToDuration")
+    protected Duration convertDaysToDuration(Long days) {
         Duration duration = null;
         if (days != null) {
             duration = Duration.ofDays(days);

@@ -6,6 +6,7 @@ import ru.clevertec.ecl.models.responses.ModificationResponse;
 import ru.clevertec.ecl.models.Tag;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 public interface TagsService {

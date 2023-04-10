@@ -1,22 +1,22 @@
 package generators.factories;
 
 import generators.builders.ModGiftCertificateDTOBuilder;
-import ru.clevertec.ecl.dto.ModGiftCertificateDTO;
+import ru.clevertec.ecl.dto.UpdateGiftCertificateDto;
 
 public class ModGiftCertificateDTOFactory {
 
-    public static ModGiftCertificateDTO getSimpleModGiftCertificateDTO() {
+    public static UpdateGiftCertificateDto getSimpleModGiftCertificateDTO() {
         return ModGiftCertificateDTOBuilder.builder().build();
     }
 
-    public static ModGiftCertificateDTO getModGiftCertificateDTOWithOnlyNamePriceDuration() {
+    public static UpdateGiftCertificateDto getModGiftCertificateDTOWithOnlyNamePriceDuration() {
         return ModGiftCertificateDTOBuilder.builder()
                 .description(null)
                 .tags(null)
                 .build();
     }
 
-    public static ModGiftCertificateDTO getModGiftCertificateDTOWithoutFields() {
+    public static UpdateGiftCertificateDto getModGiftCertificateDTOWithoutFields() {
         return ModGiftCertificateDTOBuilder.builder()
                 .name(null)
                 .description(null)

@@ -1,14 +1,12 @@
 package ru.clevertec.ecl.dao.impl;
 
-import org.hibernate.annotations.Fetch;
-import org.springframework.data.jpa.repository.EntityGraph;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
-import org.springframework.data.jpa.repository.Query;
+import jakarta.persistence.QueryHint;
+import org.hibernate.jpa.HibernateHints;
+import org.springframework.data.domain.Example;
+import org.springframework.data.jpa.repository.*;
 import org.springframework.stereotype.Repository;
 import ru.clevertec.ecl.models.GiftCertificate;
 
-import java.time.Duration;
 import java.util.List;
 import java.util.Optional;
 
@@ -17,11 +15,13 @@ public interface GiftCertificatesRepository extends JpaRepository<GiftCertificat
     @EntityGraph(type = EntityGraph.EntityGraphType.FETCH, attributePaths = "tags")
     List<GiftCertificate> findAll();
 
-    @Override
     @EntityGraph(type = EntityGraph.EntityGraphType.FETCH, attributePaths = "tags")
-    Optional<GiftCertificate> findById(Long aLong);
+    Optional<GiftCertificate> findById(long id);
 
-    boolean existsByNameAndDescriptionAndDurationAndPrice(String name, String description, Duration duration, long price);
+    @Override
+    @QueryHints(value = @QueryHint(name = HibernateHints.HINT_FLUSH_MODE, value = "COMMIT"))
+    <S extends GiftCertificate> boolean exists(Example<S> example);
+
     @Modifying
     @Query("delete from GiftCertificate where id = :id")
     int deleteById(long id);

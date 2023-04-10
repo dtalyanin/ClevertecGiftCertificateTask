@@ -7,8 +7,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.mapstruct.factory.Mappers;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import ru.clevertec.ecl.dto.GiftCertificateDTO;
-import ru.clevertec.ecl.dto.ModGiftCertificateDTO;
+import ru.clevertec.ecl.dto.GiftCertificateDto;
+import ru.clevertec.ecl.dto.UpdateGiftCertificateDto;
 import ru.clevertec.ecl.exceptions.InvalidItemException;
 import ru.clevertec.ecl.models.GiftCertificate;
 
@@ -34,43 +34,43 @@ class GiftCertificateMapperTest {
 
     @Test
     void checkGiftCertificateToDTOShouldReturnNull() {
-        GiftCertificateDTO actual = mapper.giftCertificateToDTO(null);
+        GiftCertificateDto actual = mapper.convertGiftCertificateToDto(null);
         assertThat(actual).isNull();
     }
 
     @Test
     void checkGiftCertificateToDTOShouldReturnWithoutFields() {
         GiftCertificate certificate = getGiftCertificateWithoutFields();
-        GiftCertificateDTO actual = mapper.giftCertificateToDTO(certificate);
-        GiftCertificateDTO expected = getGiftCertificateDTOWithoutFields();
+        GiftCertificateDto actual = mapper.convertGiftCertificateToDto(certificate);
+        GiftCertificateDto expected = getGiftCertificateDTOWithoutFields();
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     void checkGiftCertificateToDTOShouldReturnCorrectDTO() {
         GiftCertificate certificate = getSimpleGiftCertificateWithTags();
-        GiftCertificateDTO actual = mapper.giftCertificateToDTO(certificate);
-        GiftCertificateDTO expected = getSimpleGiftCertificateDTO();
+        GiftCertificateDto actual = mapper.convertGiftCertificateToDto(certificate);
+        GiftCertificateDto expected = getSimpleGiftCertificateDTO();
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     void checkDTOToGiftCertificateShouldReturnNull() {
-        GiftCertificate actual = mapper.dtoToGiftCertificate(null);
+        GiftCertificate actual = mapper.convertDtoToGiftCertificate(null);
         assertThat(actual).isNull();
     }
 
     @Test
     void checkDTOToGiftCertificateShouldThrowExceptionInvalidFields() {
-        GiftCertificateDTO certificateDTO = getGiftCertificateDTOWithoutFields();
-        assertThatThrownBy(() -> mapper.dtoToGiftCertificate(certificateDTO))
+        GiftCertificateDto certificateDTO = getGiftCertificateDTOWithoutFields();
+        assertThatThrownBy(() -> mapper.convertDtoToGiftCertificate(certificateDTO))
                 .isInstanceOf(InvalidItemException.class);
     }
 
     @Test
     void checkDTOToGiftCertificateShouldReturnCorrectCertificate() {
-        GiftCertificateDTO certificateDTO = getSimpleGiftCertificateDTO();
-        GiftCertificate actual = mapper.dtoToGiftCertificate(certificateDTO);
+        GiftCertificateDto certificateDTO = getSimpleGiftCertificateDTO();
+        GiftCertificate actual = mapper.convertDtoToGiftCertificate(certificateDTO);
         GiftCertificate expected = getSimpleGiftCertificateWithNullId();
         assertThat(actual).isEqualTo(expected);
     }
@@ -78,15 +78,15 @@ class GiftCertificateMapperTest {
     @Test
     void checkAllGiftCertificateToDTOShouldReturnCorrectDTOs() {
         List<GiftCertificate> certificates = getSimpleGiftCertificates();
-        List<GiftCertificateDTO> actual = mapper.allGiftCertificateToDTO(certificates);
-        List<GiftCertificateDTO> expected = getSimpleGiftCertificateDTOs();
+        List<GiftCertificateDto> actual = mapper.convertGiftCertificatesToDtos(certificates);
+        List<GiftCertificateDto> expected = getSimpleGiftCertificateDTOs();
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     void checkModDTOToGiftCertificateShouldNoUpdateBecauseDTOIsNull() {
         GiftCertificate certificate = getSimpleGiftCertificate();
-        GiftCertificate actual = mapper.modDTOToGiftCertificate(null, certificate);
+        GiftCertificate actual = mapper.convertUpdateDtoToGiftCertificate(null, certificate);
         GiftCertificate expected = getSimpleGiftCertificate();
         assertThat(actual).isEqualTo(expected);
     }
@@ -94,8 +94,8 @@ class GiftCertificateMapperTest {
     @Test
     void checkModDTOToGiftCertificateShouldNoUpdateBecauseAllFieldIsNull() {
         GiftCertificate certificate = getSimpleGiftCertificate();
-        ModGiftCertificateDTO modCertificateDTO = getModGiftCertificateDTOWithoutFields();
-        GiftCertificate actual = mapper.modDTOToGiftCertificate(modCertificateDTO, certificate);
+        UpdateGiftCertificateDto modCertificateDTO = getModGiftCertificateDTOWithoutFields();
+        GiftCertificate actual = mapper.convertUpdateDtoToGiftCertificate(modCertificateDTO, certificate);
         GiftCertificate expected = getSimpleGiftCertificate();
         assertThat(actual).isEqualTo(expected);
     }
@@ -103,8 +103,8 @@ class GiftCertificateMapperTest {
     @Test
     void checkModDTOToGiftCertificateShouldUpdateAllField() {
         GiftCertificate certificate = getSimpleGiftCertificate();
-        ModGiftCertificateDTO modCertificateDTO = getSimpleModGiftCertificateDTO();
-        GiftCertificate actual = mapper.modDTOToGiftCertificate(modCertificateDTO, certificate);
+        UpdateGiftCertificateDto modCertificateDTO = getSimpleModGiftCertificateDTO();
+        GiftCertificate actual = mapper.convertUpdateDtoToGiftCertificate(modCertificateDTO, certificate);
         GiftCertificate expected = getGiftCertificateWithAllUpdatedFields();
         assertThat(actual).isEqualTo(expected);
     }
@@ -112,8 +112,8 @@ class GiftCertificateMapperTest {
     @Test
     void checkModDTOToGiftCertificateShouldUpdateOnlyNamePriceDuration() {
         GiftCertificate certificate = getSimpleGiftCertificate();
-        ModGiftCertificateDTO modCertificateDTO = getModGiftCertificateDTOWithOnlyNamePriceDuration();
-        GiftCertificate actual = mapper.modDTOToGiftCertificate(modCertificateDTO, certificate);
+        UpdateGiftCertificateDto modCertificateDTO = getModGiftCertificateDTOWithOnlyNamePriceDuration();
+        GiftCertificate actual = mapper.convertUpdateDtoToGiftCertificate(modCertificateDTO, certificate);
         GiftCertificate expected = getGiftCertificateWithUpdatedOnlyNamePriceDuration();
         assertThat(actual).isEqualTo(expected);
     }
@@ -121,26 +121,26 @@ class GiftCertificateMapperTest {
     @ParameterizedTest(name = "{0} should convert to {1}")
     @CsvSource({"100, 1.00", "101, 1.01", "999, 9.99", "550, 5.50"})
     void checkConvertPriceFromCoinsToPriceInRubles(Long value, BigDecimal expected) {
-        BigDecimal actual = mapper.convertPriceFromCoinsToPriceInRubles(value);
+        BigDecimal actual = mapper.convertPriceFromCoinsToRubles(value);
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     void checkConvertPriceFromCoinsToPriceInRublesShouldReturnNull() {
-        BigDecimal actual = mapper.convertPriceFromCoinsToPriceInRubles(null);
+        BigDecimal actual = mapper.convertPriceFromCoinsToRubles(null);
         assertThat(actual).isNull();
     }
 
     @ParameterizedTest(name = "{0} should convert to {1}")
     @CsvSource({"1.00, 100", "1.01, 101", "9.99, 999", "5.50, 550"})
     void checkConvertPriceFromRublesToPriceInCoins(BigDecimal value, Long expected) {
-        Long actual = mapper.convertPriceFromRublesToPriceInCoins(value);
+        Long actual = mapper.convertPriceFromRublesToCoins(value);
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     void checkConvertPriceFromRublesToPriceInCoinsShouldReturnNull() {
-        Long actual = mapper.convertPriceFromRublesToPriceInCoins(null);
+        Long actual = mapper.convertPriceFromRublesToCoins(null);
         assertThat(actual).isNull();
     }
 

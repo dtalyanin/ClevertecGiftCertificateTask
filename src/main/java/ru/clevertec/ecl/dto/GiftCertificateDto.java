@@ -8,14 +8,15 @@ import lombok.NoArgsConstructor;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class GiftCertificateDTO {
+public class GiftCertificateDto {
     private String name;
     private String description;
-    private List<TagDto> tags;
+    private Set<TagDto> tags;
     private BigDecimal price;
     private Long duration;
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")

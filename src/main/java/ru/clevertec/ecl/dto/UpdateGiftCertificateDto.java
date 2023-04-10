@@ -10,7 +10,7 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ModGiftCertificateDTO {
+public class UpdateGiftCertificateDto {
     private String name;
     private String description;
     private List<TagDto> tags;

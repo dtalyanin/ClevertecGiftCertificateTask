@@ -7,8 +7,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import ru.clevertec.ecl.dao.GiftCertificatesDAO;
-import ru.clevertec.ecl.dto.GiftCertificateDTO;
-import ru.clevertec.ecl.dto.ModGiftCertificateDTO;
+import ru.clevertec.ecl.dto.GiftCertificateDto;
+import ru.clevertec.ecl.dto.UpdateGiftCertificateDto;
 import ru.clevertec.ecl.exceptions.EmptyItemException;
 import ru.clevertec.ecl.exceptions.InvalidItemException;
 import ru.clevertec.ecl.exceptions.ItemExistException;
@@ -56,11 +56,11 @@ class GiftCertificatesServiceImplTest {
     void getAllGiftCertificatesShouldReturnListOfDTOs() {
         when(dao.getAllGiftCertificates(any(FilterCriteria.class), any(SortCriteria.class),
                 any(PaginationCriteria.class))).thenReturn(getSimpleGiftCertificates());
-        when(mapper.allGiftCertificateToDTO(anyList())).thenReturn(getSimpleGiftCertificateDTOs());
+        when(mapper.convertGiftCertificatesToDtos(anyList())).thenReturn(getSimpleGiftCertificateDTOs());
 
-        List<GiftCertificateDTO> actual = service.getAllGiftCertificates(getFilterByTag(), getSortByName(),
+        List<GiftCertificateDto> actual = service.getAllGiftCertificates(getFilterByTag(), getSortByName(),
                 getPaginationFrom0To10());
-        List<GiftCertificateDTO> expected = getSimpleGiftCertificateDTOs();
+        List<GiftCertificateDto> expected = getSimpleGiftCertificateDTOs();
 
         assertThat(actual).isEqualTo(expected);
         verify(dao, times(1)).getAllGiftCertificates(any(FilterCriteria.class),
@@ -71,11 +71,11 @@ class GiftCertificatesServiceImplTest {
     void getAllGiftCertificatesShouldReturnEmptyList() {
         when(dao.getAllGiftCertificates(any(FilterCriteria.class), any(SortCriteria.class),
                 any(PaginationCriteria.class))).thenReturn(Collections.emptyList());
-        when(mapper.allGiftCertificateToDTO(anyList())).thenReturn(Collections.emptyList());
+        when(mapper.convertGiftCertificatesToDtos(anyList())).thenReturn(Collections.emptyList());
 
-        List<GiftCertificateDTO> actual = service.getAllGiftCertificates(getFilterByTag(), getSortByName(),
+        List<GiftCertificateDto> actual = service.getAllGiftCertificates(getFilterByTag(), getSortByName(),
                 getPaginationFrom0To10());
-        List<GiftCertificateDTO> expected = Collections.emptyList();
+        List<GiftCertificateDto> expected = Collections.emptyList();
 
         assertThat(actual).isEqualTo(expected);
         verify(dao, times(1)).getAllGiftCertificates(any(FilterCriteria.class),
@@ -85,10 +85,10 @@ class GiftCertificatesServiceImplTest {
     @Test
     void checkGetGiftCertificateByIdShouldReturnCertificate() {
         when(dao.getGiftCertificateById(1L)).thenReturn(Optional.of(getSimpleGiftCertificate()));
-        when(mapper.giftCertificateToDTO(any(GiftCertificate.class))).thenReturn(getSimpleGiftCertificateDTO());
+        when(mapper.convertGiftCertificateToDto(any(GiftCertificate.class))).thenReturn(getSimpleGiftCertificateDTO());
 
-        GiftCertificateDTO actual = service.getGiftCertificateById(1L);
-        GiftCertificateDTO expected = getSimpleGiftCertificateDTO();
+        GiftCertificateDto actual = service.getGiftCertificateById(1L);
+        GiftCertificateDto expected = getSimpleGiftCertificateDTO();
 
         assertThat(actual).isEqualTo(expected);
         verify(dao, times(1)).getGiftCertificateById(anyLong());
@@ -108,7 +108,7 @@ class GiftCertificatesServiceImplTest {
     void checkAddGiftCertificateShouldReturnResponseWithGeneratedId() {
         when(dao.addGiftCertificate(any(GiftCertificate.class))).thenReturn(getSimpleGiftCertificate());
         when(tagsService.addAllTagsIfNotExist(anySet())).thenReturn(Collections.emptySet());
-        when(mapper.dtoToGiftCertificate(any(GiftCertificateDTO.class))).thenReturn(getSimpleGiftCertificate());
+        when(mapper.convertDtoToGiftCertificate(any(GiftCertificateDto.class))).thenReturn(getSimpleGiftCertificate());
 
         ModificationResponse actual = service.addGiftCertificate(getSimpleGiftCertificateDTO());
         ModificationResponse expected = new ModificationResponse(1L, "Gift certificate added successfully");
@@ -120,7 +120,7 @@ class GiftCertificatesServiceImplTest {
 
     @Test
     void checkAddGiftCertificateShouldThrowExceptionInvalidDTO() {
-        when(mapper.dtoToGiftCertificate(any(GiftCertificateDTO.class)))
+        when(mapper.convertDtoToGiftCertificate(any(GiftCertificateDto.class)))
                 .thenThrow(new InvalidItemException("Message", ErrorCode.INVALID_CERTIFICATE_FIELD_VALUE));
 
         assertThatThrownBy(() -> service.addGiftCertificate(getSimpleGiftCertificateDTO()))
@@ -132,7 +132,7 @@ class GiftCertificatesServiceImplTest {
     @Test
     void checkAddGiftCertificateShouldThrowExceptionCertificateExist() {
         when(tagsService.addAllTagsIfNotExist(anySet())).thenReturn(Collections.emptySet());
-        when(mapper.dtoToGiftCertificate(any(GiftCertificateDTO.class))).thenReturn(getSimpleGiftCertificate());
+        when(mapper.convertDtoToGiftCertificate(any(GiftCertificateDto.class))).thenReturn(getSimpleGiftCertificate());
         when(dao.addGiftCertificate(any(GiftCertificate.class)))
                 .thenThrow(new ConstraintViolationException("Message", null, null));
 
@@ -147,7 +147,7 @@ class GiftCertificatesServiceImplTest {
     @Test
     void checkUpdateGiftCertificateShouldReturnResponseWithUpdatedId() {
         when(dao.getGiftCertificateById(5L)).thenReturn(Optional.of(getSimpleGiftCertificate()));
-        when(mapper.modDTOToGiftCertificate(any(ModGiftCertificateDTO.class), any(GiftCertificate.class)))
+        when(mapper.convertUpdateDtoToGiftCertificate(any(UpdateGiftCertificateDto.class), any(GiftCertificate.class)))
                 .thenReturn(getSimpleGiftCertificate());
         when(dao.updateGiftCertificate(anyLong(), any(GiftCertificate.class))).thenReturn(getSimpleGiftCertificate());
         when(tagsService.addAllTagsIfNotExist(anySet())).thenReturn(Collections.emptySet());
@@ -184,7 +184,7 @@ class GiftCertificatesServiceImplTest {
     @Test
     void checkUpdateGiftCertificateShouldThrowExceptionCertificateExist() {
         when(dao.getGiftCertificateById(1L)).thenReturn(Optional.of(getSimpleGiftCertificate()));
-        when(mapper.modDTOToGiftCertificate(any(ModGiftCertificateDTO.class), any(GiftCertificate.class)))
+        when(mapper.convertUpdateDtoToGiftCertificate(any(UpdateGiftCertificateDto.class), any(GiftCertificate.class)))
                 .thenReturn(getSimpleGiftCertificate());
         when(tagsService.addAllTagsIfNotExist(anySet())).thenReturn(Collections.emptySet());
         when(dao.updateGiftCertificate(anyLong(), any(GiftCertificate.class)))

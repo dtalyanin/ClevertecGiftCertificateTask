@@ -1,7 +1,7 @@
 package generators.factories;
 
 import generators.builders.GiftCertificateDTOBuilder;
-import ru.clevertec.ecl.dto.GiftCertificateDTO;
+import ru.clevertec.ecl.dto.GiftCertificateDto;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -12,13 +12,13 @@ import static generators.factories.TagDTOFactory.*;
 
 public class GiftCertificateDTOFactory {
 
-    public static GiftCertificateDTO getSimpleGiftCertificateDTO() {
+    public static GiftCertificateDto getSimpleGiftCertificateDTO() {
         return GiftCertificateDTOBuilder.builder()
                 .tags(getSimpleTagDTOs())
                 .build();
     }
 
-    public static GiftCertificateDTO getSimpleGiftCertificateDTO2() {
+    public static GiftCertificateDto getSimpleGiftCertificateDTO2() {
         return GiftCertificateDTOBuilder.builder()
                 .name("Test 2")
                 .description("Test description 2")
@@ -30,7 +30,7 @@ public class GiftCertificateDTOFactory {
                 .build();
     }
 
-    public static GiftCertificateDTO getSimpleGiftCertificateDTO3() {
+    public static GiftCertificateDto getSimpleGiftCertificateDTO3() {
         return GiftCertificateDTOBuilder.builder()
                 .name("Test 3")
                 .description("Test description 3")
@@ -42,7 +42,7 @@ public class GiftCertificateDTOFactory {
                 .build();
     }
 
-    public static GiftCertificateDTO getGiftCertificateDTOWithoutFields() {
+    public static GiftCertificateDto getGiftCertificateDTOWithoutFields() {
         return GiftCertificateDTOBuilder.builder()
                 .name(null)
                 .description(null)
@@ -54,7 +54,7 @@ public class GiftCertificateDTOFactory {
                 .build();
     }
 
-    public static List<GiftCertificateDTO> getSimpleGiftCertificateDTOs() {
+    public static List<GiftCertificateDto> getSimpleGiftCertificateDTOs() {
         return List.of(getSimpleGiftCertificateDTO(), getSimpleGiftCertificateDTO2(), getSimpleGiftCertificateDTO3());
     }
 }

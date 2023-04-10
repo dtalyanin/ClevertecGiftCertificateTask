@@ -1,10 +1,11 @@
 package ru.clevertec.ecl.services.impl;
 
-import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.clevertec.ecl.dao.GiftCertificatesDAO;
+import ru.clevertec.ecl.dao.impl.GiftCertificatesRepository;
 import ru.clevertec.ecl.dto.GiftCertificateDTO;
 import ru.clevertec.ecl.dto.ModGiftCertificateDTO;
 import ru.clevertec.ecl.exceptions.EmptyItemException;
@@ -30,13 +31,15 @@ import java.util.stream.Stream;
 
 @Service
 public class GiftCertificatesServiceImpl implements GiftCertificatesService {
-    private final GiftCertificatesDAO dao;
+    private final GiftCertificatesRepository repository;
     private final GiftCertificateMapper mapper;
     private final TagsService tagsService;
 
     @Autowired
-    public GiftCertificatesServiceImpl(GiftCertificatesDAO dao, GiftCertificateMapper mapper, TagsService tagsService) {
-        this.dao = dao;
+    public GiftCertificatesServiceImpl(GiftCertificatesRepository repository,
+                                       GiftCertificateMapper mapper,
+                                       TagsService tagsService) {
+        this.repository = repository;
         this.mapper = mapper;
         this.tagsService = tagsService;
     }
@@ -45,14 +48,14 @@ public class GiftCertificatesServiceImpl implements GiftCertificatesService {
     @Transactional(readOnly = true)
     public List<GiftCertificateDTO> getAllGiftCertificates(FilterCriteria filter, SortCriteria sorting,
                                                            PaginationCriteria pagination) {
-        List<GiftCertificate> giftCertificates = dao.getAllGiftCertificates(filter, sorting, pagination);
+        List<GiftCertificate> giftCertificates = repository.findAll();
         return mapper.allGiftCertificateToDTO(giftCertificates);
     }
 
     @Override
     @Transactional(readOnly = true)
     public GiftCertificateDTO getGiftCertificateById(long id) {
-        Optional<GiftCertificate> certificate = dao.getGiftCertificateById(id);
+        Optional<GiftCertificate> certificate = repository.findById(id);
         if (certificate.isEmpty()) {
             throw new ItemNotFoundException("Gift certificate with ID " + id + " not found in database",
                     ErrorCode.CERTIFICATE_ID_NOT_FOUND);
@@ -63,28 +66,34 @@ public class GiftCertificatesServiceImpl implements GiftCertificatesService {
     @Override
     @Transactional
     public ModificationResponse addGiftCertificate(GiftCertificateDTO dto) {
-        System.out.println(1);
         GiftCertificate certificate = mapper.dtoToGiftCertificate(dto);
-        System.out.println(2);
-        try {
-            Set<Tag> tags = tagsService.addAllTagsIfNotExist(certificate.getTags());
-            certificate.setTags(tags);
-            LocalDateTime now = LocalDateTime.now();
-            certificate.setCreateDate(now);
-            certificate.setLastUpdateDate(now);
-            dao.addGiftCertificate(certificate);
-            return new ModificationResponse(certificate.getId(), "Gift certificate added successfully");
-        } catch (ConstraintViolationException e) {
-            throw new ItemExistException("Cannot add: gift certificate with similar name, description, price and duration " +
-                    "already exist in database", ErrorCode.CERTIFICATE_EXIST);
+        if (checkGiftCertificateExist(certificate)) {
+            throw new ItemExistException("Cannot update: gift certificate with similar name, description, price " +
+                    "and duration already exist in database", ErrorCode.CERTIFICATE_EXIST);
         }
+        Set<Tag> tags = tagsService.addAllTagsIfNotExist(certificate.getTags());
+        certificate.setTags(tags);
+        repository.save(certificate);
+        return new ModificationResponse(certificate.getId(), "Gift certificate added successfully");
+    }
+
+    private boolean checkGiftCertificateExist(GiftCertificate certificate) {
+        ExampleMatcher matcher = ExampleMatcher.matching().withIgnorePaths("id", "lastUpdateDate", "createdDate");
+        Example<GiftCertificate> existExample = Example.of(certificate, matcher);
+        return repository.exists(existExample);
     }
 
     @Override
     @Transactional
     public ModificationResponse updateGiftCertificate(long id, ModGiftCertificateDTO dto) {
         checkFieldsForUpdating(dto);
-        Optional<GiftCertificate> oCertificate = dao.getGiftCertificateById(id);
+        if (repository.existsByNameAndDescriptionAndDurationAndPrice(dto.getName(),
+                dto.getDescription(), mapper.convertDaysToDuration(dto.getDuration()),
+                mapper.convertPriceFromRublesToPriceInCoins(dto.getPrice()))) {
+            throw new ItemExistException("Cannot update: gift certificate with similar name, description, price and duration " +
+                    "already exist in database", ErrorCode.CERTIFICATE_EXIST);
+        }
+        Optional<GiftCertificate> oCertificate = repository.findById(id);
         if (oCertificate.isEmpty()) {
             throw new ItemNotFoundException("Cannot update: gift certificate with ID " + id + " not found",
                     ErrorCode.CERTIFICATE_ID_NOT_FOUND);
@@ -92,21 +101,15 @@ public class GiftCertificatesServiceImpl implements GiftCertificatesService {
         GiftCertificate certificate = mapper.modDTOToGiftCertificate(dto, oCertificate.get());
         Set<Tag> tags = tagsService.addAllTagsIfNotExist(certificate.getTags());
         certificate.setTags(tags);
-        certificate.setLastUpdateDate(LocalDateTime.now());
-        try {
-            dao.updateGiftCertificate(id, certificate);
-            return new ModificationResponse(id, "Gift certificate updated successfully");
-        } catch (ConstraintViolationException e) {
-            throw new ItemExistException("Cannot update: gift certificate with similar " +
-                    "name, description, price and duration already exist in database", ErrorCode.CERTIFICATE_EXIST);
-        }
+        return new ModificationResponse(id, "Gift certificate updated successfully");
+
     }
 
     @Override
     @Transactional
     public ModificationResponse deleteGiftCertificate(long id) {
-        boolean certificateDeleted = dao.deleteGiftCertificate(id);
-        if (!certificateDeleted) {
+        int deletedCount = repository.deleteById(id);
+        if (deletedCount == 0) {
             throw new ItemNotFoundException("Cannot delete: gift certificate with ID " + id + " not found",
                     ErrorCode.CERTIFICATE_ID_NOT_FOUND);
         }

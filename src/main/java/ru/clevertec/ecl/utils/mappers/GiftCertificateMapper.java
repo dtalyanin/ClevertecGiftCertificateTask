@@ -49,7 +49,7 @@ public abstract class GiftCertificateMapper {
                                                                    @MappingTarget GiftCertificate updated);
 
     @Named("priceInRubles")
-    protected BigDecimal convertPriceFromCoinsToPriceInRubles(Long price) {
+    public BigDecimal convertPriceFromCoinsToPriceInRubles(Long price) {
         BigDecimal rubles = null;
         if (price != null) {
             rubles = BigDecimal.valueOf(price, 2);
@@ -58,7 +58,7 @@ public abstract class GiftCertificateMapper {
     }
 
     @Named("priceInCoins")
-    protected Long convertPriceFromRublesToPriceInCoins(BigDecimal price) {
+    public Long convertPriceFromRublesToPriceInCoins(BigDecimal price) {
         Long coins = null;
         if (price != null) {
             coins = price.multiply(COINS).longValue();
@@ -67,7 +67,7 @@ public abstract class GiftCertificateMapper {
     }
 
     @Named("days")
-    protected Long convertDurationToDays(Duration duration) {
+    public Long convertDurationToDays(Duration duration) {
         Long days = null;
         if (duration != null) {
             days = duration.toDays();
@@ -76,7 +76,7 @@ public abstract class GiftCertificateMapper {
     }
 
     @Named("duration")
-    protected Duration convertDaysToDuration(Long days) {
+    public Duration convertDaysToDuration(Long days) {
         Duration duration = null;
         if (days != null) {
             duration = Duration.ofDays(days);

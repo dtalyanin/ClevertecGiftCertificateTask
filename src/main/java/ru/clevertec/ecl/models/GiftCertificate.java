@@ -44,11 +44,23 @@ public class GiftCertificate {
 
     public void addTag(Tag tag) {
         tags.add(tag);
-        tag.getGiftCertificates().add(this);
+//        tag.getGiftCertificates().add(this);
     }
 
     public void removeTag(Tag tag) {
         tags.remove(tag);
         tag.getGiftCertificates().remove(this);
+    }
+
+    @PrePersist
+    public void addCreateAndLastUpdateDate() {
+        LocalDateTime now = LocalDateTime.now();
+        this.createDate = now;
+        this.lastUpdateDate = now;
+    }
+
+    @PreUpdate
+    public void changeLastUpdateDate() {
+        this.lastUpdateDate = LocalDateTime.now();
     }
 }

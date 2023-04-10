@@ -28,7 +28,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 @ActiveProfiles("test")
 @Transactional
 @Rollback
-class GiftCertificatesDAOImplTest {
+class GiftCertificatesRepositoryTest {
     @Autowired
     private GiftCertificatesDAO dao;
 

@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.clevertec.ecl.dao.impl.TagsRepository;
+import ru.clevertec.ecl.dao.TagsRepository;
 import ru.clevertec.ecl.dto.TagDto;
 import ru.clevertec.ecl.exceptions.ItemExistException;
 import ru.clevertec.ecl.exceptions.ItemNotFoundException;
@@ -69,7 +69,9 @@ public class TagsServiceImpl implements TagsService {
     }
 
     private Tag createTagIfNotExist(Tag tag) {
+        System.out.println(tag.getName());
         Optional<Tag> oTag = repository.findByName(tag.getName());
+        System.out.println(oTag.isPresent());
         return oTag.orElseGet(() -> repository.save(tag));
     }
 

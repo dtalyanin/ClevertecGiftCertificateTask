@@ -1,9 +1,12 @@
 package ru.clevertec.ecl.models;
 
 import jakarta.persistence.*;
+import lombok.Data;
+import lombok.ToString;
 
 import java.time.LocalDateTime;
 
+@Data
 @Entity
 @Table(name = "orders")
 public class Order {
@@ -13,6 +16,7 @@ public class Order {
     private Long id;
     @ManyToOne
     @JoinColumn(name="user_id")
+    @ToString.Exclude
     private User user;
     @ManyToOne
     @JoinColumn(name="certificate_id")
@@ -25,4 +29,11 @@ public class Order {
     private Long totalPrice;
     @Column(name = "order_date", nullable = false)
     private LocalDateTime date;
+
+    @PrePersist
+    public void setPriceAndDate() {
+        date = LocalDateTime.now();
+        price = certificate.getPrice();
+        totalPrice = price * quantity;
+    }
 }

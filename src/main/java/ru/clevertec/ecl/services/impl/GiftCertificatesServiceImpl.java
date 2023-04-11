@@ -1,8 +1,10 @@
 package ru.clevertec.ecl.services.impl;
 
+import jakarta.persistence.criteria.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.clevertec.ecl.dao.GiftCertificatesRepository;
@@ -44,8 +46,36 @@ public class GiftCertificatesServiceImpl implements GiftCertificatesService {
     @Transactional(readOnly = true)
     public List<GiftCertificateDto> getAllGiftCertificates(FilterCriteria filter, SortCriteria sorting,
                                                            PaginationCriteria pagination) {
-        List<GiftCertificate> giftCertificates = repository.findAll();
-        return mapper.convertGiftCertificatesToDtos(giftCertificates);
+        List<Specification<GiftCertificate>> specifications = new ArrayList<>();
+        if (filter.getName() != null) {
+            Specification<GiftCertificate> nameSpec = new Specification<GiftCertificate>() {
+                @Override
+                public Predicate toPredicate(Root<GiftCertificate> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
+                    return criteriaBuilder.like(criteriaBuilder.lower(root.get("name")), "%" + filter.getName().toLowerCase() + "%");
+                }
+            };
+            specifications.add(nameSpec);
+        }
+        if (filter.getDescription() != null) {
+            Specification<GiftCertificate> nameSpec = new Specification<GiftCertificate>() {
+                @Override
+                public Predicate toPredicate(Root<GiftCertificate> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
+                    return criteriaBuilder.like(criteriaBuilder.lower(root.get("description")), "%" + filter.getDescription().toLowerCase() + "%");
+                }
+            };
+            specifications.add(nameSpec);
+        }
+        if (filter.getTag() != null) {
+            Specification<GiftCertificate> nameSpec = new Specification<GiftCertificate>() {
+                @Override
+                public Predicate toPredicate(Root<GiftCertificate> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
+                    Join<GiftCertificate, Tag> join = root.join("tags");
+                    return criteriaBuilder.equal(join.get("name"), filter.getTag());
+                }
+            };
+            specifications.add(nameSpec);
+        }
+        return mapper.convertGiftCertificatesToDtos(repository.findAll(Specification.allOf(specifications)));
     }
 
     @Override
@@ -57,6 +87,12 @@ public class GiftCertificatesServiceImpl implements GiftCertificatesService {
                     ErrorCode.CERTIFICATE_ID_NOT_FOUND);
         }
         return mapper.convertGiftCertificateToDto(certificate.get());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Optional<GiftCertificate> getOptionalGiftCertificateById(long id) {
+        return repository.findById(id);
     }
 
     @Override

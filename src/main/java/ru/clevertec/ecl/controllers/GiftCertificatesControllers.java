@@ -33,7 +33,7 @@ public class GiftCertificatesControllers {
     @GetMapping
     ResponseEntity<List<GiftCertificateDto>> getAllGiftCertificates(FilterCriteria filter, SortCriteria sorting,
                                                                     @Valid PaginationCriteria pagination) {
-        return ResponseEntity.ok(service.getAllGiftCertificates(null, null, null));
+        return ResponseEntity.ok(service.getAllGiftCertificates(filter, sorting, pagination));
     }
 
     @GetMapping("/{id}")

@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import org.mapstruct.*;
 import org.springframework.validation.annotation.Validated;
 import ru.clevertec.ecl.dto.GiftCertificateDto;
+import ru.clevertec.ecl.dto.GiftCertificateDtoForOrder;
 import ru.clevertec.ecl.dto.UpdateGiftCertificateDto;
 import ru.clevertec.ecl.models.GiftCertificate;
 
@@ -38,6 +39,9 @@ public abstract class GiftCertificateMapper {
 
     public abstract @Valid GiftCertificate updateGiftCertificateFields(GiftCertificate from,
                                                                        @MappingTarget GiftCertificate to);
+
+    @Mapping(source = "duration", target = "duration", qualifiedByName = "durationToDays")
+    public abstract GiftCertificateDtoForOrder convertGiftCertificatesToDtoForOrder(GiftCertificate giftCertificate);
 
     @Named("fromCoinsToRubles")
     protected BigDecimal convertPriceFromCoinsToRubles(Long price) {

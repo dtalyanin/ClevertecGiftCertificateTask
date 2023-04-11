@@ -6,7 +6,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import ru.clevertec.ecl.dao.GiftCertificatesDAO;
 import ru.clevertec.ecl.dto.GiftCertificateDto;
 import ru.clevertec.ecl.dto.UpdateGiftCertificateDto;
 import ru.clevertec.ecl.exceptions.EmptyItemException;

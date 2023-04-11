@@ -6,7 +6,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import ru.clevertec.ecl.dao.TagsDAO;
 import ru.clevertec.ecl.dto.TagDto;
 import ru.clevertec.ecl.exceptions.InvalidItemException;
 import ru.clevertec.ecl.exceptions.ItemExistException;

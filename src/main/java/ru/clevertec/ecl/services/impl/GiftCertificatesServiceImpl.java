@@ -5,7 +5,7 @@ import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.clevertec.ecl.dao.impl.GiftCertificatesRepository;
+import ru.clevertec.ecl.dao.GiftCertificatesRepository;
 import ru.clevertec.ecl.dto.GiftCertificateDto;
 import ru.clevertec.ecl.dto.UpdateGiftCertificateDto;
 import ru.clevertec.ecl.exceptions.EmptyItemException;

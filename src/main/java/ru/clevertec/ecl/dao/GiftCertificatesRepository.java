@@ -1,4 +1,4 @@
-package ru.clevertec.ecl.dao.impl;
+package ru.clevertec.ecl.dao;
 
 import jakarta.persistence.QueryHint;
 import org.hibernate.jpa.HibernateHints;

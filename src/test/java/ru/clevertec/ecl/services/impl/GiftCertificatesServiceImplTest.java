@@ -202,7 +202,7 @@ class GiftCertificatesServiceImplTest {
     void checkDeleteGiftCertificateShouldReturnResponseWithDeletedId() {
         when(dao.deleteGiftCertificate(anyLong())).thenReturn(true);
 
-        ModificationResponse actual = service.deleteGiftCertificate(5L);
+        ModificationResponse actual = service.deleteGiftCertificateById(5L);
         ModificationResponse expected = new ModificationResponse(5L, "Gift certificate deleted successfully");
 
         assertThat(actual).isEqualTo(expected);
@@ -213,7 +213,7 @@ class GiftCertificatesServiceImplTest {
     void checkDeleteGiftCertificateShouldThrowExceptionNotFound() {
         when(dao.deleteGiftCertificate(anyLong())).thenReturn(false);
 
-        assertThatThrownBy(() -> service.deleteGiftCertificate(1L))
+        assertThatThrownBy(() -> service.deleteGiftCertificateById(1L))
                 .isInstanceOf(ItemNotFoundException.class)
                 .hasMessage("Cannot delete: gift certificate with ID 1 not found");
         verify(dao, times(1)).deleteGiftCertificate(anyLong());

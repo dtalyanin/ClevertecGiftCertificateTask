@@ -1,6 +1,5 @@
 package ru.clevertec.ecl.services.impl;
 
-import jakarta.persistence.criteria.Join;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
 import org.springframework.data.jpa.domain.Specification;
@@ -22,8 +21,10 @@ import ru.clevertec.ecl.services.TagsService;
 import ru.clevertec.ecl.utils.mappers.GiftCertificateMapper;
 
 import java.util.*;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static ru.clevertec.ecl.utils.PageableHelper.*;
+import static ru.clevertec.ecl.utils.SpecificationHelper.*;
 
 @Service
 public class GiftCertificatesServiceImpl implements GiftCertificatesService {
@@ -42,10 +43,11 @@ public class GiftCertificatesServiceImpl implements GiftCertificatesService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<GiftCertificateDto> getAllGiftCertificates(FilterCriteria filter, Pageable pageable) {
-        Specification<GiftCertificate> certificateSpecification = Specification.allOf(getSpecificationFromFilter(filter));
-        pageable = validateSort(pageable);
-        return mapper.convertGiftCertificatesToDtos(repository.findAll(certificateSpecification, pageable).getContent());
+    public List<GiftCertificateDto> getAllGiftCertificatesWithFiltering(FilterCriteria filter, Pageable pageable) {
+        pageable = validateOnlyNameOrCreateDateOrders(pageable);
+        Specification<GiftCertificate> specification = Specification.allOf(getSpecificationsFromFilter(filter));
+        List<GiftCertificate> certificates = repository.findAll(specification, pageable).getContent();
+        return mapper.convertGiftCertificatesToDtos(certificates);
     }
 
     @Override
@@ -104,7 +106,7 @@ public class GiftCertificatesServiceImpl implements GiftCertificatesService {
 
     @Override
     @Transactional
-    public ModificationResponse deleteGiftCertificate(long id) {
+    public ModificationResponse deleteGiftCertificateById(long id) {
         int deletedCount = repository.deleteById(id);
         if (deletedCount == 0) {
             throw new ItemNotFoundException("Cannot delete: gift certificate with ID " + id + " not found",
@@ -131,47 +133,5 @@ public class GiftCertificatesServiceImpl implements GiftCertificatesService {
         ExampleMatcher matcher = ExampleMatcher.matching().withIgnorePaths("id", "createDate", "lastUpdateDate");
         Example<GiftCertificate> existExample = Example.of(certificate, matcher);
         return repository.exists(existExample);
-    }
-
-    private List<Specification<GiftCertificate>> getSpecificationFromFilter(FilterCriteria filter) {
-        List<Specification<GiftCertificate>> specifications = new ArrayList<>();
-        if (filter != null) {
-            if (checkFieldIsNotEmpty(filter.getName())) {
-                Specification<GiftCertificate> nameSpecification = (root, query, criteriaBuilder)
-                        -> criteriaBuilder.like(criteriaBuilder.lower(root.get("name")), "%" + filter.getName().toLowerCase() + "%");
-                specifications.add(nameSpecification);
-            }
-            if (checkFieldIsNotEmpty(filter.getDescription())) {
-                Specification<GiftCertificate> descriptionSpecification = (root, query, criteriaBuilder) ->
-                        criteriaBuilder.like(criteriaBuilder.lower(root.get("description")), "%" + filter.getDescription().toLowerCase() + "%");
-                specifications.add(descriptionSpecification);
-            }
-            if (filter.getTags() != null) {
-                filter.getTags().stream().filter(this::checkFieldIsNotEmpty).forEach(tag -> {
-                    Specification<GiftCertificate> nameSpec = (root, query, criteriaBuilder) -> {
-                        Join<GiftCertificate, Tag> tagsJoin = root.join("tags");
-                        return criteriaBuilder.equal(tagsJoin.get("name"), tag);
-                    };
-                    specifications.add(nameSpec);
-                });
-            }
-        }
-        return specifications;
-    }
-
-    private boolean checkFieldIsNotEmpty(String field) {
-        return field != null && !field.isBlank();
-    }
-
-    private Pageable validateSort(Pageable pageable) {
-        List<Sort.Order> orders = pageable.getSort().get()
-                .filter(order -> "name".equals(order.getProperty()) || "createdDate".equals(order.getProperty()))
-                .collect(Collectors.toList());
-        if (orders.size() != pageable.getSort().stream().count()) {
-            Sort sort = Sort.by(orders);
-            return PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), sort);
-        } else {
-            return pageable;
-        }
     }
 }

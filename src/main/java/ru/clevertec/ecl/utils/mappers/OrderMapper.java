@@ -13,8 +13,8 @@ import java.util.List;
         uses = GiftCertificateMapper.class,
         unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface OrderMapper {
-    @Mapping(source = "price", target = "price", qualifiedByName = "fromCoinsToRubles")
-    @Mapping(source = "totalPrice", target = "totalPrice", qualifiedByName = "fromCoinsToRubles")
+    @Mapping(source = "price", target = "price")
+    @Mapping(source = "totalPrice", target = "totalPrice")
     OrderDto convertOrderToDto(Order order);
 
     @Mapping(target = "id", ignore = true)

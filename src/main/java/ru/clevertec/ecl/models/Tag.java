@@ -3,7 +3,6 @@ package ru.clevertec.ecl.models;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
-import ru.clevertec.ecl.dto.BaseEntity;
 
 import java.util.HashSet;
 import java.util.Set;

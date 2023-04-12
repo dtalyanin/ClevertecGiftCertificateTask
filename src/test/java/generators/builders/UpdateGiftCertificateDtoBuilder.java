@@ -9,39 +9,39 @@ import java.util.ArrayList;
 import java.util.List;
 
 @NoArgsConstructor(staticName = "builder")
-public class ModGiftCertificateDTOBuilder {
+public class UpdateGiftCertificateDtoBuilder {
     private String name = "Test mod";
     private String description = "Test description mod";
     private List<TagDto> tags = new ArrayList<>();
     private BigDecimal price = BigDecimal.valueOf(2000, 2);
     private Long duration = 2L;
 
-    public ModGiftCertificateDTOBuilder name(String name) {
+    public UpdateGiftCertificateDtoBuilder name(String name) {
         this.name = name;
         return this;
     }
 
-    public ModGiftCertificateDTOBuilder description(String description) {
+    public UpdateGiftCertificateDtoBuilder description(String description) {
         this.description = description;
         return this;
     }
 
-    public ModGiftCertificateDTOBuilder tags(List<TagDto> tags) {
+    public UpdateGiftCertificateDtoBuilder tags(List<TagDto> tags) {
         this.tags = tags;
         return this;
     }
 
-    public ModGiftCertificateDTOBuilder tag(TagDto tag) {
+    public UpdateGiftCertificateDtoBuilder tag(TagDto tag) {
         tags.add(tag);
         return this;
     }
 
-    public ModGiftCertificateDTOBuilder price(BigDecimal price) {
+    public UpdateGiftCertificateDtoBuilder price(BigDecimal price) {
         this.price = price;
         return this;
     }
 
-    public ModGiftCertificateDTOBuilder duration(Long duration) {
+    public UpdateGiftCertificateDtoBuilder duration(Long duration) {
         this.duration = duration;
         return this;
     }

@@ -12,16 +12,19 @@ import ru.clevertec.ecl.models.GiftCertificate;
 import ru.clevertec.ecl.models.Order;
 import ru.clevertec.ecl.models.User;
 import ru.clevertec.ecl.models.codes.ErrorCode;
+import ru.clevertec.ecl.models.responses.ModificationResponse;
 import ru.clevertec.ecl.services.GiftCertificatesService;
+import ru.clevertec.ecl.services.OrdersService;
 import ru.clevertec.ecl.services.UsersService;
-import ru.clevertec.ecl.utils.PageableHelper;
 import ru.clevertec.ecl.utils.mappers.OrderMapper;
 
 import java.util.List;
 import java.util.Optional;
 
+import static ru.clevertec.ecl.utils.PageableHelper.*;
+
 @Service
-public class OrdersService {
+public class OrdersServiceImpl implements OrdersService {
 
     private final OrdersRepository repository;
     private final UsersService usersService;
@@ -29,25 +32,27 @@ public class OrdersService {
     private final OrderMapper mapper;
 
     @Autowired
-    public OrdersService(OrdersRepository repository, UsersService usersService, GiftCertificatesService certificatesService, OrderMapper mapper) {
+    public OrdersServiceImpl(OrdersRepository repository, UsersService usersService, GiftCertificatesService certificatesService, OrderMapper mapper) {
         this.repository = repository;
         this.usersService = usersService;
         this.certificatesService = certificatesService;
         this.mapper = mapper;
     }
 
-    @Transactional
-    public List<OrderDto> getAllOrdersByUserIdWithPagination(Long userId, Pageable pageable) {
+    @Override
+    @Transactional(readOnly = true)
+    public List<OrderDto> getAllOrdersByUserId(Long userId, Pageable pageable) {
         if (!usersService.existsUserById(userId)) {
             throw new ItemNotFoundException("User with ID " + userId + " not found in database",
                     ErrorCode.USER_FOR_ORDER_NOT_FOUND);
         }
-        pageable = PageableHelper.setPageableUnsorted(pageable);
+        pageable = setPageableUnsorted(pageable);
         List<Order> orders = repository.findAllByUserId(userId, pageable);
         return mapper.convertOrdersToDtos(orders);
     }
 
-    @Transactional
+    @Override
+    @Transactional(readOnly = true)
     public OrderDto getOrderByOrderIdAndUserId(Long userId, Long orderId) {
         if (!usersService.existsUserById(userId)) {
             throw new ItemNotFoundException("User with ID " + userId + " not found in database",
@@ -61,8 +66,9 @@ public class OrdersService {
         return mapper.convertOrderToDto(order.get());
     }
 
+    @Override
     @Transactional
-    public Long addOrder(CreateOrderDto dto, Long userId) {
+    public ModificationResponse addOrder(CreateOrderDto dto, long userId) {
         Optional<User> user = usersService.getExistingUserById(userId);
         if (user.isEmpty()) {
             throw new ItemNotFoundException("Cannot add order: user with ID " + userId + " not found in database",
@@ -74,7 +80,7 @@ public class OrdersService {
                     ErrorCode.CERTIFICATE_FOR_ORDER_NOT_FOUND);
         }
         Order order = mapper.createOrder(dto, certificate.get(), user.get());
-        repository.save(order);
-        return order.getId();
+        long generatedId = repository.save(order).getId();
+        return new ModificationResponse(generatedId, "Order added successfully");
     }
 }

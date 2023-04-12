@@ -8,8 +8,8 @@ import java.util.List;
 import java.util.Optional;
 
 public interface UsersService {
-    List<UserDto> getAllUsersWithPagination(Pageable pageable);
-    UserDto getUserById(Long id);
-    Optional<User> getExistingUserById(Long id);
-    boolean existsUserById(Long id);
+    List<UserDto> getAllUsers(Pageable pageable);
+    UserDto getUserById(long id);
+    Optional<User> getExistingUserById(long id);
+    boolean existsUserById(long id);
 }

@@ -28,30 +28,34 @@ public class UsersServiceImpl implements UsersService {
         this.mapper = mapper;
     }
 
+    @Override
     @Transactional(readOnly = true)
-    public List<UserDto> getAllUsersWithPagination(Pageable pageable) {
+    public List<UserDto> getAllUsers(Pageable pageable) {
         pageable = PageableHelper.setPageableUnsorted(pageable);
         List<User> users = repository.findAll(pageable).getContent();
-        return mapper.usersToDtos(users);
+        return mapper.convertUsersToDtos(users);
     }
 
+    @Override
     @Transactional(readOnly = true)
-    public UserDto getUserById(Long id) {
+    public UserDto getUserById(long id) {
         Optional<User> user = getExistingUserById(id);
         if (user.isEmpty()) {
             throw new ItemNotFoundException("User with ID " + id + " not found in database",
                     ErrorCode.USER_ID_NOT_FOUND);
         }
-        return mapper.userToDto(user.get());
+        return mapper.convertUserToDto(user.get());
     }
 
+    @Override
     @Transactional(readOnly = true)
-    public Optional<User> getExistingUserById(Long id) {
+    public Optional<User> getExistingUserById(long id) {
         return repository.findById(id);
     }
 
+    @Override
     @Transactional(readOnly = true)
-    public boolean existsUserById(Long id) {
+    public boolean existsUserById(long id) {
         return repository.existsById(id);
     }
 }

@@ -10,7 +10,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import ru.clevertec.ecl.dto.CreateOrderDto;
 import ru.clevertec.ecl.dto.OrderDto;
-import ru.clevertec.ecl.services.impl.OrdersService;
+import ru.clevertec.ecl.models.responses.ModificationResponse;
+import ru.clevertec.ecl.services.impl.OrdersServiceImpl;
 
 import java.net.URI;
 import java.util.List;
@@ -19,10 +20,10 @@ import java.util.List;
 @Validated
 public class OrdersController {
 
-    private final OrdersService service;
+    private final OrdersServiceImpl service;
 
     @Autowired
-    public OrdersController(OrdersService service) {
+    public OrdersController(OrdersServiceImpl service) {
         this.service = service;
     }
 
@@ -30,24 +31,24 @@ public class OrdersController {
     public ResponseEntity<List<OrderDto>> getAllOrdersByUserIdWithPagination(
             @PathVariable @Min(value = 1, message = "Min ID value is 1") Long userId,
             Pageable pageable) {
-        return ResponseEntity.ok(service.getAllOrdersByUserIdWithPagination(userId, pageable));
+        return ResponseEntity.ok(service.getAllOrdersByUserId(userId, pageable));
     }
 
     @GetMapping("users/{userId}/orders/{orderId}")
     public ResponseEntity<OrderDto> getOrderByOrderIdAndUserId(
-            @PathVariable @Min(value = 1, message = "Min ID value is 1") Long userId,
-            @PathVariable @Min(value = 1, message = "Min ID value is 1") Long orderId) {
+            @PathVariable @Min(value = 1, message = "Min ID value is 1") long userId,
+            @PathVariable @Min(value = 1, message = "Min ID value is 1") long orderId) {
         return ResponseEntity.ok(service.getOrderByOrderIdAndUserId(userId, orderId));
     }
 
     @PostMapping("users/{userId}/orders")
-    public ResponseEntity<String> addOrder(@RequestBody @Valid CreateOrderDto dto,
-                                           @PathVariable @Min(value = 1, message = "Min ID value is 1")Long userId) {
-        long gen = service.addOrder(dto, userId);
+    public ResponseEntity<ModificationResponse> addOrder(@RequestBody @Valid CreateOrderDto dto,
+                                           @PathVariable @Min(value = 1, message = "Min ID value is 1") long userId) {
+        ModificationResponse response = service.addOrder(dto, userId);
         URI uri = ServletUriComponentsBuilder
                 .fromCurrentRequest()
                 .path("/{id}")
-                .buildAndExpand(gen).toUri();
-        return ResponseEntity.ok("yes");
+                .buildAndExpand(response.getId()).toUri();
+        return ResponseEntity.created(uri).body(response);
     }
 }

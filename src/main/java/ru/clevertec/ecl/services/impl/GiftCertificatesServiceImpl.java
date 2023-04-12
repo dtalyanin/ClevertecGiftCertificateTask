@@ -19,6 +19,7 @@ import ru.clevertec.ecl.models.responses.ModificationResponse;
 import ru.clevertec.ecl.services.GiftCertificatesService;
 import ru.clevertec.ecl.services.TagsService;
 import ru.clevertec.ecl.utils.mappers.GiftCertificateMapper;
+import ru.clevertec.ecl.utils.mappers.TagMapper;
 
 import java.util.*;
 import java.util.stream.Stream;
@@ -31,14 +32,17 @@ public class GiftCertificatesServiceImpl implements GiftCertificatesService {
     private final GiftCertificatesRepository repository;
     private final GiftCertificateMapper mapper;
     private final TagsService tagsService;
+    private final TagMapper tagMapper;
 
     @Autowired
     public GiftCertificatesServiceImpl(GiftCertificatesRepository repository,
                                        GiftCertificateMapper mapper,
-                                       TagsService tagsService) {
+                                       TagsService tagsService,
+                                       TagMapper tagMapper) {
         this.repository = repository;
         this.mapper = mapper;
         this.tagsService = tagsService;
+        this.tagMapper = tagMapper;
     }
 
     @Override
@@ -77,29 +81,28 @@ public class GiftCertificatesServiceImpl implements GiftCertificatesService {
         }
         Set<Tag> tags = tagsService.addAllTagsIfNotExist(certificate.getTags());
         certificate.setTags(tags);
-        repository.save(certificate);
-        return new ModificationResponse(certificate.getId(), "Gift certificate added successfully");
+        long generatedId = repository.save(certificate).getId();
+        return new ModificationResponse(generatedId, "Gift certificate added successfully");
     }
 
     @Override
     @Transactional
     public ModificationResponse updateGiftCertificate(long id, UpdateGiftCertificateDto dto) {
         checkFieldsForUpdatingExist(dto);
-        GiftCertificate certificateWithFieldsToUpdate = mapper.convertUpdateDtoToGiftCertificate(dto);
-        Set<Tag> tags = tagsService.addAllTagsIfNotExist(certificateWithFieldsToUpdate.getTags());
-        certificateWithFieldsToUpdate.setTags(tags);
         Optional<GiftCertificate> oCertificate = repository.findById(id);
         if (oCertificate.isEmpty()) {
             throw new ItemNotFoundException("Cannot update: gift certificate with ID " + id + " not found",
                     ErrorCode.CERTIFICATE_ID_NOT_FOUND);
         }
-        GiftCertificate giftCertificateForUpdate = oCertificate.get();
-        mapper.updateGiftCertificateFields(certificateWithFieldsToUpdate, giftCertificateForUpdate);
-        if (checkGiftCertificateExist(giftCertificateForUpdate)) {
+        Set<Tag> tagsFromDto = tagMapper.convertTagDtosToTags(dto.getTags());
+        Set<Tag> tags = tagsService.addAllTagsIfNotExist(tagsFromDto);
+        GiftCertificate certificate = oCertificate.get();
+        mapper.updateGiftCertificateFields(dto, tags, certificate);
+        if (checkGiftCertificateExist(certificate)) {
             throw new ItemExistException("Cannot update: gift certificate with similar name, description, price " +
                     "and duration already exist in database", ErrorCode.CERTIFICATE_EXIST);
         }
-        repository.save(giftCertificateForUpdate);
+        repository.save(certificate);
         return new ModificationResponse(id, "Gift certificate updated successfully");
 
     }

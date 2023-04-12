@@ -1,4 +1,4 @@
-package ru.clevertec.ecl.dto;
+package ru.clevertec.ecl.models;
 
 import java.io.Serializable;
 

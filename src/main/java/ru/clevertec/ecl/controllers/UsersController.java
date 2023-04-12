@@ -24,12 +24,12 @@ public class UsersController {
     }
 
     @GetMapping
-    public ResponseEntity<List<UserDto>> getAllUsersWithPagination(Pageable pageable) {
-        return ResponseEntity.ok(service.getAllUsersWithPagination(pageable));
+    public ResponseEntity<List<UserDto>> getAllUsers(Pageable pageable) {
+        return ResponseEntity.ok(service.getAllUsers(pageable));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<UserDto> getUserById(@PathVariable @Min(value = 1, message = "Min ID value is 1") Long id) {
+    public ResponseEntity<UserDto> getUserById(@PathVariable @Min(value = 1, message = "Min ID value is 1") long id) {
         return ResponseEntity.ok(service.getUserById(id));
     }
 }

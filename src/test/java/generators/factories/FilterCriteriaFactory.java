@@ -2,9 +2,12 @@ package generators.factories;
 
 import ru.clevertec.ecl.models.criteries.FilterCriteria;
 
+import java.util.List;
+import java.util.Set;
+
 public class FilterCriteriaFactory {
     public static FilterCriteria getFilterByTag() {
-        return FilterCriteria.builder().tag("Test tag").build();
+        return FilterCriteria.builder().tags(List.of("Test tag")).build();
     }
 
     public static FilterCriteria getFilterByName() {
@@ -17,7 +20,7 @@ public class FilterCriteriaFactory {
 
     public static FilterCriteria getFilterByAll() {
         return FilterCriteria.builder()
-                .tag("Test tag")
+                .tags(List.of("Test tag"))
                 .name("test")
                 .description("ion 2")
                 .build();

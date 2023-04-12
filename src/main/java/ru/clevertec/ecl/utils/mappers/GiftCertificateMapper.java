@@ -7,10 +7,12 @@ import ru.clevertec.ecl.dto.GiftCertificateDto;
 import ru.clevertec.ecl.dto.GiftCertificateDtoForOrder;
 import ru.clevertec.ecl.dto.UpdateGiftCertificateDto;
 import ru.clevertec.ecl.models.GiftCertificate;
+import ru.clevertec.ecl.models.Tag;
 
 import java.math.BigDecimal;
 import java.time.Duration;
 import java.util.List;
+import java.util.Set;
 
 @Validated
 @Mapper(componentModel = "spring",
@@ -25,7 +27,7 @@ public abstract class GiftCertificateMapper {
 
     @Mapping(source = "price", target = "price")
     @Mapping(source = "duration", target = "duration")
-    public abstract GiftCertificateDto convertGiftCertificateToDto(GiftCertificate giftCertificate);
+    public abstract GiftCertificateDto convertGiftCertificateToDto(GiftCertificate certificate);
 
     public abstract List<GiftCertificateDto> convertGiftCertificatesToDtos(List<GiftCertificate> giftCertificates);
 
@@ -33,15 +35,12 @@ public abstract class GiftCertificateMapper {
     @Mapping(source = "duration", target = "duration")
     public abstract @Valid GiftCertificate convertDtoToGiftCertificate(GiftCertificateDto dto);
 
-    @Mapping(source = "price", target = "price")
+    @Mapping(source = "tags", target = "tags")
+    public abstract @Valid GiftCertificate updateGiftCertificateFields(UpdateGiftCertificateDto dto,
+                                                                       Set<Tag> tags,
+                                                                       @MappingTarget GiftCertificate certificate);
     @Mapping(source = "duration", target = "duration")
-    public abstract GiftCertificate convertUpdateDtoToGiftCertificate(UpdateGiftCertificateDto dto);
-
-    public abstract @Valid GiftCertificate updateGiftCertificateFields(GiftCertificate from,
-                                                                       @MappingTarget GiftCertificate to);
-
-    @Mapping(source = "duration", target = "duration")
-    public abstract GiftCertificateDtoForOrder convertGiftCertificatesToDtoForOrder(GiftCertificate giftCertificate);
+    public abstract GiftCertificateDtoForOrder convertGiftCertificatesToDtoForOrder(GiftCertificate certificate);
     
     protected BigDecimal convertPriceFromCoinsToRubles(Long price) {
         BigDecimal rubles = null;

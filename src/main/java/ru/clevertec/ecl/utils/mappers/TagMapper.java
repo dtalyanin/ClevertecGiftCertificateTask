@@ -14,10 +14,10 @@ import java.util.Set;
 @Validated
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface TagMapper {
-    TagDto tagToDto(Tag tag);
-    @Valid Tag dtoToTag(TagDto dto);
-    List<TagDto> tagsToDto(List<Tag> tags);
-    Set<@Valid Tag> TagDtosToTag(List<TagDto> tagDtos);
-    List<TagDto> tagsToDtos(Set<Tag> tags);
+    TagDto convertTagToDto(Tag tag);
+    @Valid Tag convertDtoToTag(TagDto dto);
+    List<TagDto> convertTagsListToDtos(List<Tag> tags);
+    Set<TagDto> convertTagsSetToDto(Set<Tag> tags);
+    Set<@Valid Tag> convertTagDtosToTags(List<TagDto> dtos);
     @Valid Tag updateTag(TagDto dto, @MappingTarget Tag tag);
 }

@@ -3,7 +3,6 @@ package ru.clevertec.ecl.controllers;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -16,19 +15,15 @@ import ru.clevertec.ecl.utils.ValidationErrorResponsesFactory;
 public class GlobalExceptionHandler {
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<ValidationErrorResponse> findValidationExceptionInParameters(ConstraintViolationException e) {
-        ValidationErrorResponse errorResponse = ValidationErrorResponsesFactory.getResponse(e.getConstraintViolations());
+        ValidationErrorResponse errorResponse = ValidationErrorResponsesFactory.getResponseFromConstraints(e.getConstraintViolations());
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 
-//    @ExceptionHandler(MethodArgumentNotValidException.class)
-//    public ResponseEntity<ValidationErrorResponse> findBookException(MethodArgumentNotValidException e) {
-//        FieldError fieldError = e.getFieldErrors().get(0);
-//        ErrorResponse errorResponse = new ErrorResponse(ErrorCode.VALIDATION_ERROR,
-//                fieldError.getField(),
-//                fieldError.getRejectedValue(),
-//                fieldError.getDefaultMessage());
-//        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
-//    }
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ValidationErrorResponse> findBookException(MethodArgumentNotValidException e) {
+        ValidationErrorResponse errorResponse = ValidationErrorResponsesFactory.getResponseFromErrors(e.getFieldErrors(), e.getTarget().getClass());
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    }
 
 
     @ExceptionHandler(ItemNotFoundException.class)

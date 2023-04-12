@@ -1,119 +1,115 @@
 package ru.clevertec.ecl.utils.mappers;
 
-import org.junit.jupiter.api.BeforeEach;
+import jakarta.validation.ConstraintViolationException;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
-import org.mapstruct.factory.Mappers;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import ru.clevertec.ecl.dto.GiftCertificateDto;
 import ru.clevertec.ecl.dto.UpdateGiftCertificateDto;
-import ru.clevertec.ecl.exceptions.InvalidItemException;
 import ru.clevertec.ecl.models.GiftCertificate;
 
 import java.math.BigDecimal;
 import java.time.Duration;
 import java.util.List;
 
-import static generators.factories.GiftCertificateDTOFactory.*;
-import static generators.factories.GiftCertificateFactory.*;
-import static generators.factories.ModGiftCertificateDTOFactory.*;
+import static generators.factories.certificates.GiftCertificateDtoFactory.*;
+import static generators.factories.certificates.GiftCertificateFactory.*;
+import static generators.factories.tags.TagFactory.*;
+import static generators.factories.certificates.UpdateGiftCertificateDtoFactory.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-@ExtendWith(SpringExtension.class)
+@SpringBootTest
 class GiftCertificateMapperTest {
 
+    @Autowired
     private GiftCertificateMapper mapper;
 
-    @BeforeEach
-    void setUp() {
-        mapper = Mappers.getMapper(GiftCertificateMapper.class);
-    }
-
     @Test
-    void checkGiftCertificateToDTOShouldReturnNull() {
+    void checkGiftCertificateToDtoShouldReturnNull() {
         GiftCertificateDto actual = mapper.convertGiftCertificateToDto(null);
         assertThat(actual).isNull();
     }
 
     @Test
-    void checkGiftCertificateToDTOShouldReturnWithoutFields() {
+    void checkGiftCertificateToDtoShouldReturnWithoutFields() {
         GiftCertificate certificate = getGiftCertificateWithoutFields();
         GiftCertificateDto actual = mapper.convertGiftCertificateToDto(certificate);
-        GiftCertificateDto expected = getGiftCertificateDTOWithoutFields();
+        GiftCertificateDto expected = getGiftCertificateDtoWithoutFields();
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
-    void checkGiftCertificateToDTOShouldReturnCorrectDTO() {
+    void checkGiftCertificateToDtoShouldReturnCorrectDto() {
         GiftCertificate certificate = getSimpleGiftCertificateWithTags();
         GiftCertificateDto actual = mapper.convertGiftCertificateToDto(certificate);
-        GiftCertificateDto expected = getSimpleGiftCertificateDTO();
+        GiftCertificateDto expected = getSimpleGiftCertificateDtoWithTags();
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
-    void checkDTOToGiftCertificateShouldReturnNull() {
+    void checkDtoToGiftCertificateShouldReturnNull() {
         GiftCertificate actual = mapper.convertDtoToGiftCertificate(null);
         assertThat(actual).isNull();
     }
 
     @Test
-    void checkDTOToGiftCertificateShouldThrowExceptionInvalidFields() {
-        GiftCertificateDto certificateDTO = getGiftCertificateDTOWithoutFields();
-        assertThatThrownBy(() -> mapper.convertDtoToGiftCertificate(certificateDTO))
-                .isInstanceOf(InvalidItemException.class);
+    void checkDtoToGiftCertificateShouldThrowExceptionInvalidFields() {
+        GiftCertificateDto certificateDto = getGiftCertificateDtoWithoutFields();
+        assertThatThrownBy(() -> mapper.convertDtoToGiftCertificate(certificateDto))
+                .isInstanceOf(ConstraintViolationException.class);
     }
 
     @Test
-    void checkDTOToGiftCertificateShouldReturnCorrectCertificate() {
-        GiftCertificateDto certificateDTO = getSimpleGiftCertificateDTO();
-        GiftCertificate actual = mapper.convertDtoToGiftCertificate(certificateDTO);
+    void checkDtoToGiftCertificateShouldReturnCorrectCertificate() {
+        GiftCertificateDto certificateDto = getSimpleGiftCertificateDto();
+        GiftCertificate actual = mapper.convertDtoToGiftCertificate(certificateDto);
         GiftCertificate expected = getSimpleGiftCertificateWithNullId();
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
-    void checkAllGiftCertificateToDTOShouldReturnCorrectDTOs() {
+    void checkAllGiftCertificateToDtoShouldReturnCorrectDtos() {
         List<GiftCertificate> certificates = getSimpleGiftCertificates();
         List<GiftCertificateDto> actual = mapper.convertGiftCertificatesToDtos(certificates);
-        List<GiftCertificateDto> expected = getSimpleGiftCertificateDTOs();
+        List<GiftCertificateDto> expected = getSimpleGiftCertificateDtos();
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
-    void checkModDTOToGiftCertificateShouldNoUpdateBecauseDTOIsNull() {
+    void checkUpdateDtoToGiftCertificateShouldNoUpdateBecauseDtoAndTagsIsNull() {
         GiftCertificate certificate = getSimpleGiftCertificate();
-        GiftCertificate actual = mapper.convertUpdateDtoToGiftCertificate(null, certificate);
+        GiftCertificate actual = mapper.updateGiftCertificateFields(null, null, certificate);
         GiftCertificate expected = getSimpleGiftCertificate();
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
-    void checkModDTOToGiftCertificateShouldNoUpdateBecauseAllFieldIsNull() {
+    void checkModDtoToGiftCertificateShouldNoUpdateBecauseAllDtoFieldAndTagIsNull() {
         GiftCertificate certificate = getSimpleGiftCertificate();
-        UpdateGiftCertificateDto modCertificateDTO = getModGiftCertificateDTOWithoutFields();
-        GiftCertificate actual = mapper.convertUpdateDtoToGiftCertificate(modCertificateDTO, certificate);
+        UpdateGiftCertificateDto updateCertificateDto = getUpdateGiftCertificateDtoWithoutFields();
+        GiftCertificate actual = mapper.updateGiftCertificateFields(updateCertificateDto, null, certificate);
         GiftCertificate expected = getSimpleGiftCertificate();
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
-    void checkModDTOToGiftCertificateShouldUpdateAllField() {
+    void checkModDtoToGiftCertificateShouldUpdateAllField() {
         GiftCertificate certificate = getSimpleGiftCertificate();
-        UpdateGiftCertificateDto modCertificateDTO = getSimpleModGiftCertificateDTO();
-        GiftCertificate actual = mapper.convertUpdateDtoToGiftCertificate(modCertificateDTO, certificate);
+        UpdateGiftCertificateDto updateCertificateDto = getSimpleUpdateGiftCertificateDto();
+        GiftCertificate actual = mapper
+                .updateGiftCertificateFields(updateCertificateDto, getDifferentTagsSet(), certificate);
         GiftCertificate expected = getGiftCertificateWithAllUpdatedFields();
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
-    void checkModDTOToGiftCertificateShouldUpdateOnlyNamePriceDuration() {
+    void checkModDtoToGiftCertificateShouldUpdateOnlyNamePriceDuration() {
         GiftCertificate certificate = getSimpleGiftCertificate();
-        UpdateGiftCertificateDto modCertificateDTO = getModGiftCertificateDTOWithOnlyNamePriceDuration();
-        GiftCertificate actual = mapper.convertUpdateDtoToGiftCertificate(modCertificateDTO, certificate);
+        UpdateGiftCertificateDto modCertificateDto = getUpdateGiftCertificateDtoWithOnlyNamePriceDuration();
+        GiftCertificate actual = mapper.updateGiftCertificateFields(modCertificateDto, null, certificate);
         GiftCertificate expected = getGiftCertificateWithUpdatedOnlyNamePriceDuration();
         assertThat(actual).isEqualTo(expected);
     }

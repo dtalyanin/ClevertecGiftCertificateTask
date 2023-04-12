@@ -12,6 +12,7 @@ import ru.clevertec.ecl.models.Tag;
 import ru.clevertec.ecl.models.codes.ErrorCode;
 import ru.clevertec.ecl.models.responses.ModificationResponse;
 import ru.clevertec.ecl.services.TagsService;
+import ru.clevertec.ecl.utils.PageableHelper;
 import ru.clevertec.ecl.utils.mappers.TagMapper;
 
 import java.util.List;
@@ -19,8 +20,10 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+
 @Service
 public class TagsServiceImpl implements TagsService {
+
     private final TagsRepository repository;
     private final TagMapper mapper;
 
@@ -33,8 +36,9 @@ public class TagsServiceImpl implements TagsService {
     @Override
     @Transactional(readOnly = true)
     public List<TagDto> getAllTags(Pageable pageable) {
+        pageable = PageableHelper.setPageableUnsorted(pageable);
         List<Tag> allTags = repository.findAll(pageable).getContent();
-        return mapper.tagsToDto(allTags);
+        return mapper.convertTagsListToDtos(allTags);
     }
 
     @Override
@@ -45,7 +49,7 @@ public class TagsServiceImpl implements TagsService {
             throw new ItemNotFoundException("Tag with ID " + id + " not found in database",
                     ErrorCode.TAG_ID_NOT_FOUND);
         }
-        return mapper.tagToDto(tag.get());
+        return mapper.convertTagToDto(tag.get());
     }
 
     @Override
@@ -55,9 +59,9 @@ public class TagsServiceImpl implements TagsService {
             throw new ItemExistException("Cannot add: tag with name '" + dto.getName() +
                     "' already exist in database", ErrorCode.TAG_NAME_EXIST);
         }
-        Tag tag = mapper.dtoToTag(dto);
-        repository.save(tag);
-        return new ModificationResponse(tag.getId(), "Tag added successfully");
+        Tag tag = mapper.convertDtoToTag(dto);
+        long generatedId = repository.save(tag).getId();
+        return new ModificationResponse(generatedId, "Tag added successfully");
     }
 
     @Override
@@ -69,9 +73,7 @@ public class TagsServiceImpl implements TagsService {
     }
 
     private Tag createTagIfNotExist(Tag tag) {
-        System.out.println(tag.getName());
         Optional<Tag> oTag = repository.findByName(tag.getName());
-        System.out.println(oTag.isPresent());
         return oTag.orElseGet(() -> repository.save(tag));
     }
 
@@ -79,7 +81,7 @@ public class TagsServiceImpl implements TagsService {
     @Transactional
     public ModificationResponse updateTag(long id, TagDto dto) {
         if (repository.existsByName(dto.getName())) {
-            throw new ItemExistException("Cannot add: tag with name '" + dto.getName() +
+            throw new ItemExistException("Cannot update: tag with name '" + dto.getName() +
                     "' already exist in database", ErrorCode.TAG_NAME_EXIST);
         }
         Optional<Tag> oTag = repository.findById(id);
@@ -87,7 +89,9 @@ public class TagsServiceImpl implements TagsService {
             throw new ItemNotFoundException("Cannot update: tag with ID " + id + " not found",
                     ErrorCode.TAG_ID_NOT_FOUND);
         }
-        mapper.updateTag(dto, oTag.get());
+        Tag tag = oTag.get();
+        mapper.updateTag(dto, tag);
+        repository.save(tag);
         return new ModificationResponse(id, "Tag updated successfully");
 
     }

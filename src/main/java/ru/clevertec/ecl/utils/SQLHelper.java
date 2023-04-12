@@ -18,25 +18,25 @@ public class SQLHelper {
     public SQLFilter getSQLFilter(FilterCriteria filter) {
         Map<String, Object> paramValues = new LinkedHashMap<>();
         StringBuilder sb = new StringBuilder();
-        if (filter != null) {
-            if (filter.getTag() != null) {
-                sb.append(FILTER_BY_TAG_NAME);
-                paramValues.put(CERTIFICATE_TAG, filter.getTag());
-            }
-            if (filter.getName() != null) {
-                sb.append(getAndClauseIfFilterAlreadyExist(sb));
-                sb.append(FILTER_BY_GIFT_CERTIFICATE_NAME);
-                paramValues.put(CERTIFICATE_NAME, PERCENT + filter.getName() + PERCENT);
-            }
-            if (filter.getDescription() != null) {
-                sb.append(getAndClauseIfFilterAlreadyExist(sb));
-                sb.append(FILTER_BY_GIFT_CERTIFICATE_DESCRIPTION);
-                paramValues.put(CERTIFICATE_DESCRIPTION, PERCENT + filter.getDescription() + PERCENT);
-            }
-            if (!sb.isEmpty()) {
-                sb.insert(0, WHERE_CLAUSE);
-            }
-        }
+//        if (filter != null) {
+//            if (filter.getTag() != null) {
+//                sb.append(FILTER_BY_TAG_NAME);
+//                paramValues.put(CERTIFICATE_TAG, filter.getTag());
+//            }
+//            if (filter.getName() != null) {
+//                sb.append(getAndClauseIfFilterAlreadyExist(sb));
+//                sb.append(FILTER_BY_GIFT_CERTIFICATE_NAME);
+//                paramValues.put(CERTIFICATE_NAME, PERCENT + filter.getName() + PERCENT);
+//            }
+//            if (filter.getDescription() != null) {
+//                sb.append(getAndClauseIfFilterAlreadyExist(sb));
+//                sb.append(FILTER_BY_GIFT_CERTIFICATE_DESCRIPTION);
+//                paramValues.put(CERTIFICATE_DESCRIPTION, PERCENT + filter.getDescription() + PERCENT);
+//            }
+//            if (!sb.isEmpty()) {
+//                sb.insert(0, WHERE_CLAUSE);
+//            }
+//        }
         return new SQLFilter(sb.toString(), paramValues);
     }
 

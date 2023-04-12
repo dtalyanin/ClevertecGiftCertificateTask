@@ -2,8 +2,7 @@ package ru.clevertec.ecl.services.impl;
 
 import jakarta.persistence.criteria.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Example;
-import org.springframework.data.domain.ExampleMatcher;
+import org.springframework.data.domain.*;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,14 +16,14 @@ import ru.clevertec.ecl.models.GiftCertificate;
 import ru.clevertec.ecl.models.Tag;
 import ru.clevertec.ecl.models.codes.ErrorCode;
 import ru.clevertec.ecl.models.criteries.FilterCriteria;
-import ru.clevertec.ecl.models.criteries.PaginationCriteria;
-import ru.clevertec.ecl.models.criteries.SortCriteria;
 import ru.clevertec.ecl.models.responses.ModificationResponse;
 import ru.clevertec.ecl.services.GiftCertificatesService;
 import ru.clevertec.ecl.services.TagsService;
 import ru.clevertec.ecl.utils.mappers.GiftCertificateMapper;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Service
@@ -44,38 +43,12 @@ public class GiftCertificatesServiceImpl implements GiftCertificatesService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<GiftCertificateDto> getAllGiftCertificates(FilterCriteria filter, SortCriteria sorting,
-                                                           PaginationCriteria pagination) {
-        List<Specification<GiftCertificate>> specifications = new ArrayList<>();
-        if (filter.getName() != null) {
-            Specification<GiftCertificate> nameSpec = new Specification<GiftCertificate>() {
-                @Override
-                public Predicate toPredicate(Root<GiftCertificate> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
-                    return criteriaBuilder.like(criteriaBuilder.lower(root.get("name")), "%" + filter.getName().toLowerCase() + "%");
-                }
-            };
-            specifications.add(nameSpec);
-        }
-        if (filter.getDescription() != null) {
-            Specification<GiftCertificate> nameSpec = new Specification<GiftCertificate>() {
-                @Override
-                public Predicate toPredicate(Root<GiftCertificate> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
-                    return criteriaBuilder.like(criteriaBuilder.lower(root.get("description")), "%" + filter.getDescription().toLowerCase() + "%");
-                }
-            };
-            specifications.add(nameSpec);
-        }
-        if (filter.getTag() != null) {
-            Specification<GiftCertificate> nameSpec = new Specification<GiftCertificate>() {
-                @Override
-                public Predicate toPredicate(Root<GiftCertificate> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
-                    Join<GiftCertificate, Tag> join = root.join("tags");
-                    return criteriaBuilder.equal(join.get("name"), filter.getTag());
-                }
-            };
-            specifications.add(nameSpec);
-        }
-        return mapper.convertGiftCertificatesToDtos(repository.findAll(Specification.allOf(specifications)));
+    public List<GiftCertificateDto> getAllGiftCertificates(FilterCriteria filter, Pageable pageable) {
+        Specification<GiftCertificate> certificateSpecification = Specification.allOf(getSpecificationFromFilter(filter));
+        System.out.println(pageable);
+        pageable = validateSort(pageable);
+        System.out.println(pageable);
+        return mapper.convertGiftCertificatesToDtos(repository.findAll(certificateSpecification, pageable).getContent());
     }
 
     @Override
@@ -161,5 +134,47 @@ public class GiftCertificatesServiceImpl implements GiftCertificatesService {
         ExampleMatcher matcher = ExampleMatcher.matching().withIgnorePaths("id", "createDate", "lastUpdateDate");
         Example<GiftCertificate> existExample = Example.of(certificate, matcher);
         return repository.exists(existExample);
+    }
+
+    private List<Specification<GiftCertificate>> getSpecificationFromFilter(FilterCriteria filter) {
+        List<Specification<GiftCertificate>> specifications = new ArrayList<>();
+        if (filter != null) {
+            if (checkFieldIsNotEmpty(filter.getName())) {
+                Specification<GiftCertificate> nameSpecification = (root, query, criteriaBuilder)
+                        -> criteriaBuilder.like(criteriaBuilder.lower(root.get("name")), "%" + filter.getName().toLowerCase() + "%");
+                specifications.add(nameSpecification);
+            }
+            if (checkFieldIsNotEmpty(filter.getDescription())) {
+                Specification<GiftCertificate> descriptionSpecification = (root, query, criteriaBuilder) ->
+                        criteriaBuilder.like(criteriaBuilder.lower(root.get("description")), "%" + filter.getDescription().toLowerCase() + "%");
+                specifications.add(descriptionSpecification);
+            }
+            if (filter.getTags() != null) {
+                filter.getTags().stream().filter(this::checkFieldIsNotEmpty).forEach(tag -> {
+                    Specification<GiftCertificate> nameSpec = (root, query, criteriaBuilder) -> {
+                        Join<GiftCertificate, Tag> tagsJoin = root.join("tags");
+                        return criteriaBuilder.equal(tagsJoin.get("name"), tag);
+                    };
+                    specifications.add(nameSpec);
+                });
+            }
+        }
+        return specifications;
+    }
+
+    private boolean checkFieldIsNotEmpty(String field) {
+        return field != null && !field.isBlank();
+    }
+
+    private Pageable validateSort(Pageable pageable) {
+        List<Sort.Order> orders = pageable.getSort().get()
+                .filter(order -> "name".equals(order.getProperty()) || "createdDate".equals(order.getProperty()))
+                .collect(Collectors.toList());
+        if (orders.size() != pageable.getSort().stream().count()) {
+            Sort sort = Sort.by(orders);
+            return PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), sort);
+        } else {
+            return pageable;
+        }
     }
 }

@@ -1,8 +1,11 @@
 package ru.clevertec.ecl.dao;
 
 import jakarta.persistence.QueryHint;
+import org.hibernate.Hibernate;
 import org.hibernate.jpa.HibernateHints;
 import org.springframework.data.domain.Example;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.*;
 import org.springframework.stereotype.Repository;
@@ -19,9 +22,8 @@ public interface GiftCertificatesRepository extends JpaRepository<GiftCertificat
     @EntityGraph(type = EntityGraph.EntityGraphType.FETCH, attributePaths = "tags")
     Optional<GiftCertificate> findById(long id);
 
-    @Override
     @EntityGraph(type = EntityGraph.EntityGraphType.FETCH, attributePaths = "tags")
-    List<GiftCertificate> findAll(Specification<GiftCertificate> spec);
+    Page<GiftCertificate> findAll(Specification<GiftCertificate> spec, Pageable pageable);
 
     @Override
     @QueryHints(value = @QueryHint(name = HibernateHints.HINT_FLUSH_MODE, value = "COMMIT"))

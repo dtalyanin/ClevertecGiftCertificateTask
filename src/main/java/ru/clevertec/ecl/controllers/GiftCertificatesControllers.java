@@ -1,8 +1,9 @@
 package ru.clevertec.ecl.controllers;
 
-import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -10,9 +11,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import ru.clevertec.ecl.dto.GiftCertificateDto;
 import ru.clevertec.ecl.dto.UpdateGiftCertificateDto;
 import ru.clevertec.ecl.models.criteries.FilterCriteria;
-import ru.clevertec.ecl.models.criteries.PaginationCriteria;
 import ru.clevertec.ecl.models.responses.ModificationResponse;
-import ru.clevertec.ecl.models.criteries.SortCriteria;
 import ru.clevertec.ecl.services.GiftCertificatesService;
 
 import java.net.URI;
@@ -31,9 +30,9 @@ public class GiftCertificatesControllers {
     }
 
     @GetMapping
-    ResponseEntity<List<GiftCertificateDto>> getAllGiftCertificates(FilterCriteria filter, SortCriteria sorting,
-                                                                    @Valid PaginationCriteria pagination) {
-        return ResponseEntity.ok(service.getAllGiftCertificates(filter, sorting, pagination));
+    ResponseEntity<List<GiftCertificateDto>> getAllGiftCertificates(FilterCriteria filter, Pageable pageable) {
+        System.out.println(pageable);
+        return ResponseEntity.ok(service.getAllGiftCertificates(filter, pageable));
     }
 
     @GetMapping("/{id}")

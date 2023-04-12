@@ -13,7 +13,7 @@ import java.util.Optional;
 public interface GiftCertificatesService {
     List<GiftCertificateDto> getAllGiftCertificates(FilterCriteria filter, Pageable pageable);
     GiftCertificateDto getGiftCertificateById(long id);
-    Optional<GiftCertificate> getOptionalGiftCertificateById(long id);
+    Optional<GiftCertificate> getGiftCertificateByIdWithoutTags(long id);
     ModificationResponse addGiftCertificate(GiftCertificateDto dto);
     ModificationResponse updateGiftCertificate(long id, UpdateGiftCertificateDto dto);
     ModificationResponse deleteGiftCertificate(long id);

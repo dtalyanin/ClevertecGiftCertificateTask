@@ -1,6 +1,6 @@
 package ru.clevertec.ecl.services.impl;
 
-import jakarta.persistence.criteria.*;
+import jakarta.persistence.criteria.Join;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
 import org.springframework.data.jpa.domain.Specification;
@@ -22,7 +22,6 @@ import ru.clevertec.ecl.services.TagsService;
 import ru.clevertec.ecl.utils.mappers.GiftCertificateMapper;
 
 import java.util.*;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -45,9 +44,7 @@ public class GiftCertificatesServiceImpl implements GiftCertificatesService {
     @Transactional(readOnly = true)
     public List<GiftCertificateDto> getAllGiftCertificates(FilterCriteria filter, Pageable pageable) {
         Specification<GiftCertificate> certificateSpecification = Specification.allOf(getSpecificationFromFilter(filter));
-        System.out.println(pageable);
         pageable = validateSort(pageable);
-        System.out.println(pageable);
         return mapper.convertGiftCertificatesToDtos(repository.findAll(certificateSpecification, pageable).getContent());
     }
 
@@ -64,8 +61,8 @@ public class GiftCertificatesServiceImpl implements GiftCertificatesService {
 
     @Override
     @Transactional(readOnly = true)
-    public Optional<GiftCertificate> getOptionalGiftCertificateById(long id) {
-        return repository.findById(id);
+    public Optional<GiftCertificate> getGiftCertificateByIdWithoutTags(long id) {
+        return repository.findWithoutTagsById(id);
     }
 
     @Override

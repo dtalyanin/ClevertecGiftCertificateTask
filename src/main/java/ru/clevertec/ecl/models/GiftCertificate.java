@@ -5,6 +5,7 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
+import ru.clevertec.ecl.dto.BaseEntity;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -18,7 +19,7 @@ import java.util.Set;
 @EqualsAndHashCode
 @Entity
 @Table(name = "gift_certificates")
-public class GiftCertificate {
+public class GiftCertificate implements BaseEntity<Long> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

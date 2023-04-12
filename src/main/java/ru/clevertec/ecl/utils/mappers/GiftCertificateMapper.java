@@ -20,8 +20,8 @@ import java.util.List;
         nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 public abstract class GiftCertificateMapper {
 
+    private static final int COINS_RUBLE_SCALE = 2;
     private static final BigDecimal COINS = BigDecimal.valueOf(100);
-    private static final int COINS_IN_RUBLE = 2;
 
     @Mapping(source = "price", target = "price", qualifiedByName = "fromCoinsToRubles")
     @Mapping(source = "duration", target = "duration", qualifiedByName = "durationToDays")
@@ -47,7 +47,7 @@ public abstract class GiftCertificateMapper {
     protected BigDecimal convertPriceFromCoinsToRubles(Long price) {
         BigDecimal rubles = null;
         if (price != null) {
-            rubles = BigDecimal.valueOf(price, COINS_IN_RUBLE);
+            rubles = BigDecimal.valueOf(price, COINS_RUBLE_SCALE);
         }
         return rubles;
     }

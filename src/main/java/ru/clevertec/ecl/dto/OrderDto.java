@@ -11,5 +11,5 @@ public class OrderDto {
     private BigDecimal price;
     private Integer quantity;
     private BigDecimal totalPrice;
-    private LocalDateTime date;
+    private LocalDateTime orderDate;
 }

@@ -3,6 +3,7 @@ package ru.clevertec.ecl.models;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
+import ru.clevertec.ecl.dto.BaseEntity;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -15,7 +16,7 @@ import java.util.Set;
 @EqualsAndHashCode
 @Entity
 @Table(name = "tags")
-public class Tag {
+public class Tag implements BaseEntity<Long> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")

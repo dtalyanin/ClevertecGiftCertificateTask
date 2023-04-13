@@ -1,7 +1,6 @@
 package generators.factories.certificates;
 
 import generators.builders.GiftCertificateDtoBuilder;
-import lombok.experimental.UtilityClass;
 import ru.clevertec.ecl.dto.certificates.GiftCertificateDto;
 
 import java.math.BigDecimal;
@@ -12,21 +11,20 @@ import java.util.Set;
 
 import static generators.factories.tags.TagDtoFactory.*;
 
-@UtilityClass
 public class GiftCertificateDtoFactory {
 
-    public GiftCertificateDto getSimpleGiftCertificateDto() {
+    public static GiftCertificateDto getSimpleGiftCertificateDto() {
         return GiftCertificateDtoBuilder.builder()
                 .build();
     }
 
-    public GiftCertificateDto getSimpleGiftCertificateDtoWithTags() {
+    public static GiftCertificateDto getSimpleGiftCertificateDtoWithTags() {
         return GiftCertificateDtoBuilder.builder()
                 .tags(getSimpleTagDtosSet())
                 .build();
     }
 
-    public GiftCertificateDto getSimpleGiftCertificateDto2() {
+    public static GiftCertificateDto getSimpleGiftCertificateDto2() {
         return GiftCertificateDtoBuilder.builder()
                 .name("Test 2")
                 .description("Test description 2")
@@ -38,7 +36,7 @@ public class GiftCertificateDtoFactory {
                 .build();
     }
 
-    public GiftCertificateDto getSimpleGiftCertificateDto3() {
+    public static GiftCertificateDto getSimpleGiftCertificateDto3() {
         return GiftCertificateDtoBuilder.builder()
                 .name("Test 3")
                 .description("Test description 3")
@@ -50,7 +48,7 @@ public class GiftCertificateDtoFactory {
                 .build();
     }
 
-    public GiftCertificateDto getGiftCertificateDtoWithoutFields() {
+    public static GiftCertificateDto getGiftCertificateDtoWithoutFields() {
         return GiftCertificateDtoBuilder.builder()
                 .name(null)
                 .description(null)
@@ -62,7 +60,7 @@ public class GiftCertificateDtoFactory {
                 .build();
     }
 
-    public List<GiftCertificateDto> getSimpleGiftCertificateDtos() {
+    public static List<GiftCertificateDto> getSimpleGiftCertificateDtos() {
         return List.of(getSimpleGiftCertificateDto(), getSimpleGiftCertificateDto2(), getSimpleGiftCertificateDto3());
     }
 }

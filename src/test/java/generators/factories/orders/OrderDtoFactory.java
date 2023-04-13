@@ -1,27 +1,25 @@
 package generators.factories.orders;
 
 import generators.builders.OrderDtoBuilder;
-import lombok.experimental.UtilityClass;
 import ru.clevertec.ecl.dto.orders.OrderDto;
 
 import java.math.BigDecimal;
 import java.util.List;
 
-@UtilityClass
 public class OrderDtoFactory {
 
-    public OrderDto getSimpleOrderDto() {
+    public static OrderDto getSimpleOrderDto() {
         return OrderDtoBuilder.builder().build();
     }
 
-    public OrderDto getSimpleOrderDto2() {
+    public static OrderDto getSimpleOrderDto2() {
         return OrderDtoBuilder.builder()
                 .quantity(10)
                 .totalPrice(BigDecimal.valueOf(10000L, 2))
                 .build();
     }
 
-    public List<OrderDto> getDifferentOrderDtos() {
+    public static List<OrderDto> getDifferentOrderDtos() {
         return List.of(getSimpleOrderDto(), getSimpleOrderDto2());
     }
 }

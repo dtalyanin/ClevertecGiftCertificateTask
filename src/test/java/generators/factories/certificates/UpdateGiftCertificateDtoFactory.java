@@ -1,24 +1,22 @@
 package generators.factories.certificates;
 
 import generators.builders.UpdateGiftCertificateDtoBuilder;
-import lombok.experimental.UtilityClass;
 import ru.clevertec.ecl.dto.certificates.UpdateGiftCertificateDto;
 
-@UtilityClass
 public class UpdateGiftCertificateDtoFactory {
 
-    public UpdateGiftCertificateDto getSimpleUpdateGiftCertificateDto() {
+    public static UpdateGiftCertificateDto getSimpleUpdateGiftCertificateDto() {
         return UpdateGiftCertificateDtoBuilder.builder().build();
     }
 
-    public UpdateGiftCertificateDto getUpdateGiftCertificateDtoWithOnlyNamePriceDuration() {
+    public static UpdateGiftCertificateDto getUpdateGiftCertificateDtoWithOnlyNamePriceDuration() {
         return UpdateGiftCertificateDtoBuilder.builder()
                 .description(null)
                 .tags(null)
                 .build();
     }
 
-    public UpdateGiftCertificateDto getUpdateGiftCertificateDtoWithoutFields() {
+    public static UpdateGiftCertificateDto getUpdateGiftCertificateDtoWithoutFields() {
         return UpdateGiftCertificateDtoBuilder.builder()
                 .name(null)
                 .description(null)

@@ -2,6 +2,7 @@ package ru.clevertec.ecl.models;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -19,6 +20,7 @@ public class Order implements BaseEntity<Long> {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
+    @NotNull(message = "Order should associated have user")
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     @ManyToOne
@@ -26,6 +28,7 @@ public class Order implements BaseEntity<Long> {
     private User user;
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
+    @NotNull(message = "Order should have associated certificate")
     @ManyToOne
     @JoinColumn(name = "certificate_id")
     private GiftCertificate certificate;

@@ -1,19 +1,17 @@
 package generators.factories.orders;
 
 import generators.builders.OrderBuilder;
-import lombok.experimental.UtilityClass;
 import ru.clevertec.ecl.models.Order;
 
 import java.util.List;
 
-@UtilityClass
 public class OrderFactory {
 
-    public Order getSimpleOrder() {
+    public static Order getSimpleOrder() {
         return OrderBuilder.builder().build();
     }
 
-    public Order getSimpleOrder2() {
+    public static Order getSimpleOrder2() {
         return OrderBuilder.builder()
                 .id(2L)
                 .quantity(10)
@@ -21,7 +19,7 @@ public class OrderFactory {
                 .build();
     }
 
-    public Order getSimpleOrderBeforeSaving() {
+    public static Order getSimpleOrderBeforeSaving() {
         return OrderBuilder.builder()
                 .id(null)
                 .totalPrice(null)
@@ -29,7 +27,7 @@ public class OrderFactory {
                 .build();
     }
 
-    public List<Order> getDifferentOrders() {
+    public static List<Order> getDifferentOrders() {
         return List.of(getSimpleOrder(), getSimpleOrder2());
     }
 }

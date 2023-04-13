@@ -144,7 +144,7 @@ class GiftCertificatesServiceImplTest {
 
         assertThatThrownBy(() -> service.updateGiftCertificate(1L, getSimpleUpdateGiftCertificateDto()))
                 .isInstanceOf(ItemNotFoundException.class)
-                .hasMessage("Cannot update: gift certificate with ID 1 not found");
+                .hasMessage("Cannot update: gift certificate with ID 1 not found in database");
         verify(repository, times(1)).findById(anyLong());
         verify(repository, times(0)).exists(any(Example.class));
         verify(repository, times(0)).save(any(GiftCertificate.class));
@@ -195,7 +195,7 @@ class GiftCertificatesServiceImplTest {
 
         assertThatThrownBy(() -> service.deleteGiftCertificateById(1L))
                 .isInstanceOf(ItemNotFoundException.class)
-                .hasMessage("Cannot delete: gift certificate with ID 1 not found");
+                .hasMessage("Cannot delete: gift certificate with ID 1 not found in database");
         verify(repository, times(1)).deleteById(anyLong());
     }
 }

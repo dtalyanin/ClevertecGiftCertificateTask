@@ -146,7 +146,7 @@ class TagsServiceImplTest {
 
         assertThatThrownBy(() -> service.updateTag(1L, getSimpleTagDto()))
                 .isInstanceOf(ItemNotFoundException.class)
-                .hasMessage("Cannot update: tag with ID 1 not found");
+                .hasMessage("Cannot update: tag with ID 1 not found in database");
         verify(repository, times(1)).existsByName(anyString());
         verify(repository, times(1)).findById(anyLong());
         verify(repository, times(0)).save(any(Tag.class));
@@ -181,7 +181,7 @@ class TagsServiceImplTest {
 
         assertThatThrownBy(() -> service.deleteTag(1L))
                 .isInstanceOf(ItemNotFoundException.class)
-                .hasMessage("Cannot delete: tag with ID 1 not found");
+                .hasMessage("Cannot delete: tag with ID 1 not found in database");
         verify(repository, times(1)).deleteById(anyLong());
     }
 

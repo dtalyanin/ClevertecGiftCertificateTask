@@ -12,10 +12,9 @@ import java.util.Set;
 
 import static generators.factories.tags.TagFactory.*;
 
-@UtilityClass
 public class GiftCertificateFactory {
 
-    public GiftCertificate getGiftCertificateWithoutFields() {
+    public static GiftCertificate getGiftCertificateWithoutFields() {
         return GiftCertificateBuilder.builder()
                 .id(null)
                 .name(null)
@@ -28,17 +27,17 @@ public class GiftCertificateFactory {
                 .build();
     }
 
-    public GiftCertificate getSimpleGiftCertificate() {
+    public static GiftCertificate getSimpleGiftCertificate() {
         return GiftCertificateBuilder.builder().build();
     }
 
-    public GiftCertificate getSimpleGiftCertificateWithTags() {
+    public static GiftCertificate getSimpleGiftCertificateWithTags() {
         return GiftCertificateBuilder.builder()
                 .tags(getDifferentTagsSet())
                 .build();
     }
 
-    public GiftCertificate getSimpleGiftCertificate2() {
+    public static GiftCertificate getSimpleGiftCertificate2() {
         return GiftCertificateBuilder.builder()
                 .id(2L)
                 .name("Test 2")
@@ -51,7 +50,7 @@ public class GiftCertificateFactory {
                 .build();
     }
 
-    public GiftCertificate getSimpleGiftCertificate3() {
+    public static GiftCertificate getSimpleGiftCertificate3() {
         return GiftCertificateBuilder.builder()
                 .id(3L)
                 .name("Test 3")
@@ -64,21 +63,21 @@ public class GiftCertificateFactory {
                 .build();
     }
 
-    public GiftCertificate getSimpleGiftCertificateWithoutId() {
+    public static GiftCertificate getSimpleGiftCertificateWithoutId() {
         return GiftCertificateBuilder.builder()
                 .id(0L)
                 .tags(getDifferentTagsWithoutIdSet())
                 .build();
     }
 
-    public GiftCertificate getSimpleGiftCertificateWithNullId() {
+    public static GiftCertificate getSimpleGiftCertificateWithNullId() {
         return GiftCertificateBuilder.builder()
                 .id(null)
                 .tags(getDifferentTagsWithoutIdSet())
                 .build();
     }
 
-    public GiftCertificate getGiftCertificateWithAllUpdatedFields() {
+    public static GiftCertificate getGiftCertificateWithAllUpdatedFields() {
         return GiftCertificateBuilder.builder()
                 .name("Test mod")
                 .description("Test description mod")
@@ -89,14 +88,14 @@ public class GiftCertificateFactory {
     }
 
 
-    public GiftCertificate getGiftCertificateForUpdate() {
+    public static GiftCertificate getGiftCertificateForUpdate() {
         return GiftCertificateBuilder.builder()
                 .name("New test")
                 .tags(Collections.emptySet())
                 .build();
     }
 
-    public GiftCertificate getGiftCertificateWithUpdatedOnlyNamePriceDuration() {
+    public static GiftCertificate getGiftCertificateWithUpdatedOnlyNamePriceDuration() {
         return GiftCertificateBuilder.builder()
                 .name("Test mod")
                 .price(2000L)
@@ -104,7 +103,7 @@ public class GiftCertificateFactory {
                 .build();
     }
 
-    public List<GiftCertificate> getSimpleGiftCertificates() {
+    public static List<GiftCertificate> getSimpleGiftCertificates() {
         return List.of(getSimpleGiftCertificate(), getSimpleGiftCertificate2(), getSimpleGiftCertificate3());
     }
 }

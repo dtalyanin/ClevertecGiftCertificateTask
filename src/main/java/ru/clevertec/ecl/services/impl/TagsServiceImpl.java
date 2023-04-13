@@ -20,6 +20,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static ru.clevertec.ecl.utils.constants.MessageConstants.*;
 
 @Service
 public class TagsServiceImpl implements TagsService {
@@ -46,8 +47,7 @@ public class TagsServiceImpl implements TagsService {
     public TagDto getTagById(long id) {
         Optional<Tag> tag = repository.findById(id);
         if (tag.isEmpty()) {
-            throw new ItemNotFoundException("Tag with ID " + id + " not found in database",
-                    ErrorCode.TAG_ID_NOT_FOUND);
+            throw new ItemNotFoundException(TAG_ID_START + id + NOT_FOUND, ErrorCode.TAG_ID_NOT_FOUND);
         }
         return mapper.convertTagToDto(tag.get());
     }
@@ -56,12 +56,11 @@ public class TagsServiceImpl implements TagsService {
     @Transactional
     public ModificationResponse addTag(TagDto dto) {
         if (repository.existsByName(dto.getName())) {
-            throw new ItemExistException("Cannot add: tag with name '" + dto.getName() +
-                    "' already exist in database", ErrorCode.TAG_NAME_EXIST);
+            throw new ItemExistException(CANNOT_ADD +TAG_NAME_START+ dto.getName() + EXIST, ErrorCode.TAG_NAME_EXIST);
         }
         Tag tag = mapper.convertDtoToTag(dto);
         long generatedId = repository.save(tag).getId();
-        return new ModificationResponse(generatedId, "Tag added successfully");
+        return new ModificationResponse(generatedId, TAG_ADDED);
     }
 
     @Override
@@ -81,19 +80,18 @@ public class TagsServiceImpl implements TagsService {
     @Transactional
     public ModificationResponse updateTag(long id, TagDto dto) {
         if (repository.existsByName(dto.getName())) {
-            throw new ItemExistException("Cannot update: tag with name '" + dto.getName() +
-                    "' already exist in database", ErrorCode.TAG_NAME_EXIST);
+            throw new ItemExistException(CANNOT_UPDATE + TAG_NAME_START + dto.getName() + EXIST,
+                    ErrorCode.TAG_NAME_EXIST);
         }
         Optional<Tag> oTag = repository.findById(id);
         if (oTag.isEmpty()) {
-            throw new ItemNotFoundException("Cannot update: tag with ID " + id + " not found",
+            throw new ItemNotFoundException(CANNOT_UPDATE + TAG_ID_START_L + id + NOT_FOUND,
                     ErrorCode.TAG_ID_NOT_FOUND);
         }
         Tag tag = oTag.get();
         mapper.updateTag(dto, tag);
         repository.save(tag);
-        return new ModificationResponse(id, "Tag updated successfully");
-
+        return new ModificationResponse(id, TAG_UPDATED);
     }
 
     @Override
@@ -101,10 +99,10 @@ public class TagsServiceImpl implements TagsService {
     public ModificationResponse deleteTag(long id) {
         int deletedCount = repository.deleteById(id);
         if (deletedCount == 0) {
-            throw new ItemNotFoundException("Cannot delete: tag with ID " + id + " not found",
+            throw new ItemNotFoundException(CANNOT_DELETE + TAG_ID_START_L + id + NOT_FOUND,
                     ErrorCode.TAG_ID_NOT_FOUND);
         }
-        return new ModificationResponse(id, "Tag deleted successfully");
+        return new ModificationResponse(id, TAG_DELETED);
     }
 
     @Override

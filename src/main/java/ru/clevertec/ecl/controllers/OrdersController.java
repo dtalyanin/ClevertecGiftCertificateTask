@@ -16,6 +16,8 @@ import ru.clevertec.ecl.services.impl.OrdersServiceImpl;
 import java.net.URI;
 import java.util.List;
 
+import static ru.clevertec.ecl.utils.constants.MessageConstants.MIN_ID_MESSAGE;
+
 @RestController
 @Validated
 public class OrdersController {
@@ -29,21 +31,21 @@ public class OrdersController {
 
     @GetMapping("users/{userId}/orders")
     public ResponseEntity<List<OrderDto>> getAllOrdersByUserIdWithPagination(
-            @PathVariable @Min(value = 1, message = "Min ID value is 1") Long userId,
+            @PathVariable @Min(value = 1, message = MIN_ID_MESSAGE) Long userId,
             Pageable pageable) {
         return ResponseEntity.ok(service.getAllOrdersByUserId(userId, pageable));
     }
 
     @GetMapping("users/{userId}/orders/{orderId}")
     public ResponseEntity<OrderDto> getOrderByOrderIdAndUserId(
-            @PathVariable @Min(value = 1, message = "Min ID value is 1") long userId,
-            @PathVariable @Min(value = 1, message = "Min ID value is 1") long orderId) {
+            @PathVariable @Min(value = 1, message = MIN_ID_MESSAGE) long userId,
+            @PathVariable @Min(value = 1, message = MIN_ID_MESSAGE) long orderId) {
         return ResponseEntity.ok(service.getOrderByOrderIdAndUserId(userId, orderId));
     }
 
     @PostMapping("users/{userId}/orders")
     public ResponseEntity<ModificationResponse> addOrder(@RequestBody @Valid CreateOrderDto dto,
-                                                         @PathVariable @Min(value = 1, message = "Min ID value is 1")
+                                                         @PathVariable @Min(value = 1, message = MIN_ID_MESSAGE)
                                                          long userId) {
         ModificationResponse response = service.addOrder(dto, userId);
         URI uri = ServletUriComponentsBuilder

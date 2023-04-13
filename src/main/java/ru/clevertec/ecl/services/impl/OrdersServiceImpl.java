@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static ru.clevertec.ecl.utils.PageableHelper.*;
+import static ru.clevertec.ecl.utils.constants.MessageConstants.*;
 
 @Service
 public class OrdersServiceImpl implements OrdersService {
@@ -32,7 +33,10 @@ public class OrdersServiceImpl implements OrdersService {
     private final OrderMapper mapper;
 
     @Autowired
-    public OrdersServiceImpl(OrdersRepository repository, UsersService usersService, GiftCertificatesService certificatesService, OrderMapper mapper) {
+    public OrdersServiceImpl(OrdersRepository repository,
+                             UsersService usersService,
+                             GiftCertificatesService certificatesService,
+                             OrderMapper mapper) {
         this.repository = repository;
         this.usersService = usersService;
         this.certificatesService = certificatesService;
@@ -42,10 +46,7 @@ public class OrdersServiceImpl implements OrdersService {
     @Override
     @Transactional(readOnly = true)
     public List<OrderDto> getAllOrdersByUserId(Long userId, Pageable pageable) {
-        if (!usersService.existsUserById(userId)) {
-            throw new ItemNotFoundException("User with ID " + userId + " not found in database",
-                    ErrorCode.USER_FOR_ORDER_NOT_FOUND);
-        }
+        checkUserExist(userId);
         pageable = setPageableUnsorted(pageable);
         List<Order> orders = repository.findAllByUserId(userId, pageable);
         return mapper.convertOrdersToDtos(orders);
@@ -54,13 +55,10 @@ public class OrdersServiceImpl implements OrdersService {
     @Override
     @Transactional(readOnly = true)
     public OrderDto getOrderByOrderIdAndUserId(Long userId, Long orderId) {
-        if (!usersService.existsUserById(userId)) {
-            throw new ItemNotFoundException("User with ID " + userId + " not found in database",
-                    ErrorCode.USER_FOR_ORDER_NOT_FOUND);
-        }
+        checkUserExist(userId);
         Optional<Order> order = repository.findByIdAndUserId(orderId, userId);
         if (order.isEmpty()) {
-            throw new ItemNotFoundException("Order with ID " + orderId + " not found in database for user with ID " + userId,
+            throw new ItemNotFoundException(ORDER_ID_START + orderId + ORDER_USER_NOT_FOUND + userId,
                     ErrorCode.ORDER_NOT_FOUND);
         }
         return mapper.convertOrderToDto(order.get());
@@ -71,16 +69,23 @@ public class OrdersServiceImpl implements OrdersService {
     public ModificationResponse addOrder(CreateOrderDto dto, long userId) {
         Optional<User> user = usersService.getExistingUserById(userId);
         if (user.isEmpty()) {
-            throw new ItemNotFoundException("Cannot add order: user with ID " + userId + " not found in database",
+            throw new ItemNotFoundException(CANNOT_ADD_ORDER + USER_ID_START_L + userId + NOT_FOUND,
                     ErrorCode.USER_FOR_ORDER_NOT_FOUND);
         }
-        Optional<GiftCertificate> certificate = certificatesService.getGiftCertificateByIdWithoutTags(dto.getCertificateId());
+        Optional<GiftCertificate> certificate = certificatesService
+                .getGiftCertificateByIdWithoutTags(dto.getCertificateId());
         if (certificate.isEmpty()) {
-            throw new ItemNotFoundException("Cannot add order: gift certificate with ID " + dto.getCertificateId() + " not found in database",
-                    ErrorCode.CERTIFICATE_FOR_ORDER_NOT_FOUND);
+            throw new ItemNotFoundException(CANNOT_ADD_ORDER + CERTIFICATE_ID_START_L + dto.getCertificateId() +
+                    NOT_FOUND, ErrorCode.CERTIFICATE_FOR_ORDER_NOT_FOUND);
         }
         Order order = mapper.createOrder(dto, certificate.get(), user.get());
         long generatedId = repository.save(order).getId();
-        return new ModificationResponse(generatedId, "Order added successfully");
+        return new ModificationResponse(generatedId, ORDER_ADDED);
+    }
+
+    private void checkUserExist(long userId) {
+        if (!usersService.existsUserById(userId)) {
+            throw new ItemNotFoundException(USER_ID_START + userId + NOT_FOUND, ErrorCode.USER_FOR_ORDER_NOT_FOUND);
+        }
     }
 }

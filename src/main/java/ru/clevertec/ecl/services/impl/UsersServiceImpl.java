@@ -16,6 +16,8 @@ import ru.clevertec.ecl.utils.mappers.UserMapper;
 import java.util.List;
 import java.util.Optional;
 
+import static ru.clevertec.ecl.utils.constants.MessageConstants.*;
+
 @Service
 public class UsersServiceImpl implements UsersService {
 
@@ -41,8 +43,7 @@ public class UsersServiceImpl implements UsersService {
     public UserDto getUserById(long id) {
         Optional<User> user = getExistingUserById(id);
         if (user.isEmpty()) {
-            throw new ItemNotFoundException("User with ID " + id + " not found in database",
-                    ErrorCode.USER_ID_NOT_FOUND);
+            throw new ItemNotFoundException(USER_ID_START + id + NOT_FOUND, ErrorCode.USER_ID_NOT_FOUND);
         }
         return mapper.convertUserToDto(user.get());
     }

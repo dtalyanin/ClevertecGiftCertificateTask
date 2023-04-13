@@ -26,6 +26,8 @@ import java.util.stream.Stream;
 
 import static ru.clevertec.ecl.utils.PageableHelper.*;
 import static ru.clevertec.ecl.utils.SpecificationHelper.*;
+import static ru.clevertec.ecl.utils.constants.GiftCertificateParams.*;
+import static ru.clevertec.ecl.utils.constants.MessageConstants.*;
 
 @Service
 public class GiftCertificatesServiceImpl implements GiftCertificatesService {
@@ -59,7 +61,7 @@ public class GiftCertificatesServiceImpl implements GiftCertificatesService {
     public GiftCertificateDto getGiftCertificateById(long id) {
         Optional<GiftCertificate> certificate = repository.findById(id);
         if (certificate.isEmpty()) {
-            throw new ItemNotFoundException("Gift certificate with ID " + id + " not found in database",
+            throw new ItemNotFoundException(CERTIFICATE_ID_START + id + NOT_FOUND,
                     ErrorCode.CERTIFICATE_ID_NOT_FOUND);
         }
         return mapper.convertGiftCertificateToDto(certificate.get());
@@ -76,13 +78,12 @@ public class GiftCertificatesServiceImpl implements GiftCertificatesService {
     public ModificationResponse addGiftCertificate(GiftCertificateDto dto) {
         GiftCertificate certificate = mapper.convertDtoToGiftCertificate(dto);
         if (checkGiftCertificateExist(certificate)) {
-            throw new ItemExistException("Cannot add: gift certificate with similar name, description, price " +
-                    "and duration already exist in database", ErrorCode.CERTIFICATE_EXIST);
+            throw new ItemExistException(CANNOT_ADD + CERTIFICATE_WITH_PARAMS_EXIST, ErrorCode.CERTIFICATE_EXIST);
         }
         Set<Tag> tags = tagsService.addAllTagsIfNotExist(certificate.getTags());
         certificate.setTags(tags);
         long generatedId = repository.save(certificate).getId();
-        return new ModificationResponse(generatedId, "Gift certificate added successfully");
+        return new ModificationResponse(generatedId, CERTIFICATE_ADDED);
     }
 
     @Override
@@ -91,7 +92,7 @@ public class GiftCertificatesServiceImpl implements GiftCertificatesService {
         checkFieldsForUpdatingExist(dto);
         Optional<GiftCertificate> oCertificate = repository.findById(id);
         if (oCertificate.isEmpty()) {
-            throw new ItemNotFoundException("Cannot update: gift certificate with ID " + id + " not found",
+            throw new ItemNotFoundException(CANNOT_UPDATE + CERTIFICATE_ID_START_L + id + NOT_FOUND,
                     ErrorCode.CERTIFICATE_ID_NOT_FOUND);
         }
         Set<Tag> tagsFromDto = tagMapper.convertTagDtosToTags(dto.getTags());
@@ -99,11 +100,10 @@ public class GiftCertificatesServiceImpl implements GiftCertificatesService {
         GiftCertificate certificate = oCertificate.get();
         mapper.updateGiftCertificateFields(dto, tags, certificate);
         if (checkGiftCertificateExist(certificate)) {
-            throw new ItemExistException("Cannot update: gift certificate with similar name, description, price " +
-                    "and duration already exist in database", ErrorCode.CERTIFICATE_EXIST);
+            throw new ItemExistException(CANNOT_UPDATE + CERTIFICATE_WITH_PARAMS_EXIST, ErrorCode.CERTIFICATE_EXIST);
         }
         repository.save(certificate);
-        return new ModificationResponse(id, "Gift certificate updated successfully");
+        return new ModificationResponse(id, CERTIFICATE_UPDATED);
 
     }
 
@@ -112,10 +112,10 @@ public class GiftCertificatesServiceImpl implements GiftCertificatesService {
     public ModificationResponse deleteGiftCertificateById(long id) {
         int deletedCount = repository.deleteById(id);
         if (deletedCount == 0) {
-            throw new ItemNotFoundException("Cannot delete: gift certificate with ID " + id + " not found",
+            throw new ItemNotFoundException(CANNOT_DELETE + CERTIFICATE_ID_START_L + id + NOT_FOUND,
                     ErrorCode.CERTIFICATE_ID_NOT_FOUND);
         }
-        return new ModificationResponse(id, "Gift certificate deleted successfully");
+        return new ModificationResponse(id, CERTIFICATE_DELETED);
     }
 
     private void checkFieldsForUpdatingExist(UpdateGiftCertificateDto dto) {
@@ -127,13 +127,13 @@ public class GiftCertificatesServiceImpl implements GiftCertificatesService {
                         dto.getDuration())
                 .allMatch(Objects::isNull);
         if (fieldsForUpdatingNotExist) {
-            throw new EmptyItemException("Cannot update: no fields to update",
-                    ErrorCode.NO_CERTIFICATE_FIELDS_FOR_UPDATE);
+            throw new EmptyItemException(CANNOT_UPDATE + NO_FIELDS_TO_UPDATE, ErrorCode.NO_CERTIFICATE_FIELDS_FOR_UPDATE);
         }
     }
 
     private boolean checkGiftCertificateExist(GiftCertificate certificate) {
-        ExampleMatcher matcher = ExampleMatcher.matching().withIgnorePaths("id", "createDate", "lastUpdateDate");
+        ExampleMatcher matcher = ExampleMatcher.matching().withIgnorePaths(CERTIFICATE_ID, CERTIFICATE_CREATE_DATE,
+                CERTIFICATE_LAST_UPDATE_DATE);
         Example<GiftCertificate> existExample = Example.of(certificate, matcher);
         return repository.exists(existExample);
     }

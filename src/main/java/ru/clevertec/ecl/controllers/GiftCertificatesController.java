@@ -16,6 +16,8 @@ import ru.clevertec.ecl.services.GiftCertificatesService;
 import java.net.URI;
 import java.util.List;
 
+import static ru.clevertec.ecl.utils.constants.MessageConstants.*;
+
 @RestController
 @RequestMapping("/certificates")
 @Validated
@@ -36,7 +38,7 @@ public class GiftCertificatesController {
 
     @GetMapping("/{id}")
     ResponseEntity<GiftCertificateDto> getGiftCertificateById(
-            @PathVariable @Min(value = 1, message = "Min ID value is 1") long id) {
+            @PathVariable @Min(value = 1, message = MIN_ID_MESSAGE) long id) {
         return ResponseEntity.ok(service.getGiftCertificateById(id));
     }
 
@@ -52,14 +54,14 @@ public class GiftCertificatesController {
 
     @PatchMapping("/{id}")
     public ResponseEntity<ModificationResponse> updateGiftCertificate(
-            @PathVariable @Min(value = 1, message = "Min ID value is 1") long id,
+            @PathVariable @Min(value = 1, message = MIN_ID_MESSAGE) long id,
             @RequestBody UpdateGiftCertificateDto dto) {
         return ResponseEntity.ok(service.updateGiftCertificate(id, dto));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<ModificationResponse> deleteGiftCertificateById(
-            @PathVariable @Min(value = 1, message = "Min ID value is 1") long id) {
+            @PathVariable @Min(value = 1, message = MIN_ID_MESSAGE) long id) {
         return ResponseEntity.ok(service.deleteGiftCertificateById(id));
     }
 }

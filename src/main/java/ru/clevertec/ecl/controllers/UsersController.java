@@ -11,6 +11,8 @@ import ru.clevertec.ecl.services.UsersService;
 
 import java.util.List;
 
+import static ru.clevertec.ecl.utils.constants.MessageConstants.MIN_ID_MESSAGE;
+
 @RestController
 @RequestMapping("/users")
 @Validated
@@ -29,7 +31,7 @@ public class UsersController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<UserDto> getUserById(@PathVariable @Min(value = 1, message = "Min ID value is 1") long id) {
+    public ResponseEntity<UserDto> getUserById(@PathVariable @Min(value = 1, message = MIN_ID_MESSAGE) long id) {
         return ResponseEntity.ok(service.getUserById(id));
     }
 }

@@ -14,6 +14,8 @@ import ru.clevertec.ecl.services.TagsService;
 import java.net.URI;
 import java.util.List;
 
+import static ru.clevertec.ecl.utils.constants.MessageConstants.MIN_ID_MESSAGE;
+
 /**
  * Controller for performing operations with tags for gift certificates
  */
@@ -46,7 +48,7 @@ public class TagsController {
      * @return tag with specified id
      */
     @GetMapping("/{id}")
-    public ResponseEntity<TagDto> getTagById(@PathVariable @Min(value = 1, message = "Min ID value is 1") long id) {
+    public ResponseEntity<TagDto> getTagById(@PathVariable @Min(value = 1, message = MIN_ID_MESSAGE) long id) {
         return ResponseEntity.ok(service.getTagById(id));
     }
 
@@ -75,7 +77,7 @@ public class TagsController {
      */
     @PutMapping("/{id}")
     public ResponseEntity<ModificationResponse> updateTag(
-            @PathVariable @Min(value = 1, message = "Min ID value is 1") long id, @RequestBody TagDto tag) {
+            @PathVariable @Min(value = 1, message = MIN_ID_MESSAGE) long id, @RequestBody TagDto tag) {
         return ResponseEntity.ok(service.updateTag(id, tag));
     }
 
@@ -87,7 +89,7 @@ public class TagsController {
      */
     @DeleteMapping("/{id}")
     public ResponseEntity<ModificationResponse> deleteTagById(
-            @PathVariable @Min(value = 1, message = "Min ID value is 1") long id) {
+            @PathVariable @Min(value = 1, message = MIN_ID_MESSAGE) long id) {
         return ResponseEntity.ok(service.deleteTag(id));
     }
 

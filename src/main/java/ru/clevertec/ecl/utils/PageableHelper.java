@@ -8,6 +8,9 @@ import org.springframework.data.domain.Sort;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static ru.clevertec.ecl.utils.constants.GiftCertificateParams.CERTIFICATE_CREATE_DATE;
+import static ru.clevertec.ecl.utils.constants.GiftCertificateParams.CERTIFICATE_NAME;
+
 @UtilityClass
 public class PageableHelper {
 
@@ -20,7 +23,8 @@ public class PageableHelper {
 
     public Pageable validateOnlyNameOrCreateDateOrders(Pageable pageable) {
         List<Sort.Order> orders = pageable.getSort().get()
-                .filter(order -> "name".equals(order.getProperty()) || "createdDate".equals(order.getProperty()))
+                .filter(order -> CERTIFICATE_NAME.equals(order.getProperty()) ||
+                        CERTIFICATE_CREATE_DATE.equals(order.getProperty()))
                 .collect(Collectors.toList());
         if (orders.size() != pageable.getSort().stream().count()) {
             Sort sort = Sort.by(orders);

@@ -6,8 +6,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import ru.clevertec.ecl.dto.GiftCertificateDto;
-import ru.clevertec.ecl.dto.UpdateGiftCertificateDto;
+import ru.clevertec.ecl.dto.certificates.GiftCertificateDto;
+import ru.clevertec.ecl.dto.certificates.UpdateGiftCertificateDto;
 import ru.clevertec.ecl.models.GiftCertificate;
 
 import java.math.BigDecimal;

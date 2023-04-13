@@ -2,13 +2,14 @@ package generators.factories.orders;
 
 import generators.builders.OrderDtoBuilder;
 import lombok.experimental.UtilityClass;
-import ru.clevertec.ecl.dto.OrderDto;
+import ru.clevertec.ecl.dto.orders.OrderDto;
 
 import java.math.BigDecimal;
 import java.util.List;
 
 @UtilityClass
 public class OrderDtoFactory {
+
     public OrderDto getSimpleOrderDto() {
         return OrderDtoBuilder.builder().build();
     }

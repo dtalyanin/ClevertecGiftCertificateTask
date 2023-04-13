@@ -15,4 +15,5 @@ public interface TagsService {
     Set<Tag> addAllTagsIfNotExist(Set<Tag> tags);
     ModificationResponse updateTag(long id, TagDto dto);
     ModificationResponse deleteTag(long id);
+    TagDto getMostWidelyUsedTagOfUserWithHighestOrdersCost();
 }

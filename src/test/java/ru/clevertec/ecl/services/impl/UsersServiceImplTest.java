@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static generators.factories.PageFactory.*;
-import static generators.factories.PageableFactory.getDefaultPageable;
+import static generators.factories.PageableFactory.*;
 import static generators.factories.users.UserDtoFactory.*;
 import static generators.factories.users.UserFactory.*;
 import static org.assertj.core.api.Assertions.assertThat;

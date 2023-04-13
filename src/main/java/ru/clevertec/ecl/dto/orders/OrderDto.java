@@ -1,8 +1,9 @@
-package ru.clevertec.ecl.dto;
+package ru.clevertec.ecl.dto.orders;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import ru.clevertec.ecl.dto.certificates.GiftCertificateDtoForOrder;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;

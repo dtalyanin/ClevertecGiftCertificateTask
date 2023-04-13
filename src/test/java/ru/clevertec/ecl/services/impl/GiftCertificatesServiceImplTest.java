@@ -9,7 +9,7 @@ import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import ru.clevertec.ecl.dao.GiftCertificatesRepository;
-import ru.clevertec.ecl.dto.GiftCertificateDto;
+import ru.clevertec.ecl.dto.certificates.GiftCertificateDto;
 import ru.clevertec.ecl.exceptions.EmptyItemException;
 import ru.clevertec.ecl.exceptions.ItemExistException;
 import ru.clevertec.ecl.exceptions.ItemNotFoundException;

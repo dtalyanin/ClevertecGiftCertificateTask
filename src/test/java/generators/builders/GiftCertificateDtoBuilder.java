@@ -1,14 +1,12 @@
 package generators.builders;
 
 import lombok.NoArgsConstructor;
-import ru.clevertec.ecl.dto.GiftCertificateDto;
+import ru.clevertec.ecl.dto.certificates.GiftCertificateDto;
 import ru.clevertec.ecl.dto.TagDto;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 @NoArgsConstructor(staticName = "builder")

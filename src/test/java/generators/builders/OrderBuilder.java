@@ -1,7 +1,5 @@
 package generators.builders;
 
-import generators.factories.certificates.GiftCertificateFactory;
-import generators.factories.users.UserFactory;
 import lombok.NoArgsConstructor;
 import ru.clevertec.ecl.models.GiftCertificate;
 import ru.clevertec.ecl.models.Order;
@@ -9,9 +7,8 @@ import ru.clevertec.ecl.models.User;
 
 import java.time.LocalDateTime;
 
-import static generators.factories.certificates.GiftCertificateFactory.*;
-import static generators.factories.users.UserFactory.*;
-
+import static generators.factories.certificates.GiftCertificateFactory.getSimpleGiftCertificate;
+import static generators.factories.users.UserFactory.getSimpleUser;
 
 @NoArgsConstructor(staticName = "builder")
 public class OrderBuilder {

@@ -21,7 +21,7 @@ public class Tag implements BaseEntity<Long> {
     @Column(name = "id")
     private Long id;
     @NotBlank(message = "Tag name must contain at least 1 character")
-    @Column(name = "name", nullable = false, unique = true)
+    @Column(name = "name")
     private String name;
     @ToString.Exclude
     @EqualsAndHashCode.Exclude

@@ -3,7 +3,7 @@ package ru.clevertec.ecl.utils;
 import jakarta.validation.ConstraintViolation;
 import lombok.experimental.UtilityClass;
 import org.springframework.validation.FieldError;
-import ru.clevertec.ecl.dto.CreateOrderDto;
+import ru.clevertec.ecl.dto.orders.CreateOrderDto;
 import ru.clevertec.ecl.models.GiftCertificate;
 import ru.clevertec.ecl.models.Tag;
 import ru.clevertec.ecl.models.codes.ErrorCode;

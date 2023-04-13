@@ -1,4 +1,4 @@
-package ru.clevertec.ecl.dto;
+package ru.clevertec.ecl.dto.certificates;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

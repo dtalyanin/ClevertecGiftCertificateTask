@@ -106,4 +106,10 @@ public class TagsServiceImpl implements TagsService {
         }
         return new ModificationResponse(id, "Tag deleted successfully");
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public TagDto getMostWidelyUsedTagOfUserWithHighestOrdersCost() {
+        return mapper.convertTagToDto(repository.findMostWidelyUsedTagOfUserWithHighestOrdersCost());
+    }
 }

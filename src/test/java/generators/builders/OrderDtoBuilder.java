@@ -1,8 +1,8 @@
 package generators.builders;
 
 import lombok.NoArgsConstructor;
-import ru.clevertec.ecl.dto.GiftCertificateDtoForOrder;
-import ru.clevertec.ecl.dto.OrderDto;
+import ru.clevertec.ecl.dto.certificates.GiftCertificateDtoForOrder;
+import ru.clevertec.ecl.dto.orders.OrderDto;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -14,7 +14,7 @@ public class OrderDtoBuilder {
     private GiftCertificateDtoForOrder certificate = getSimpleGiftCertificateDtoForOrder();
     private BigDecimal price = BigDecimal.valueOf(1000L, 2);
     private Integer quantity = 5;
-    private BigDecimal totalPrice = BigDecimal.valueOf(5000L, 2);;
+    private BigDecimal totalPrice = BigDecimal.valueOf(5000L, 2);
     private LocalDateTime orderDate = LocalDateTime.of(2023, 4, 1, 1, 0 ,0);
 
     public OrderDtoBuilder certificate(GiftCertificateDtoForOrder certificate) {

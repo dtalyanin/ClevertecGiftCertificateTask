@@ -7,7 +7,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Pageable;
 import ru.clevertec.ecl.dao.OrdersRepository;
-import ru.clevertec.ecl.dto.OrderDto;
+import ru.clevertec.ecl.dto.orders.OrderDto;
 import ru.clevertec.ecl.exceptions.ItemNotFoundException;
 import ru.clevertec.ecl.models.Order;
 import ru.clevertec.ecl.models.responses.ModificationResponse;

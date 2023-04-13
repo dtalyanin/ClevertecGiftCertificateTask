@@ -8,8 +8,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-import ru.clevertec.ecl.dto.CreateOrderDto;
-import ru.clevertec.ecl.dto.OrderDto;
+import ru.clevertec.ecl.dto.orders.CreateOrderDto;
+import ru.clevertec.ecl.dto.orders.OrderDto;
 import ru.clevertec.ecl.models.responses.ModificationResponse;
 import ru.clevertec.ecl.services.impl.OrdersServiceImpl;
 
@@ -43,7 +43,8 @@ public class OrdersController {
 
     @PostMapping("users/{userId}/orders")
     public ResponseEntity<ModificationResponse> addOrder(@RequestBody @Valid CreateOrderDto dto,
-                                           @PathVariable @Min(value = 1, message = "Min ID value is 1") long userId) {
+                                                         @PathVariable @Min(value = 1, message = "Min ID value is 1")
+                                                         long userId) {
         ModificationResponse response = service.addOrder(dto, userId);
         URI uri = ServletUriComponentsBuilder
                 .fromCurrentRequest()

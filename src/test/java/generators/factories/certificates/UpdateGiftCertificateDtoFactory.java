@@ -2,7 +2,7 @@ package generators.factories.certificates;
 
 import generators.builders.UpdateGiftCertificateDtoBuilder;
 import lombok.experimental.UtilityClass;
-import ru.clevertec.ecl.dto.UpdateGiftCertificateDto;
+import ru.clevertec.ecl.dto.certificates.UpdateGiftCertificateDto;
 
 @UtilityClass
 public class UpdateGiftCertificateDtoFactory {

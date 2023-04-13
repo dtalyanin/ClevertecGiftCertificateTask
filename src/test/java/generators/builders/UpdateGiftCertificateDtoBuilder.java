@@ -1,7 +1,7 @@
 package generators.builders;
 
 import lombok.NoArgsConstructor;
-import ru.clevertec.ecl.dto.UpdateGiftCertificateDto;
+import ru.clevertec.ecl.dto.certificates.UpdateGiftCertificateDto;
 import ru.clevertec.ecl.dto.TagDto;
 
 import java.math.BigDecimal;

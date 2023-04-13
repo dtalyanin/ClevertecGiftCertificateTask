@@ -1,7 +1,7 @@
 package generators.factories.orders;
 
 import lombok.experimental.UtilityClass;
-import ru.clevertec.ecl.dto.CreateOrderDto;
+import ru.clevertec.ecl.dto.orders.CreateOrderDto;
 
 @UtilityClass
 public class CreateOrderDtoFactory {

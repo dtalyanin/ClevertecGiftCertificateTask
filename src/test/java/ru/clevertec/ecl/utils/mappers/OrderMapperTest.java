@@ -4,12 +4,12 @@ import jakarta.validation.ConstraintViolationException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import ru.clevertec.ecl.dto.OrderDto;
+import ru.clevertec.ecl.dto.orders.OrderDto;
 import ru.clevertec.ecl.models.Order;
 
 import java.util.List;
 
-import static generators.factories.certificates.GiftCertificateFactory.getSimpleGiftCertificate;
+import static generators.factories.certificates.GiftCertificateFactory.*;
 import static generators.factories.orders.CreateOrderDtoFactory.*;
 import static generators.factories.orders.OrderDtoFactory.*;
 import static generators.factories.orders.OrderFactory.*;

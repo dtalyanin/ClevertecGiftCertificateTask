@@ -1,4 +1,4 @@
-package ru.clevertec.ecl.dto;
+package ru.clevertec.ecl.dto.orders;
 
 import jakarta.validation.constraints.Min;
 import lombok.AllArgsConstructor;

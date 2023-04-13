@@ -1,8 +1,8 @@
 package ru.clevertec.ecl.services;
 
 import org.springframework.data.domain.Pageable;
-import ru.clevertec.ecl.dto.CreateOrderDto;
-import ru.clevertec.ecl.dto.OrderDto;
+import ru.clevertec.ecl.dto.orders.CreateOrderDto;
+import ru.clevertec.ecl.dto.orders.OrderDto;
 import ru.clevertec.ecl.models.responses.ModificationResponse;
 
 import java.util.List;

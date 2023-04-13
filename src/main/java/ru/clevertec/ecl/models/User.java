@@ -3,32 +3,37 @@ package ru.clevertec.ecl.models;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import jakarta.validation.constraints.NotNull;
+import lombok.*;
 
 import java.util.HashSet;
 import java.util.Set;
 
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
+@Setter
+@ToString
+@EqualsAndHashCode
 @Entity
 @Table(name = "users")
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
 public class User implements BaseEntity<Long> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
-    @NotBlank
-    @Column(name = "first_name", nullable = false)
+    @NotBlank(message = "First name must contain at least 1 character")
+    @Column(name = "first_name")
     private String firstName;
-    @NotBlank
-    @Column(name = "last_name", nullable = false)
+    @NotBlank(message = "Last name must contain at least 1 character")
+    @Column(name = "last_name")
     private String lastName;
-    @Email
+    @NotNull(message = "Email cannot be null")
+    @Email(message = "Email should be valid")
     @Column(name = "email", nullable = false, unique = true)
     private String email;
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     @OneToMany(mappedBy="user")
     private Set<Order> orders = new HashSet<>();
 }

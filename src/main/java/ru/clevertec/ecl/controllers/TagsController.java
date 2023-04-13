@@ -90,4 +90,9 @@ public class TagsController {
             @PathVariable @Min(value = 1, message = "Min ID value is 1") long id) {
         return ResponseEntity.ok(service.deleteTag(id));
     }
+
+    @GetMapping("/mostWidelyUsedTagOfUserWithHighestOrdersCost")
+    public ResponseEntity<TagDto> getMostWidelyUsedTagOfUserWithHighestOrdersCost() {
+        return ResponseEntity.ok(service.getMostWidelyUsedTagOfUserWithHighestOrdersCost());
+    }
 }

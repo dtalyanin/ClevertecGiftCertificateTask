@@ -14,7 +14,9 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface GiftCertificatesRepository extends JpaRepository<GiftCertificate, Long>, JpaSpecificationExecutor<GiftCertificate> {
+public interface GiftCertificatesRepository extends JpaRepository<GiftCertificate, Long>,
+        JpaSpecificationExecutor<GiftCertificate> {
+
     @EntityGraph(type = EntityGraph.EntityGraphType.FETCH, attributePaths = "tags")
     List<GiftCertificate> findAll();
 

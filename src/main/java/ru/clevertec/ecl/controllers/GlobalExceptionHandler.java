@@ -9,19 +9,21 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import ru.clevertec.ecl.exceptions.*;
 import ru.clevertec.ecl.models.responses.errors.ErrorResponse;
 import ru.clevertec.ecl.models.responses.errors.ValidationErrorResponse;
-import ru.clevertec.ecl.utils.ValidationErrorResponsesFactory;
+
+import static ru.clevertec.ecl.utils.ValidationErrorResponsesFactory.*;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
+
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<ValidationErrorResponse> findValidationExceptionInParameters(ConstraintViolationException e) {
-        ValidationErrorResponse errorResponse = ValidationErrorResponsesFactory.getResponseFromConstraints(e.getConstraintViolations());
+        ValidationErrorResponse errorResponse = getResponseFromConstraints(e.getConstraintViolations());
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ValidationErrorResponse> findBookException(MethodArgumentNotValidException e) {
-        ValidationErrorResponse errorResponse = ValidationErrorResponsesFactory.getResponseFromErrors(e.getFieldErrors(), e.getTarget().getClass());
+        ValidationErrorResponse errorResponse = getResponseFromErrors(e.getFieldErrors(), e.getTarget().getClass());
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 

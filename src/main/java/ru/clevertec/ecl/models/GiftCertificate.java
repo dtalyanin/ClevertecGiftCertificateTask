@@ -11,9 +11,10 @@ import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
-@Data
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
+@Getter
+@Setter
 @ToString
 @EqualsAndHashCode
 @Entity
@@ -26,8 +27,9 @@ public class GiftCertificate implements BaseEntity<Long> {
     private String name;
     @NotBlank(message = "Gift certificate description must contain at least 1 character")
     private  String description;
-    @ManyToMany(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
+    @ToString.Exclude
     @EqualsAndHashCode.Exclude
+    @ManyToMany(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
     @JoinTable(name = "gift_certificates_tags",
             joinColumns = @JoinColumn(name = "certificate_id"),
             inverseJoinColumns = @JoinColumn(name = "tag_id"))
@@ -41,16 +43,6 @@ public class GiftCertificate implements BaseEntity<Long> {
     private LocalDateTime createDate;
     @Column(name = "last_update_date")
     private LocalDateTime lastUpdateDate;
-
-    public void addTag(Tag tag) {
-        tags.add(tag);
-//        tag.getGiftCertificates().add(this);
-    }
-
-    public void removeTag(Tag tag) {
-        tags.remove(tag);
-        tag.getGiftCertificates().remove(this);
-    }
 
     @PrePersist
     public void addCreateAndLastUpdateDate() {

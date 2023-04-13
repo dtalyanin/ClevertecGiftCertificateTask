@@ -1,24 +1,45 @@
 package generators.factories;
 
+import lombok.experimental.UtilityClass;
 import ru.clevertec.ecl.models.criteries.FilterCriteria;
 
 import java.util.List;
-import java.util.Set;
 
+@UtilityClass
 public class FilterCriteriaFactory {
-    public static FilterCriteria getFilterByTag() {
-        return FilterCriteria.builder().tags(List.of("Test tag")).build();
+
+    public FilterCriteria getFilterByTag() {
+        return FilterCriteria.builder()
+                .tags(List.of("Test tag"))
+                .build();
     }
 
-    public static FilterCriteria getFilterByName() {
-        return FilterCriteria.builder().name("t 2").build();
+    public FilterCriteria getFilterByTwoTags() {
+        return FilterCriteria.builder()
+                .tags(List.of("Test tag", "Test tag 2"))
+                .build();
     }
 
-    public static FilterCriteria getFilterByDescription() {
-        return FilterCriteria.builder().description("ion 2").build();
+    public FilterCriteria getFilterByName() {
+        return FilterCriteria.builder()
+                .name("t 2")
+                .build();
     }
 
-    public static FilterCriteria getFilterByAll() {
+    public FilterCriteria getFilterByDescription() {
+        return FilterCriteria.builder()
+                .description("ion 2")
+                .build();
+    }
+
+    public FilterCriteria getFilterByNameAndDescription() {
+        return FilterCriteria.builder()
+                .name("t 2")
+                .description("ion 2")
+                .build();
+    }
+
+    public FilterCriteria getFilterByAllFields() {
         return FilterCriteria.builder()
                 .tags(List.of("Test tag"))
                 .name("test")
@@ -26,7 +47,7 @@ public class FilterCriteriaFactory {
                 .build();
     }
 
-    public static FilterCriteria getEmptyFilter() {
+    public FilterCriteria getEmptyFilter() {
         return FilterCriteria.builder().build();
     }
 }

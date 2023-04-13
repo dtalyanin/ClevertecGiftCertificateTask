@@ -3,9 +3,9 @@ package ru.clevertec.ecl.utils.mappers;
 import jakarta.validation.Valid;
 import org.mapstruct.*;
 import org.springframework.validation.annotation.Validated;
-import ru.clevertec.ecl.dto.GiftCertificateDto;
-import ru.clevertec.ecl.dto.GiftCertificateDtoForOrder;
-import ru.clevertec.ecl.dto.UpdateGiftCertificateDto;
+import ru.clevertec.ecl.dto.certificates.GiftCertificateDto;
+import ru.clevertec.ecl.dto.certificates.GiftCertificateDtoForOrder;
+import ru.clevertec.ecl.dto.certificates.UpdateGiftCertificateDto;
 import ru.clevertec.ecl.models.GiftCertificate;
 import ru.clevertec.ecl.models.Tag;
 

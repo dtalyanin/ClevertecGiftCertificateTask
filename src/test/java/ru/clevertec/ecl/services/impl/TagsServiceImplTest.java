@@ -5,7 +5,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.data.domain.Pageable;
 import ru.clevertec.ecl.dao.TagsRepository;
 import ru.clevertec.ecl.dto.TagDto;
@@ -13,7 +12,6 @@ import ru.clevertec.ecl.exceptions.ItemExistException;
 import ru.clevertec.ecl.exceptions.ItemNotFoundException;
 import ru.clevertec.ecl.models.Tag;
 import ru.clevertec.ecl.models.responses.ModificationResponse;
-import ru.clevertec.ecl.utils.mappers.TagMapper;
 
 import java.util.List;
 import java.util.Optional;
@@ -185,5 +183,16 @@ class TagsServiceImplTest {
                 .isInstanceOf(ItemNotFoundException.class)
                 .hasMessage("Cannot delete: tag with ID 1 not found");
         verify(repository, times(1)).deleteById(anyLong());
+    }
+
+    @Test
+    void checkGetMostWidelyUsedTagOfUserWithHighestOrdersCostShouldReturnTag() {
+        when(repository.findMostWidelyUsedTagOfUserWithHighestOrdersCost()).thenReturn(getSimpleTag());
+
+        TagDto actual = service.getMostWidelyUsedTagOfUserWithHighestOrdersCost();
+        TagDto expected = getSimpleTagDto();
+
+        assertThat(actual).isEqualTo(expected);
+        verify(repository, times(1)).findMostWidelyUsedTagOfUserWithHighestOrdersCost();
     }
 }

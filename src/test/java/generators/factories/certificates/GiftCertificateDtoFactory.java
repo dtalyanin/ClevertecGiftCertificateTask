@@ -2,7 +2,7 @@ package generators.factories.certificates;
 
 import generators.builders.GiftCertificateDtoBuilder;
 import lombok.experimental.UtilityClass;
-import ru.clevertec.ecl.dto.GiftCertificateDto;
+import ru.clevertec.ecl.dto.certificates.GiftCertificateDto;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;

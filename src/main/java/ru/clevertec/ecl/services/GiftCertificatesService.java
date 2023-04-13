@@ -1,8 +1,8 @@
 package ru.clevertec.ecl.services;
 
 import org.springframework.data.domain.Pageable;
-import ru.clevertec.ecl.dto.GiftCertificateDto;
-import ru.clevertec.ecl.dto.UpdateGiftCertificateDto;
+import ru.clevertec.ecl.dto.certificates.GiftCertificateDto;
+import ru.clevertec.ecl.dto.certificates.UpdateGiftCertificateDto;
 import ru.clevertec.ecl.models.GiftCertificate;
 import ru.clevertec.ecl.models.criteries.FilterCriteria;
 import ru.clevertec.ecl.models.responses.ModificationResponse;

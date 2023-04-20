@@ -14,3 +14,5 @@ VALUES (1, 1),
        (1, 3),
        (2, 1),
        (2, 2);
+
+SELECT setval('tags_id_seq', (SELECT MAX(id) FROM tags))

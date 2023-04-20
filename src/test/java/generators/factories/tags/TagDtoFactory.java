@@ -23,6 +23,14 @@ public class TagDtoFactory {
         return new TagDto();
     }
 
+    public static TagDto getSimpleTagDtoToCreate() {
+        return new TagDto("Test tag created");
+    }
+
+    public static TagDto getSimpleTagDtoToUpdate() {
+        return new TagDto("Test tag updated");
+    }
+
     public static List<TagDto> getSimpleTagDtosList() {
         return List.of(getSimpleTagDto(), getSimpleTagDto2(), getSimpleTagDto3());
     }

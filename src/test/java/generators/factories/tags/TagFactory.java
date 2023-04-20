@@ -19,6 +19,14 @@ public class TagFactory {
         return new Tag(3L, "Test tag 3", Collections.emptySet());
     }
 
+    public static Tag getCreatedTag() {
+        return new Tag(4L, "Test tag created", Collections.emptySet());
+    }
+
+    public static Tag getUpdatedTag() {
+        return new Tag(1L, "Test tag updated", Collections.emptySet());
+    }
+
     public static Tag getSimpleTagWithoutId() {
         return new Tag(null, "Test tag", Collections.emptySet());
     }

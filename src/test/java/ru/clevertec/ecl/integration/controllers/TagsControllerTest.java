@@ -10,7 +10,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.clevertec.ecl.dto.TagDto;
 import ru.clevertec.ecl.integration.BaseIntegrationTest;
-import ru.clevertec.ecl.models.codes.ErrorCode;
 import ru.clevertec.ecl.models.responses.ModificationResponse;
 import ru.clevertec.ecl.models.responses.errors.ErrorResponse;
 import ru.clevertec.ecl.models.responses.errors.SingleFieldValidationErrorResponse;
@@ -18,6 +17,9 @@ import ru.clevertec.ecl.models.responses.errors.SingleFieldValidationErrorRespon
 import java.util.Collections;
 import java.util.List;
 
+import static generators.factories.responses.ErrorResponseFactory.*;
+import static generators.factories.responses.ModificationResponseFactory.*;
+import static generators.factories.responses.ValidationErrorResponseFactory.getTagEmptyNameResponse;
 import static generators.factories.tags.TagDtoFactory.*;
 import static org.hamcrest.Matchers.containsString;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -117,6 +119,18 @@ class TagsControllerTest extends BaseIntegrationTest {
 
     @Test
     @SneakyThrows
+    void checkGetAllTagsShouldReturnTagDtosWithoutSortingIfSortParamExist() {
+        List<TagDto> tagDtos = getSimpleTagDtosList();
+        String jsonTagDtos = mapper.writeValueAsString(tagDtos);
+
+        mvc.perform(get("/tags")
+                        .param("sort", "name"))
+                .andExpect(status().isOk())
+                .andExpect(content().json(jsonTagDtos));
+    }
+
+    @Test
+    @SneakyThrows
     void checkGetTagByIdShouldReturnTagDtoWithSpecifiedId() {
         TagDto tagDto = TagDtoFactory.getSimpleTagDto();
         String jsonTagDto = mapper.writeValueAsString(tagDto);
@@ -129,7 +143,7 @@ class TagsControllerTest extends BaseIntegrationTest {
     @Test
     @SneakyThrows
     void checkGetTagByIdShouldReturnErrorResponseWithIncorrectId() {
-        ErrorResponse response = new ErrorResponse("Min ID value is 1", ErrorCode.INVALID_FIELD_VALUE.getCode());
+        ErrorResponse response = getIncorrectIdResponse();
         String jsonErrorResponse = mapper.writeValueAsString(response);
 
         mvc.perform(get("/tags/{id}", -1L))
@@ -140,8 +154,7 @@ class TagsControllerTest extends BaseIntegrationTest {
     @Test
     @SneakyThrows
     void checkGetTagByIdShouldReturnErrorResponseWithIdNotFound() {
-        ErrorResponse errorResponse = new ErrorResponse("Tag with ID 10 not found in database",
-                ErrorCode.TAG_ID_NOT_FOUND.getCode());
+        ErrorResponse errorResponse = getTagIdNotFoundResponse();
         String jsonErrorResponse = mapper.writeValueAsString(errorResponse);
 
         mvc.perform(get("/tags/{id}", 10L))
@@ -154,7 +167,7 @@ class TagsControllerTest extends BaseIntegrationTest {
     void checkAddTagShouldReturnResponseWithGeneratedId() {
         TagDto dtoToCreate = getSimpleTagDtoToCreate();
         String jsonTagToCreate = mapper.writeValueAsString(dtoToCreate);
-        ModificationResponse modificationResponse = new ModificationResponse(4L, "Tag added successfully");
+        ModificationResponse modificationResponse = getTagAddedResponse();
         String jsonModificationResponse = mapper.writeValueAsString(modificationResponse);
 
         mvc.perform(post("/tags")
@@ -170,8 +183,7 @@ class TagsControllerTest extends BaseIntegrationTest {
     void checkAddTagShouldReturnErrorResponseWithEmptyTagName() {
         TagDto dtoToCreate = getTagDtoWithoutName();
         String jsonTagToCreate = mapper.writeValueAsString(dtoToCreate);
-        SingleFieldValidationErrorResponse errorResponse = new SingleFieldValidationErrorResponse(null,
-                "Tag name must contain at least 1 character", ErrorCode.INVALID_TAG_FIELD_VALUE.getCode());
+        SingleFieldValidationErrorResponse errorResponse = getTagEmptyNameResponse();
         String jsonErrorResponse = mapper.writeValueAsString(errorResponse);
 
         mvc.perform(post("/tags")
@@ -186,8 +198,7 @@ class TagsControllerTest extends BaseIntegrationTest {
     void checkAddTagShouldReturnErrorResponseWithNameExist() {
         TagDto dtoToCreate = getSimpleTagDto();
         String jsonTagToCreate = mapper.writeValueAsString(dtoToCreate);
-        ErrorResponse errorResponse = new ErrorResponse("Cannot add: tag with name 'Test tag' already exist in database",
-                ErrorCode.TAG_NAME_EXIST.getCode());
+        ErrorResponse errorResponse = getTagCannotAddExistResponse();
         String jsonErrorResponse = mapper.writeValueAsString(errorResponse);
 
         mvc.perform(post("/tags")
@@ -202,7 +213,7 @@ class TagsControllerTest extends BaseIntegrationTest {
     void checkUpdateTagShouldReturnResponseWithUpdatedId() {
         TagDto dtoToUpdate = getSimpleTagDtoToUpdate();
         String jsonTagToCreate = mapper.writeValueAsString(dtoToUpdate);
-        ModificationResponse modificationResponse = new ModificationResponse(1L, "Tag updated successfully");
+        ModificationResponse modificationResponse = getTagUpdatedResponse();
         String jsonModificationResponse = mapper.writeValueAsString(modificationResponse);
 
         mvc.perform(put("/tags/{id}", 1L)
@@ -217,7 +228,7 @@ class TagsControllerTest extends BaseIntegrationTest {
     void checkUpdateTagByIdShouldReturnErrorResponseWithIncorrectId() {
         TagDto dtoToUpdate = getSimpleTagDtoToUpdate();
         String jsonTagToUpdate = mapper.writeValueAsString(dtoToUpdate);
-        ErrorResponse errorResponse = new ErrorResponse("Min ID value is 1", ErrorCode.INVALID_FIELD_VALUE.getCode());
+        ErrorResponse errorResponse = getIncorrectIdResponse();
         String jsonErrorResponse = mapper.writeValueAsString(errorResponse);
 
         mvc.perform(put("/tags/{id}", -1L)
@@ -232,8 +243,7 @@ class TagsControllerTest extends BaseIntegrationTest {
     void checkUpdateTagByIdShouldReturnErrorResponseWithIdNotFound() {
         TagDto dtoToUpdate = getSimpleTagDtoToUpdate();
         String jsonTagToUpdate = mapper.writeValueAsString(dtoToUpdate);
-        ErrorResponse errorResponse = new ErrorResponse("Cannot update: tag with ID 10 not found in database",
-                ErrorCode.TAG_ID_NOT_FOUND.getCode());
+        ErrorResponse errorResponse = getTagCannotUpdateIdNotFound();
         String jsonErrorResponse = mapper.writeValueAsString(errorResponse);
 
         mvc.perform(put("/tags/{id}", 10L)
@@ -248,8 +258,7 @@ class TagsControllerTest extends BaseIntegrationTest {
     void checkUpdateTagByIdShouldReturnErrorResponseWithNameExist() {
         TagDto dtoToUpdate = getSimpleTagDto2();
         String jsonTagToUpdate = mapper.writeValueAsString(dtoToUpdate);
-        ErrorResponse errorResponse = new ErrorResponse("Cannot update: tag with name 'Test tag 2' already exist in database",
-                ErrorCode.TAG_NAME_EXIST.getCode());
+        ErrorResponse errorResponse = getTagCannotUpdateExistResponse();
         String jsonErrorResponse = mapper.writeValueAsString(errorResponse);
 
         mvc.perform(put("/tags/{id}", 1L)
@@ -264,8 +273,7 @@ class TagsControllerTest extends BaseIntegrationTest {
     void checkUpdateTagByIdShouldReturnErrorResponseWithEmptyTagName() {
         TagDto dtoToCreate = getTagDtoWithoutName();
         String jsonTagToUpdate = mapper.writeValueAsString(dtoToCreate);
-        SingleFieldValidationErrorResponse errorResponse = new SingleFieldValidationErrorResponse(null,
-                "Tag name must contain at least 1 character", ErrorCode.INVALID_TAG_FIELD_VALUE.getCode());
+        SingleFieldValidationErrorResponse errorResponse = getTagEmptyNameResponse();
         String jsonErrorResponse = mapper.writeValueAsString(errorResponse);
 
         mvc.perform(put("/tags/{id}", 1L)
@@ -278,7 +286,7 @@ class TagsControllerTest extends BaseIntegrationTest {
     @Test
     @SneakyThrows
     void checkDeleteTagShouldReturnResponseWithDeletedId() {
-        ModificationResponse modificationResponse = new ModificationResponse(3L, "Tag deleted successfully");
+        ModificationResponse modificationResponse = getTagDeletedResponse();
         String jsonModificationResponse = mapper.writeValueAsString(modificationResponse);
 
         mvc.perform(delete("/tags/{id}", 3L))
@@ -289,26 +297,23 @@ class TagsControllerTest extends BaseIntegrationTest {
     @Test
     @SneakyThrows
     void checkDeleteTagByIdShouldReturnErrorResponseWithIdNotFound() {
-        ErrorResponse errorResponse = new ErrorResponse("Cannot delete: tag with ID 10 not found in database",
-                ErrorCode.TAG_ID_NOT_FOUND.getCode());
+        ErrorResponse errorResponse = getTagCannotDeleteIdNotFound();
         String jsonErrorResponse = mapper.writeValueAsString(errorResponse);
 
         mvc.perform(delete("/tags/{id}", 10L))
                 .andExpect(status().isNotFound())
                 .andExpect(content().json(jsonErrorResponse));
-
     }
 
     @Test
     @SneakyThrows
     void checkDeleteTagByIdShouldReturnErrorResponseWithIncorrectId() {
-        ErrorResponse errorResponse = new ErrorResponse("Min ID value is 1", ErrorCode.INVALID_FIELD_VALUE.getCode());
+        ErrorResponse errorResponse = getIncorrectIdResponse();
         String jsonErrorResponse = mapper.writeValueAsString(errorResponse);
 
         mvc.perform(delete("/tags/{id}", -1L))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().json(jsonErrorResponse));
-
     }
 
     @Test

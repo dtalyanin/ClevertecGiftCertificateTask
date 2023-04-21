@@ -24,6 +24,24 @@ public class GiftCertificateDtoFactory {
                 .build();
     }
 
+    public static GiftCertificateDto getSimpleGiftCertificateDtoWithTagsAsInDb() {
+        return GiftCertificateDtoBuilder.builder()
+                .tags(getSimpleTagDtosSetAsInDb())
+                .build();
+    }
+
+    public static GiftCertificateDto getSimpleGiftCertificateDtoWithTagsAsInDb2() {
+        return GiftCertificateDtoBuilder.builder()
+                .name("Test 2")
+                .description("Test description 2")
+                .tags(getSimpleTagDtosSetAsInDb2())
+                .price(BigDecimal.valueOf(2000, 2))
+                .duration(2L)
+                .createDate(LocalDateTime.of(2023, 1, 1, 1, 0 ,0))
+                .lastUpdateDate(LocalDateTime.of(2023, 2, 22, 6, 0 ,0))
+                .build();
+    }
+
     public static GiftCertificateDto getSimpleGiftCertificateDto2() {
         return GiftCertificateDtoBuilder.builder()
                 .name("Test 2")
@@ -100,5 +118,25 @@ public class GiftCertificateDtoFactory {
         return GiftCertificateDtoBuilder.builder()
                 .duration(0L)
                 .build();
+    }
+
+    public static List<GiftCertificateDto> getGiftCertificateDtosFromDbSortByNameOrCrateDateAsc() {
+        return List.of(getSimpleGiftCertificateDtoWithTagsAsInDb(), getSimpleGiftCertificateDtoWithTagsAsInDb2(),
+                getSimpleGiftCertificateDto3());
+    }
+
+    public static List<GiftCertificateDto> getGiftCertificateDtosFromDbSortByNameDesc() {
+        return List.of(getSimpleGiftCertificateDto3(), getSimpleGiftCertificateDtoWithTagsAsInDb2(),
+                getSimpleGiftCertificateDtoWithTagsAsInDb());
+    }
+
+    public static List<GiftCertificateDto> getGiftCertificateDtosFromDbSortByCreateDateDesc() {
+        return List.of(getSimpleGiftCertificateDto3(), getSimpleGiftCertificateDtoWithTagsAsInDb(),
+                getSimpleGiftCertificateDtoWithTagsAsInDb2());
+    }
+
+    public static List<GiftCertificateDto> getGiftCertificateDtosFromDbSortByCreateDateDescAndNameDesc() {
+        return List.of(getSimpleGiftCertificateDto3(), getSimpleGiftCertificateDtoWithTagsAsInDb2(),
+                getSimpleGiftCertificateDtoWithTagsAsInDb());
     }
 }

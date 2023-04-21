@@ -6,7 +6,6 @@ import org.springframework.data.jpa.domain.Specification;
 import ru.clevertec.ecl.models.GiftCertificate;
 import ru.clevertec.ecl.models.Tag;
 import ru.clevertec.ecl.models.criteries.FilterCriteria;
-import ru.clevertec.ecl.utils.constants.GiftCertificateParams;
 
 import java.util.ArrayList;
 import java.util.List;

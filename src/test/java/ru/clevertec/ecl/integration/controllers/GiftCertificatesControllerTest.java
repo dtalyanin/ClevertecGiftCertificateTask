@@ -10,17 +10,19 @@ import org.springframework.test.web.servlet.MockMvc;
 import ru.clevertec.ecl.dto.certificates.GiftCertificateDto;
 import ru.clevertec.ecl.dto.certificates.UpdateGiftCertificateDto;
 import ru.clevertec.ecl.integration.BaseIntegrationTest;
-import ru.clevertec.ecl.models.codes.ErrorCode;
 import ru.clevertec.ecl.models.responses.ModificationResponse;
 import ru.clevertec.ecl.models.responses.errors.ErrorResponse;
 import ru.clevertec.ecl.models.responses.errors.MultipleFieldsValidationErrorResponse;
 import ru.clevertec.ecl.models.responses.errors.SingleFieldValidationErrorResponse;
 
-import java.time.Duration;
+import java.util.Collections;
 import java.util.List;
 
 import static generators.factories.certificates.GiftCertificateDtoFactory.*;
 import static generators.factories.certificates.UpdateGiftCertificateDtoFactory.*;
+import static generators.factories.responses.ErrorResponseFactory.*;
+import static generators.factories.responses.ModificationResponseFactory.*;
+import static generators.factories.responses.ValidationErrorResponseFactory.*;
 import static org.hamcrest.Matchers.containsString;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -35,13 +37,270 @@ class GiftCertificatesControllerTest extends BaseIntegrationTest {
 
     @Test
     @SneakyThrows
-    void getAllGiftCertificatesWithFilteringShouldReturnCertificateDtosWithDefaultPagination() {
+    void getAllGiftCertificatesWithFilteringShouldReturn3CertificateDtosWithDefaultPagination() {
         List<GiftCertificateDto> certificateDtos = getGiftCertificateDtosFromDb();
         String jsonCertificateDtos = mapper.writeValueAsString(certificateDtos);
 
         mvc.perform(get("/certificates"))
                 .andExpect(status().isOk())
                 .andExpect(content().json(jsonCertificateDtos));
+    }
+
+    @Test
+    @SneakyThrows
+    void checkGetGiftCertificatesWithFilteringShouldReturn2DtosWithPageSize2() {
+        List<GiftCertificateDto> certificateDtos = List.of(getSimpleGiftCertificateDtoWithTags(), getSimpleGiftCertificateDto2());
+        String jsonTagDtos = mapper.writeValueAsString(certificateDtos);
+
+        mvc.perform(get("/certificates")
+                        .param("size", "2"))
+                .andExpect(status().isOk())
+                .andExpect(content().json(jsonTagDtos));
+    }
+
+    @Test
+    @SneakyThrows
+    void checkGetGiftCertificatesWithFilteringShouldReturn3DtosWithFirstPage() {
+        List<GiftCertificateDto> certificateDtos = getGiftCertificateDtosFromDb();
+        String jsonTagDtos = mapper.writeValueAsString(certificateDtos);
+
+        mvc.perform(get("/certificates")
+                        .param("page", "0"))
+                .andExpect(status().isOk())
+                .andExpect(content().json(jsonTagDtos));
+    }
+
+    @Test
+    @SneakyThrows
+    void checkGetGiftCertificatesWithFilteringShouldReturnDtosEmptyListOutOfPageRange() {
+        List<GiftCertificateDto> certificateDtos = Collections.emptyList();
+        String jsonTagDtos = mapper.writeValueAsString(certificateDtos);
+
+        mvc.perform(get("/certificates")
+                        .param("page", "2"))
+                .andExpect(status().isOk())
+                .andExpect(content().json(jsonTagDtos));
+    }
+
+    @Test
+    @SneakyThrows
+    void checkGetGiftCertificatesWithFilteringShouldReturn2DtosWithPageSize2AngIncludeFirstPage() {
+        List<GiftCertificateDto> certificateDtos = List.of(getSimpleGiftCertificateDtoWithTags(), getSimpleGiftCertificateDto2());
+        String jsonTagDtos = mapper.writeValueAsString(certificateDtos);
+
+        mvc.perform(get("/certificates")
+                        .param("size", "2")
+                        .param("page", "0"))
+                .andExpect(status().isOk())
+                .andExpect(content().json(jsonTagDtos));
+    }
+
+    @Test
+    @SneakyThrows
+    void checkGetGiftCertificatesWithFilteringShouldReturn3DtosWithDefaultPaginationWhenNegativePageSize() {
+        List<GiftCertificateDto> certificateDtos = getGiftCertificateDtosFromDb();
+        String jsonTagDtos = mapper.writeValueAsString(certificateDtos);
+
+        mvc.perform(get("/certificates")
+                        .param("size", "-1"))
+                .andExpect(status().isOk())
+                .andExpect(content().json(jsonTagDtos));
+    }
+
+    @Test
+    @SneakyThrows
+    void checkGetGiftCertificatesWithFilteringShouldReturn3DtosWithDefaultPaginationWhenNegativePage() {
+        List<GiftCertificateDto> certificateDtos = getGiftCertificateDtosFromDb();
+        String jsonTagDtos = mapper.writeValueAsString(certificateDtos);
+
+        mvc.perform(get("/certificates")
+                        .param("page", "-1"))
+                .andExpect(status().isOk())
+                .andExpect(content().json(jsonTagDtos));
+    }
+
+    @Test
+    @SneakyThrows
+    void checkGetGiftCertificatesWithFilteringShouldReturnDtosWithSortByName() {
+        List<GiftCertificateDto> certificateDtos = getGiftCertificateDtosFromDbSortByNameOrCrateDateAsc();
+        String jsonTagDtos = mapper.writeValueAsString(certificateDtos);
+
+        mvc.perform(get("/certificates")
+                        .param("sort", "name"))
+                .andExpect(status().isOk())
+                .andExpect(content().json(jsonTagDtos, true));
+    }
+
+    @Test
+    @SneakyThrows
+    void checkGetGiftCertificatesWithFilteringShouldReturnDtosWithSortByNameDesc() {
+        List<GiftCertificateDto> certificateDtos = getGiftCertificateDtosFromDbSortByNameDesc();
+        String jsonTagDtos = mapper.writeValueAsString(certificateDtos);
+
+        mvc.perform(get("/certificates")
+                        .param("sort", "name,desc"))
+                .andExpect(status().isOk())
+                .andExpect(content().json(jsonTagDtos, true));
+    }
+
+    @Test
+    @SneakyThrows
+    void checkGetGiftCertificatesWithFilteringShouldReturnDtosWithSortByCreateDate() {
+        List<GiftCertificateDto> certificateDtos = getGiftCertificateDtosFromDbSortByNameOrCrateDateAsc();
+        String jsonTagDtos = mapper.writeValueAsString(certificateDtos);
+
+        mvc.perform(get("/certificates")
+                        .param("sort", "createDate"))
+                .andExpect(status().isOk())
+                .andExpect(content().json(jsonTagDtos, true));
+    }
+
+    @Test
+    @SneakyThrows
+    void checkGetGiftCertificatesWithFilteringShouldReturnDtosWithSortByCreateDateDesc() {
+        List<GiftCertificateDto> certificateDtos = getGiftCertificateDtosFromDbSortByCreateDateDesc();
+        String jsonTagDtos = mapper.writeValueAsString(certificateDtos);
+
+        mvc.perform(get("/certificates")
+                        .param("sort", "createDate,desc"))
+                .andExpect(status().isOk())
+                .andExpect(content().json(jsonTagDtos, true));
+    }
+
+    @Test
+    @SneakyThrows
+    void checkGetGiftCertificatesWithFilteringShouldReturnDtosWithSortByCreateDateDescAndNameDesc() {
+        List<GiftCertificateDto> certificateDtos = getGiftCertificateDtosFromDbSortByCreateDateDescAndNameDesc();
+        String jsonTagDtos = mapper.writeValueAsString(certificateDtos);
+
+        mvc.perform(get("/certificates")
+                        .param("sort", "createDate,desc")
+                        .param("sort", "name,desc"))
+                .andExpect(status().isOk())
+                .andExpect(content().json(jsonTagDtos, true));
+    }
+
+
+    @Test
+    @SneakyThrows
+    void checkGetGiftCertificatesWithFilteringShouldIgnoreUnknownOrders() {
+        List<GiftCertificateDto> certificateDtos = getGiftCertificateDtosFromDbSortByNameDesc();
+        String jsonTagDtos = mapper.writeValueAsString(certificateDtos);
+
+        mvc.perform(get("/certificates")
+                        .param("sort", "name,desc")
+                        .param("sort", "price"))
+                .andExpect(status().isOk())
+                .andExpect(content().json(jsonTagDtos, true));
+    }
+
+    @Test
+    @SneakyThrows
+    void checkGetGiftCertificatesWithFilteringShouldReturn1DtoWithFilterByFullName() {
+        List<GiftCertificateDto> certificateDtos = List.of(getSimpleGiftCertificateDto2());
+        String jsonTagDtos = mapper.writeValueAsString(certificateDtos);
+
+        mvc.perform(get("/certificates")
+                        .param("name", "Test 2"))
+                .andExpect(status().isOk())
+                .andExpect(content().json(jsonTagDtos));
+    }
+
+    @Test
+    @SneakyThrows
+    void checkGetGiftCertificatesWithFilteringShouldReturn3DtoWithFilterByPartOfName() {
+        List<GiftCertificateDto> certificateDtos = getGiftCertificateDtosFromDb();
+        String jsonTagDtos = mapper.writeValueAsString(certificateDtos);
+
+        mvc.perform(get("/certificates")
+                        .param("name", "Test"))
+                .andExpect(status().isOk())
+                .andExpect(content().json(jsonTagDtos));
+    }
+
+    @Test
+    @SneakyThrows
+    void checkGetGiftCertificatesWithFilteringShouldReturn3DtoWithFilterByPartOfNameIgnoreCase() {
+        List<GiftCertificateDto> certificateDtos = getGiftCertificateDtosFromDb();
+        String jsonTagDtos = mapper.writeValueAsString(certificateDtos);
+
+        mvc.perform(get("/certificates")
+                        .param("name", "tEsT"))
+                .andExpect(status().isOk())
+                .andExpect(content().json(jsonTagDtos));
+    }
+
+    @Test
+    @SneakyThrows
+    void checkGetGiftCertificatesWithFilteringShouldReturn1DtoWithFilterByFullDescription() {
+        List<GiftCertificateDto> certificateDtos = List.of(getSimpleGiftCertificateDto2());
+        String jsonTagDtos = mapper.writeValueAsString(certificateDtos);
+
+        mvc.perform(get("/certificates")
+                        .param("description", "Test description 2"))
+                .andExpect(status().isOk())
+                .andExpect(content().json(jsonTagDtos));
+    }
+
+    @Test
+    @SneakyThrows
+    void checkGetGiftCertificatesWithFilteringShouldReturn3DtoWithFilterByPartOfDescription() {
+        List<GiftCertificateDto> certificateDtos = getGiftCertificateDtosFromDb();
+        String jsonTagDtos = mapper.writeValueAsString(certificateDtos);
+
+        mvc.perform(get("/certificates")
+                        .param("description", "Test"))
+                .andExpect(status().isOk())
+                .andExpect(content().json(jsonTagDtos));
+    }
+
+    @Test
+    @SneakyThrows
+    void checkGetGiftCertificatesWithFilteringShouldReturn3DtoWithFilterByPartOfDescriptionIgnoreCase() {
+        List<GiftCertificateDto> certificateDtos = getGiftCertificateDtosFromDb();
+        String jsonTagDtos = mapper.writeValueAsString(certificateDtos);
+
+        mvc.perform(get("/certificates")
+                        .param("description", "tEsT"))
+                .andExpect(status().isOk())
+                .andExpect(content().json(jsonTagDtos));
+    }
+
+    @Test
+    @SneakyThrows
+    void checkGetGiftCertificatesWithFilteringShouldReturn2DtoWithFilterByOneTag() {
+        List<GiftCertificateDto> certificateDtos = List.of(getSimpleGiftCertificateDtoWithTags(), getSimpleGiftCertificateDto2());
+        String jsonTagDtos = mapper.writeValueAsString(certificateDtos);
+
+        mvc.perform(get("/certificates")
+                        .param("tags", "Test tag"))
+                .andExpect(status().isOk())
+                .andExpect(content().json(jsonTagDtos));
+    }
+
+    @Test
+    @SneakyThrows
+    void checkGetGiftCertificatesWithFilteringShouldReturn1DtoWithFilterByTwoTags() {
+        List<GiftCertificateDto> certificateDtos = List.of(getSimpleGiftCertificateDtoWithTags());
+        String jsonTagDtos = mapper.writeValueAsString(certificateDtos);
+
+        mvc.perform(get("/certificates")
+                        .param("tags", "Test tag")
+                        .param("tags", "Test tag 3"))
+                .andExpect(status().isOk())
+                .andExpect(content().json(jsonTagDtos));
+    }
+
+    @Test
+    @SneakyThrows
+    void checkGetGiftCertificatesWithFilteringShouldReturnEmptyListUnknownTag() {
+        List<GiftCertificateDto> certificateDtos = Collections.emptyList();
+        String jsonTagDtos = mapper.writeValueAsString(certificateDtos);
+
+        mvc.perform(get("/certificates")
+                        .param("tags", "Test tag 10"))
+                .andExpect(status().isOk())
+                .andExpect(content().json(jsonTagDtos));
     }
 
     @Test
@@ -58,7 +317,7 @@ class GiftCertificatesControllerTest extends BaseIntegrationTest {
     @Test
     @SneakyThrows
     void checkGetTagByIdShouldReturnErrorResponseWithIncorrectId() {
-        ErrorResponse response = new ErrorResponse("Min ID value is 1", ErrorCode.INVALID_FIELD_VALUE.getCode());
+        ErrorResponse response = getIncorrectIdResponse();
         String jsonErrorResponse = mapper.writeValueAsString(response);
 
         mvc.perform(get("/certificates/{id}", -1L))
@@ -69,10 +328,7 @@ class GiftCertificatesControllerTest extends BaseIntegrationTest {
     @Test
     @SneakyThrows
     void checkGetGiftCertificateByIdShouldErrorResponseWithIdNotFound() {
-        GiftCertificateDto certificateDto = getSimpleGiftCertificateDtoWithTags();
-        String jsonCertificateDto = mapper.writeValueAsString(certificateDto);
-        ErrorResponse errorResponse = new ErrorResponse("Gift certificate with ID 10 not found in database",
-                ErrorCode.CERTIFICATE_ID_NOT_FOUND.getCode());
+        ErrorResponse errorResponse = getCertificateIdNotFoundResponse();
         String jsonErrorResponse = mapper.writeValueAsString(errorResponse);
 
         mvc.perform(get("/certificates/{id}", 10L))
@@ -85,7 +341,7 @@ class GiftCertificatesControllerTest extends BaseIntegrationTest {
     void checkAddGiftCertificateShouldReturnResponseWithGeneratedId() {
         GiftCertificateDto certificateDtoToCreate = getSimpleGiftCertificateDtoToCreate();
         String jsonCertificateToCreate = mapper.writeValueAsString(certificateDtoToCreate);
-        ModificationResponse modificationResponse = new ModificationResponse(4L, "Gift certificate added successfully");
+        ModificationResponse modificationResponse = getCertificateAddedResponse();
         String jsonModificationResponse = mapper.writeValueAsString(modificationResponse);
 
         mvc.perform(post("/certificates")
@@ -101,8 +357,7 @@ class GiftCertificatesControllerTest extends BaseIntegrationTest {
     void checkAddGiftCertificateShouldReturnErrorResponseWithEmptyCertificateName() {
         GiftCertificateDto certificateDtoToCreate = getGiftCertificateDtoWithEmptyName();
         String jsonCertificateToCreate = mapper.writeValueAsString(certificateDtoToCreate);
-        SingleFieldValidationErrorResponse errorResponse = new SingleFieldValidationErrorResponse("", "Gift certificate " +
-                "name must contain at least 1 character", ErrorCode.INVALID_CERTIFICATE_FIELD_VALUE.getCode());
+        SingleFieldValidationErrorResponse errorResponse = getCertificateEmptyNameResponse();
         String jsonErrorResponse = mapper.writeValueAsString(errorResponse);
 
         mvc.perform(post("/certificates")
@@ -117,8 +372,7 @@ class GiftCertificatesControllerTest extends BaseIntegrationTest {
     void checkAddGiftCertificateShouldReturnErrorResponseWithEmptyCertificateDescription() {
         GiftCertificateDto certificateDtoToCreate = getGiftCertificateDtoWithEmptyDescription();
         String jsonCertificateToCreate = mapper.writeValueAsString(certificateDtoToCreate);
-        SingleFieldValidationErrorResponse errorResponse = new SingleFieldValidationErrorResponse("", "Gift certificate " +
-                "description must contain at least 1 character", ErrorCode.INVALID_CERTIFICATE_FIELD_VALUE.getCode());
+        SingleFieldValidationErrorResponse errorResponse = getCertificateEmptyDescriptionResponse();
         String jsonErrorResponse = mapper.writeValueAsString(errorResponse);
 
         mvc.perform(post("/certificates")
@@ -133,8 +387,7 @@ class GiftCertificatesControllerTest extends BaseIntegrationTest {
     void checkAddGiftCertificateShouldReturnErrorResponseWithZeroPrice() {
         GiftCertificateDto certificateDtoToCreate = getGiftCertificateDtoWithZeroPrice();
         String jsonCertificateToCreate = mapper.writeValueAsString(certificateDtoToCreate);
-        SingleFieldValidationErrorResponse errorResponse = new SingleFieldValidationErrorResponse(0, "Min price is 1 coin",
-                ErrorCode.INVALID_CERTIFICATE_FIELD_VALUE.getCode());
+        SingleFieldValidationErrorResponse errorResponse = getCertificateZeroPriceResponse();
         String jsonErrorResponse = mapper.writeValueAsString(errorResponse);
 
         mvc.perform(post("/certificates")
@@ -149,8 +402,7 @@ class GiftCertificatesControllerTest extends BaseIntegrationTest {
     void checkAddGiftCertificateShouldReturnErrorResponseWithZeroDuration() {
         GiftCertificateDto certificateDtoToCreate = getGiftCertificateDtoWithZeroDuration();
         String jsonCertificateToCreate = mapper.writeValueAsString(certificateDtoToCreate);
-        SingleFieldValidationErrorResponse errorResponse = new SingleFieldValidationErrorResponse(Duration.ofDays(0), "Min duration is 1 day",
-                ErrorCode.INVALID_CERTIFICATE_FIELD_VALUE.getCode());
+        SingleFieldValidationErrorResponse errorResponse = getCertificateZeroDurationResponse();
         String jsonErrorResponse = mapper.writeValueAsString(errorResponse);
 
         mvc.perform(post("/certificates")
@@ -165,12 +417,7 @@ class GiftCertificatesControllerTest extends BaseIntegrationTest {
     void checkAddGiftCertificateShouldReturnErrorResponseWithNullNameDescriptionPriceDuration() {
         GiftCertificateDto certificateDtoToCreate = getGiftCertificateDtoWithoutFields();
         String jsonCertificateToCreate = mapper.writeValueAsString(certificateDtoToCreate);
-        MultipleFieldsValidationErrorResponse errorResponse = new MultipleFieldsValidationErrorResponse(
-                List.of(new SingleFieldValidationErrorResponse(null, "Gift certificate name must contain at least 1 character", ErrorCode.INVALID_CERTIFICATE_FIELD_VALUE.getCode()),
-                        new SingleFieldValidationErrorResponse(null, "Gift certificate description must contain at least 1 character", ErrorCode.INVALID_CERTIFICATE_FIELD_VALUE.getCode()),
-                        new SingleFieldValidationErrorResponse(null, "Price cannot be null", ErrorCode.INVALID_CERTIFICATE_FIELD_VALUE.getCode()),
-                        new SingleFieldValidationErrorResponse(null, "Duration cannot be null", ErrorCode.INVALID_CERTIFICATE_FIELD_VALUE.getCode()))
-        );
+        MultipleFieldsValidationErrorResponse errorResponse = getCertificateNullNameDescriptionPriceDurationResponse();
         String jsonErrorResponse = mapper.writeValueAsString(errorResponse);
 
         mvc.perform(post("/certificates")
@@ -186,9 +433,7 @@ class GiftCertificatesControllerTest extends BaseIntegrationTest {
         GiftCertificateDto certificateDtoToCreate = getSimpleGiftCertificateDto();
         String jsonCertificateToCreate = mapper.writeValueAsString(certificateDtoToCreate);
 
-        ErrorResponse errorResponse = new ErrorResponse("Cannot add: gift certificate with similar name, description, " +
-                "price and duration already exist in database",
-                ErrorCode.CERTIFICATE_EXIST.getCode());
+        ErrorResponse errorResponse = getCertificateCannotAddExistResponse();
         String jsonErrorResponse = mapper.writeValueAsString(errorResponse);
 
         mvc.perform(post("/certificates")
@@ -203,7 +448,7 @@ class GiftCertificatesControllerTest extends BaseIntegrationTest {
     void checkUpdateGiftCertificateShouldReturnResponseWithUpdatedId() {
         UpdateGiftCertificateDto certificateDtoToUpdate = getSimpleUpdateGiftCertificateDto();
         String jsonCertificateToUpdate = mapper.writeValueAsString(certificateDtoToUpdate);
-        ModificationResponse modificationResponse = new ModificationResponse(1L, "Gift certificate updated successfully");
+        ModificationResponse modificationResponse = getCertificateUpdatedResponse();
         String jsonModificationResponse = mapper.writeValueAsString(modificationResponse);
 
         mvc.perform(patch("/certificates/{id}", 1L)
@@ -218,8 +463,7 @@ class GiftCertificatesControllerTest extends BaseIntegrationTest {
     void checkUpdateGiftCertificateShouldReturnErrorResponseWithIdNotFound() {
         UpdateGiftCertificateDto certificateDtoToUpdate = getSimpleUpdateGiftCertificateDto();
         String jsonCertificateToUpdate = mapper.writeValueAsString(certificateDtoToUpdate);
-        ErrorResponse errorResponse = new ErrorResponse("Cannot update: gift certificate with ID 10 not found in database",
-                ErrorCode.CERTIFICATE_ID_NOT_FOUND.getCode());
+        ErrorResponse errorResponse = getCertificateCannotUpdateIdNotFound();
         String jsonErrorResponse = mapper.writeValueAsString(errorResponse);
 
         mvc.perform(patch("/certificates/{id}", 10L)
@@ -234,7 +478,7 @@ class GiftCertificatesControllerTest extends BaseIntegrationTest {
     void checkUpdateGiftCertificateShouldReturnErrorResponseWithIncorrectId() {
         UpdateGiftCertificateDto certificateDtoToUpdate = getSimpleUpdateGiftCertificateDto();
         String jsonCertificateToUpdate = mapper.writeValueAsString(certificateDtoToUpdate);
-        ErrorResponse response = new ErrorResponse("Min ID value is 1", ErrorCode.INVALID_FIELD_VALUE.getCode());
+        ErrorResponse response = getIncorrectIdResponse();
         String jsonErrorResponse = mapper.writeValueAsString(response);
 
         mvc.perform(patch("/certificates/{id}", -1L)
@@ -249,7 +493,7 @@ class GiftCertificatesControllerTest extends BaseIntegrationTest {
     void checkUpdateGiftCertificateShouldReturnErrorResponseWithNoFieldsToUpdate() {
         UpdateGiftCertificateDto certificateDtoToUpdate = getUpdateGiftCertificateDtoWithoutFields();
         String jsonCertificateToUpdate = mapper.writeValueAsString(certificateDtoToUpdate);
-        ErrorResponse response = new ErrorResponse("Cannot update: no fields to update", ErrorCode.NO_CERTIFICATE_FIELDS_FOR_UPDATE.getCode());
+        ErrorResponse response = getCertificateCannotUpdateNoFieldsToUpdate();
         String jsonErrorResponse = mapper.writeValueAsString(response);
 
         mvc.perform(patch("/certificates/{id}", 1L)
@@ -264,8 +508,7 @@ class GiftCertificatesControllerTest extends BaseIntegrationTest {
     void checkUpdateGiftCertificateShouldReturnErrorResponseWithEmptyCertificateName() {
         UpdateGiftCertificateDto updateCertificateDto = getUpdateGiftCertificateDtoWithEmptyName();
         String jsonCertificateToCreate = mapper.writeValueAsString(updateCertificateDto);
-        SingleFieldValidationErrorResponse errorResponse = new SingleFieldValidationErrorResponse("", "Gift certificate " +
-                "name must contain at least 1 character", ErrorCode.INVALID_CERTIFICATE_FIELD_VALUE.getCode());
+        SingleFieldValidationErrorResponse errorResponse = getCertificateEmptyNameResponse();
         String jsonErrorResponse = mapper.writeValueAsString(errorResponse);
 
         mvc.perform(post("/certificates")
@@ -280,8 +523,7 @@ class GiftCertificatesControllerTest extends BaseIntegrationTest {
     void checkUpdateGiftCertificateShouldReturnErrorResponseWithEmptyCertificateDescription() {
         UpdateGiftCertificateDto updateCertificateDto = getUpdateGiftCertificateDtoWithEmptyDescription();
         String jsonCertificateToCreate = mapper.writeValueAsString(updateCertificateDto);
-        SingleFieldValidationErrorResponse errorResponse = new SingleFieldValidationErrorResponse("", "Gift certificate " +
-                "description must contain at least 1 character", ErrorCode.INVALID_CERTIFICATE_FIELD_VALUE.getCode());
+        SingleFieldValidationErrorResponse errorResponse = getCertificateEmptyDescriptionResponse();
         String jsonErrorResponse = mapper.writeValueAsString(errorResponse);
 
         mvc.perform(post("/certificates")
@@ -296,8 +538,7 @@ class GiftCertificatesControllerTest extends BaseIntegrationTest {
     void checkUpdateGiftCertificateShouldReturnErrorResponseWithZeroPrice() {
         UpdateGiftCertificateDto updateCertificateDto = getUpdateGiftCertificateDtoWithZeroPrice();
         String jsonCertificateToCreate = mapper.writeValueAsString(updateCertificateDto);
-        SingleFieldValidationErrorResponse errorResponse = new SingleFieldValidationErrorResponse(0, "Min price is 1 coin",
-                ErrorCode.INVALID_CERTIFICATE_FIELD_VALUE.getCode());
+        SingleFieldValidationErrorResponse errorResponse = getCertificateZeroPriceResponse();
         String jsonErrorResponse = mapper.writeValueAsString(errorResponse);
 
         mvc.perform(post("/certificates")
@@ -312,8 +553,7 @@ class GiftCertificatesControllerTest extends BaseIntegrationTest {
     void checkUpdateGiftCertificateShouldReturnErrorResponseWithZeroDuration() {
         GiftCertificateDto certificateDtoToCreate = getGiftCertificateDtoWithZeroDuration();
         String jsonCertificateToCreate = mapper.writeValueAsString(certificateDtoToCreate);
-        SingleFieldValidationErrorResponse errorResponse = new SingleFieldValidationErrorResponse(Duration.ofDays(0), "Min duration is 1 day",
-                ErrorCode.INVALID_CERTIFICATE_FIELD_VALUE.getCode());
+        SingleFieldValidationErrorResponse errorResponse = getCertificateZeroDurationResponse();
         String jsonErrorResponse = mapper.writeValueAsString(errorResponse);
 
         mvc.perform(post("/certificates")
@@ -328,8 +568,7 @@ class GiftCertificatesControllerTest extends BaseIntegrationTest {
     void checkUpdateGiftCertificateShouldReturnErrorResponseWithSimilarParamsExist() {
         UpdateGiftCertificateDto updateCertificateDto = getUpdateGiftCertificateDtoWithExistingInDbFields();
         String jsonCertificateToUpdate = mapper.writeValueAsString(updateCertificateDto);
-        ErrorResponse response = new ErrorResponse("Cannot update: gift certificate with similar name, description, " +
-                "price and duration already exist in database", ErrorCode.CERTIFICATE_EXIST.getCode());
+        ErrorResponse response = getCertificateCannotUpdateExistResponse();
         String jsonErrorResponse = mapper.writeValueAsString(response);
 
         mvc.perform(patch("/certificates/{id}", 3L)
@@ -342,7 +581,7 @@ class GiftCertificatesControllerTest extends BaseIntegrationTest {
     @Test
     @SneakyThrows
     void checkDeleteGiftCertificateShouldReturnResponseWithDeletedId() {
-        ModificationResponse modificationResponse = new ModificationResponse(3L, "Gift certificate deleted successfully");
+        ModificationResponse modificationResponse = getCertificateDeletedResponse();
         String jsonModificationResponse = mapper.writeValueAsString(modificationResponse);
 
         mvc.perform(delete("/certificates/{id}", 3L))
@@ -353,12 +592,22 @@ class GiftCertificatesControllerTest extends BaseIntegrationTest {
     @Test
     @SneakyThrows
     void checkDeleteGiftCertificateShouldReturnErrorResponseWithIdNotFound() {
-        ErrorResponse errorResponse = new ErrorResponse("Cannot delete: gift certificate with ID 10 not found in database",
-                ErrorCode.CERTIFICATE_ID_NOT_FOUND.getCode());
+        ErrorResponse errorResponse = getCertificateCannotDeleteIdNotFound();
         String jsonErrorResponse = mapper.writeValueAsString(errorResponse);
 
         mvc.perform(delete("/certificates/{id}", 10L))
                 .andExpect(status().isNotFound())
+                .andExpect(content().json(jsonErrorResponse));
+    }
+
+    @Test
+    @SneakyThrows
+    void checkDeleteGiftCertificateShouldReturnErrorResponseWithIncorrectId() {
+        ErrorResponse errorResponse = getIncorrectIdResponse();
+        String jsonErrorResponse = mapper.writeValueAsString(errorResponse);
+
+        mvc.perform(delete("/certificates/{id}", -1L))
+                .andExpect(status().isBadRequest())
                 .andExpect(content().json(jsonErrorResponse));
     }
 }

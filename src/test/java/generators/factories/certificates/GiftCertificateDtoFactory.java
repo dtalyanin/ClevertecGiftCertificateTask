@@ -63,4 +63,42 @@ public class GiftCertificateDtoFactory {
     public static List<GiftCertificateDto> getSimpleGiftCertificateDtos() {
         return List.of(getSimpleGiftCertificateDto(), getSimpleGiftCertificateDto2(), getSimpleGiftCertificateDto3());
     }
+
+    public static List<GiftCertificateDto> getGiftCertificateDtosFromDb() {
+        return List.of(getSimpleGiftCertificateDtoWithTags(), getSimpleGiftCertificateDto2(), getSimpleGiftCertificateDto3());
+    }
+
+    public static GiftCertificateDto getSimpleGiftCertificateDtoToCreate() {
+        return GiftCertificateDtoBuilder.builder()
+                .name("Test created")
+                .description("Test description created")
+                .tags(Set.of(getSimpleTagDto(), getSimpleTagDto2()))
+                .price(BigDecimal.valueOf(2000, 2))
+                .duration(2L)
+                .build();
+    }
+
+    public static GiftCertificateDto getGiftCertificateDtoWithEmptyName() {
+        return GiftCertificateDtoBuilder.builder()
+                .name("")
+                .build();
+    }
+
+    public static GiftCertificateDto getGiftCertificateDtoWithEmptyDescription() {
+        return GiftCertificateDtoBuilder.builder()
+                .description("")
+                .build();
+    }
+
+    public static GiftCertificateDto getGiftCertificateDtoWithZeroPrice() {
+        return GiftCertificateDtoBuilder.builder()
+                .price(BigDecimal.ZERO)
+                .build();
+    }
+
+    public static GiftCertificateDto getGiftCertificateDtoWithZeroDuration() {
+        return GiftCertificateDtoBuilder.builder()
+                .duration(0L)
+                .build();
+    }
 }

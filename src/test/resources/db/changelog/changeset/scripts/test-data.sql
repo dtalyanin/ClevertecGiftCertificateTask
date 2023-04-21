@@ -8,11 +8,11 @@ VALUES ('Test tag'),
        ('Test tag 2'),
        ('Test tag 3');
 
+SELECT SETVAL('tags_id_seq', (SELECT MAX(id) FROM tags));
+
 INSERT INTO gift_certificates_tags
 VALUES (1, 1),
        (1, 2),
        (1, 3),
        (2, 1),
        (2, 2);
-
-SELECT setval('tags_id_seq', (SELECT MAX(id) FROM tags))

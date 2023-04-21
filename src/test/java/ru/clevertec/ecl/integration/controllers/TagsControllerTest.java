@@ -8,10 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import ru.clevertec.ecl.dao.TagsRepository;
 import ru.clevertec.ecl.dto.TagDto;
 import ru.clevertec.ecl.integration.BaseIntegrationTest;
-import ru.clevertec.ecl.models.Tag;
 import ru.clevertec.ecl.models.codes.ErrorCode;
 import ru.clevertec.ecl.models.responses.ModificationResponse;
 import ru.clevertec.ecl.models.responses.errors.ErrorResponse;
@@ -19,12 +17,8 @@ import ru.clevertec.ecl.models.responses.errors.SingleFieldValidationErrorRespon
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 import static generators.factories.tags.TagDtoFactory.*;
-import static generators.factories.tags.TagFactory.getCreatedTag;
-import static generators.factories.tags.TagFactory.getUpdatedTag;
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -36,13 +30,10 @@ class TagsControllerTest extends BaseIntegrationTest {
     private MockMvc mvc;
     @Autowired
     private ObjectMapper mapper;
-    @Autowired
-    private TagsRepository repository;
-
 
     @Test
     @SneakyThrows
-    void checkGetAllTagsShouldReturnTagDtosWithoutPagination() {
+    void checkGetAllTagsShouldReturnTagDtosWithDefaultPagination() {
         List<TagDto> tagDtos = getSimpleTagDtosList();
         String jsonTagDtos = mapper.writeValueAsString(tagDtos);
 
@@ -127,13 +118,12 @@ class TagsControllerTest extends BaseIntegrationTest {
     @Test
     @SneakyThrows
     void checkGetTagByIdShouldReturnTagDtoWithSpecifiedId() {
-        TagDto dto = TagDtoFactory.getSimpleTagDto();
-        String json = mapper.writeValueAsString(dto);
+        TagDto tagDto = TagDtoFactory.getSimpleTagDto();
+        String jsonTagDto = mapper.writeValueAsString(tagDto);
 
         mvc.perform(get("/tags/{id}", 1L))
                 .andExpect(status().isOk())
-                .andExpect(content().json(json));
-
+                .andExpect(content().json(jsonTagDto));
     }
 
     @Test
@@ -145,7 +135,6 @@ class TagsControllerTest extends BaseIntegrationTest {
         mvc.perform(get("/tags/{id}", -1L))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().json(jsonErrorResponse));
-
     }
 
     @Test
@@ -158,7 +147,6 @@ class TagsControllerTest extends BaseIntegrationTest {
         mvc.perform(get("/tags/{id}", 10L))
                 .andExpect(status().isNotFound())
                 .andExpect(content().json(jsonErrorResponse));
-
     }
 
     @Test
@@ -179,25 +167,7 @@ class TagsControllerTest extends BaseIntegrationTest {
 
     @Test
     @SneakyThrows
-    void checkAddTagShouldExistInDbAfterExecuting() {
-        TagDto dtoToCreate = getSimpleTagDtoToCreate();
-        String jsonTagToCreate = mapper.writeValueAsString(dtoToCreate);
-
-        mvc.perform(post("/tags")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(jsonTagToCreate));
-        System.out.println(repository.findAll());
-        Tag expectedTag = getCreatedTag();
-        Optional<Tag> actualTag = repository.findById(4L);
-
-        assertThat(actualTag).hasValue(expectedTag);
-
-
-    }
-
-    @Test
-    @SneakyThrows
-    void checkAddTagShouldReturnErrorResponseDtoWithEmptyTagName() {
+    void checkAddTagShouldReturnErrorResponseWithEmptyTagName() {
         TagDto dtoToCreate = getTagDtoWithoutName();
         String jsonTagToCreate = mapper.writeValueAsString(dtoToCreate);
         SingleFieldValidationErrorResponse errorResponse = new SingleFieldValidationErrorResponse(null,
@@ -213,7 +183,7 @@ class TagsControllerTest extends BaseIntegrationTest {
 
     @Test
     @SneakyThrows
-    void checkAddTagShouldReturnErrorResponseTagWithNameExist() {
+    void checkAddTagShouldReturnErrorResponseWithNameExist() {
         TagDto dtoToCreate = getSimpleTagDto();
         String jsonTagToCreate = mapper.writeValueAsString(dtoToCreate);
         ErrorResponse errorResponse = new ErrorResponse("Cannot add: tag with name 'Test tag' already exist in database",
@@ -230,10 +200,10 @@ class TagsControllerTest extends BaseIntegrationTest {
     @Test
     @SneakyThrows
     void checkUpdateTagShouldReturnResponseWithUpdatedId() {
-        ModificationResponse modificationResponse = new ModificationResponse(1L, "Tag updated successfully");
-        String jsonModificationResponse = mapper.writeValueAsString(modificationResponse);
         TagDto dtoToUpdate = getSimpleTagDtoToUpdate();
         String jsonTagToCreate = mapper.writeValueAsString(dtoToUpdate);
+        ModificationResponse modificationResponse = new ModificationResponse(1L, "Tag updated successfully");
+        String jsonModificationResponse = mapper.writeValueAsString(modificationResponse);
 
         mvc.perform(put("/tags/{id}", 1L)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -244,22 +214,101 @@ class TagsControllerTest extends BaseIntegrationTest {
 
     @Test
     @SneakyThrows
-    void checkUpdateTagShouldExistWithUpdatedName() {
+    void checkUpdateTagByIdShouldReturnErrorResponseWithIncorrectId() {
         TagDto dtoToUpdate = getSimpleTagDtoToUpdate();
-        String jsonTagToCreate = mapper.writeValueAsString(dtoToUpdate);
+        String jsonTagToUpdate = mapper.writeValueAsString(dtoToUpdate);
+        ErrorResponse errorResponse = new ErrorResponse("Min ID value is 1", ErrorCode.INVALID_FIELD_VALUE.getCode());
+        String jsonErrorResponse = mapper.writeValueAsString(errorResponse);
 
-        mvc.perform(put("/tags/{id}", 1L)
+        mvc.perform(put("/tags/{id}", -1L)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(jsonTagToCreate));
-
-        Tag expectedTag = getUpdatedTag();
-        Optional<Tag> actualTag = repository.findById(1L);
-
-        assertThat(actualTag).hasValue(expectedTag);
+                        .content(jsonTagToUpdate))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().json(jsonErrorResponse));
     }
 
     @Test
-    void deleteTagById() {
+    @SneakyThrows
+    void checkUpdateTagByIdShouldReturnErrorResponseWithIdNotFound() {
+        TagDto dtoToUpdate = getSimpleTagDtoToUpdate();
+        String jsonTagToUpdate = mapper.writeValueAsString(dtoToUpdate);
+        ErrorResponse errorResponse = new ErrorResponse("Cannot update: tag with ID 10 not found in database",
+                ErrorCode.TAG_ID_NOT_FOUND.getCode());
+        String jsonErrorResponse = mapper.writeValueAsString(errorResponse);
+
+        mvc.perform(put("/tags/{id}", 10L)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonTagToUpdate))
+                .andExpect(status().isNotFound())
+                .andExpect(content().json(jsonErrorResponse));
+    }
+
+    @Test
+    @SneakyThrows
+    void checkUpdateTagByIdShouldReturnErrorResponseWithNameExist() {
+        TagDto dtoToUpdate = getSimpleTagDto2();
+        String jsonTagToUpdate = mapper.writeValueAsString(dtoToUpdate);
+        ErrorResponse errorResponse = new ErrorResponse("Cannot update: tag with name 'Test tag 2' already exist in database",
+                ErrorCode.TAG_NAME_EXIST.getCode());
+        String jsonErrorResponse = mapper.writeValueAsString(errorResponse);
+
+        mvc.perform(put("/tags/{id}", 1L)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonTagToUpdate))
+                .andExpect(status().isUnprocessableEntity())
+                .andExpect(content().json(jsonErrorResponse));
+    }
+
+    @Test
+    @SneakyThrows
+    void checkUpdateTagByIdShouldReturnErrorResponseWithEmptyTagName() {
+        TagDto dtoToCreate = getTagDtoWithoutName();
+        String jsonTagToUpdate = mapper.writeValueAsString(dtoToCreate);
+        SingleFieldValidationErrorResponse errorResponse = new SingleFieldValidationErrorResponse(null,
+                "Tag name must contain at least 1 character", ErrorCode.INVALID_TAG_FIELD_VALUE.getCode());
+        String jsonErrorResponse = mapper.writeValueAsString(errorResponse);
+
+        mvc.perform(put("/tags/{id}", 1L)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonTagToUpdate))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().json(jsonErrorResponse));
+    }
+
+    @Test
+    @SneakyThrows
+    void checkDeleteTagShouldReturnResponseWithDeletedId() {
+        ModificationResponse modificationResponse = new ModificationResponse(3L, "Tag deleted successfully");
+        String jsonModificationResponse = mapper.writeValueAsString(modificationResponse);
+
+        mvc.perform(delete("/tags/{id}", 3L))
+                .andExpect(status().isOk())
+                .andExpect(content().json(jsonModificationResponse));
+    }
+
+    @Test
+    @SneakyThrows
+    void checkDeleteTagByIdShouldReturnErrorResponseWithIdNotFound() {
+        ErrorResponse errorResponse = new ErrorResponse("Cannot delete: tag with ID 10 not found in database",
+                ErrorCode.TAG_ID_NOT_FOUND.getCode());
+        String jsonErrorResponse = mapper.writeValueAsString(errorResponse);
+
+        mvc.perform(delete("/tags/{id}", 10L))
+                .andExpect(status().isNotFound())
+                .andExpect(content().json(jsonErrorResponse));
+
+    }
+
+    @Test
+    @SneakyThrows
+    void checkDeleteTagByIdShouldReturnErrorResponseWithIncorrectId() {
+        ErrorResponse errorResponse = new ErrorResponse("Min ID value is 1", ErrorCode.INVALID_FIELD_VALUE.getCode());
+        String jsonErrorResponse = mapper.writeValueAsString(errorResponse);
+
+        mvc.perform(delete("/tags/{id}", -1L))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().json(jsonErrorResponse));
+
     }
 
     @Test

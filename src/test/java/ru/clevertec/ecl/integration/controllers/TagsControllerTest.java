@@ -35,7 +35,7 @@ class TagsControllerTest extends BaseIntegrationTest {
 
     @Test
     @SneakyThrows
-    void checkGetAllTagsShouldReturnTagDtosWithDefaultPagination() {
+    void checkGetAllTagsShouldReturn3TagDtosWithDefaultPagination() {
         List<TagDto> tagDtos = getSimpleTagDtosList();
         String jsonTagDtos = mapper.writeValueAsString(tagDtos);
 
@@ -46,7 +46,7 @@ class TagsControllerTest extends BaseIntegrationTest {
 
     @Test
     @SneakyThrows
-    void checkGetAllTagsShouldReturnTagDtosWithPageSize2() {
+    void checkGetAllTagsShouldReturn2TagDtosWithPageSize2() {
         List<TagDto> tagDtos = List.of(getSimpleTagDto(), getSimpleTagDto2());
         String jsonTagDtos = mapper.writeValueAsString(tagDtos);
 
@@ -58,7 +58,7 @@ class TagsControllerTest extends BaseIntegrationTest {
 
     @Test
     @SneakyThrows
-    void checkGetAllTagsShouldReturnTagDtosWithFirstPage() {
+    void checkGetAllTagsShouldReturn3TagDtosWithFirstPage() {
         List<TagDto> tagDtos = getSimpleTagDtosList();
         String jsonTagDtos = mapper.writeValueAsString(tagDtos);
 
@@ -82,7 +82,7 @@ class TagsControllerTest extends BaseIntegrationTest {
 
     @Test
     @SneakyThrows
-    void checkGetAllTagsShouldReturnTagDtosWithPageSize2AngIncludeFirstPage() {
+    void checkGetAllTagsShouldReturnTag2DtosWithPageSize2AngIncludeFirstPage() {
         List<TagDto> tagDtos = List.of(getSimpleTagDto(), getSimpleTagDto2());
         String jsonTagDtos = mapper.writeValueAsString(tagDtos);
 
@@ -95,7 +95,7 @@ class TagsControllerTest extends BaseIntegrationTest {
 
     @Test
     @SneakyThrows
-    void checkGetAllTagsShouldReturnTagDtosWithDefaultPaginationWhenNegativePageSize() {
+    void checkGetAllTagsShouldReturn3TagDtosWithDefaultPaginationWhenNegativePageSize() {
         List<TagDto> tagDtos = getSimpleTagDtosList();
         String jsonTagDtos = mapper.writeValueAsString(tagDtos);
 
@@ -107,7 +107,7 @@ class TagsControllerTest extends BaseIntegrationTest {
 
     @Test
     @SneakyThrows
-    void checkGetAllTagsShouldReturnTagDtosWithDefaultPaginationWhenNegativePage() {
+    void checkGetAllTagsShouldReturn3TagDtosWithDefaultPaginationWhenNegativePage() {
         List<TagDto> tagDtos = getSimpleTagDtosList();
         String jsonTagDtos = mapper.writeValueAsString(tagDtos);
 

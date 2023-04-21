@@ -64,4 +64,9 @@ public class ErrorResponseFactory {
         return new ErrorResponse("Cannot delete: tag with ID 10 not found in database",
                 ErrorCode.TAG_ID_NOT_FOUND.getCode());
     }
+
+    public static ErrorResponse getUserIdNotFoundResponse() {
+        return new ErrorResponse("User with ID 10 not found in database",
+                ErrorCode.USER_ID_NOT_FOUND.getCode());
+    }
 }

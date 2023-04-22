@@ -1,7 +1,6 @@
 package generators.factories.certificates;
 
 import generators.builders.GiftCertificateBuilder;
-import lombok.experimental.UtilityClass;
 import ru.clevertec.ecl.models.GiftCertificate;
 
 import java.time.Duration;
@@ -63,13 +62,6 @@ public class GiftCertificateFactory {
                 .build();
     }
 
-    public static GiftCertificate getSimpleGiftCertificateWithoutId() {
-        return GiftCertificateBuilder.builder()
-                .id(0L)
-                .tags(getDifferentTagsWithoutIdSet())
-                .build();
-    }
-
     public static GiftCertificate getSimpleGiftCertificateWithNullId() {
         return GiftCertificateBuilder.builder()
                 .id(null)
@@ -87,11 +79,16 @@ public class GiftCertificateFactory {
                 .build();
     }
 
-
-    public static GiftCertificate getGiftCertificateForUpdate() {
+    public static GiftCertificate getGiftCertificateNotExistingInDb() {
         return GiftCertificateBuilder.builder()
-                .name("New test")
+                .id(5L)
+                .name("Test not existing")
+                .description("Test not existing")
                 .tags(Collections.emptySet())
+                .price(5000L)
+                .duration(Duration.ofDays(5))
+                .createDate(LocalDateTime.of(2023, 1, 3, 1, 0 ,0))
+                .lastUpdateDate(LocalDateTime.of(2023, 2, 22, 6, 0 ,0))
                 .build();
     }
 

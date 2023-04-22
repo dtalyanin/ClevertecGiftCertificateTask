@@ -69,4 +69,28 @@ public class ErrorResponseFactory {
         return new ErrorResponse("User with ID 10 not found in database",
                 ErrorCode.USER_ID_NOT_FOUND.getCode());
     }
+
+    public static ErrorResponse getUserForOrderIdNotFoundResponse() {
+        return new ErrorResponse("User with ID 10 not found in database",
+                ErrorCode.USER_FOR_ORDER_NOT_FOUND.getCode());
+    }
+
+    public static ErrorResponse getOrderIdNotFoundResponse() {
+        return new ErrorResponse("Order with ID 10 not found in database for user with ID 1",
+                ErrorCode.ORDER_NOT_FOUND.getCode());
+    }
+
+    public static ErrorResponse getOrderCannotAddUserIdNotFoundResponse() {
+        return new ErrorResponse("Cannot add order: user with ID 10 not found in database",
+                ErrorCode.USER_FOR_ORDER_NOT_FOUND.getCode());
+    }
+
+    public static ErrorResponse getOrderCannotAddCertificateIdNotFoundResponse() {
+        return new ErrorResponse("Cannot add order: gift certificate with ID 10 not found in database",
+                ErrorCode.CERTIFICATE_FOR_ORDER_NOT_FOUND.getCode());
+    }
+
+    public static ErrorResponse getIncorrectCertificateIdResponse() {
+        return new ErrorResponse("Min ID value is 1", ErrorCode.INVALID_ORDER_VALUE.getCode());
+    }
 }

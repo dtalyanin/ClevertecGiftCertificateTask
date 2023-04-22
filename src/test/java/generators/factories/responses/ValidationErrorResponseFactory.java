@@ -61,4 +61,9 @@ public class ValidationErrorResponseFactory {
         return new SingleFieldValidationErrorResponse(null,
                 "Tag name must contain at least 1 character", ErrorCode.INVALID_TAG_FIELD_VALUE.getCode());
     }
+
+    public static SingleFieldValidationErrorResponse getZeroOrderQuantityResponse() {
+        return new SingleFieldValidationErrorResponse(0,
+                "Min quantity is 1", ErrorCode.INVALID_ORDER_VALUE.getCode());
+    }
 }

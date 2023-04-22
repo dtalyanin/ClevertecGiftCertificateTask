@@ -4,6 +4,7 @@ import generators.builders.OrderDtoBuilder;
 import ru.clevertec.ecl.dto.orders.OrderDto;
 
 import java.math.BigDecimal;
+import java.util.Collections;
 import java.util.List;
 
 public class OrderDtoFactory {
@@ -21,5 +22,13 @@ public class OrderDtoFactory {
 
     public static List<OrderDto> getDifferentOrderDtos() {
         return List.of(getSimpleOrderDto(), getSimpleOrderDto2());
+    }
+
+    public static List<OrderDto> getOrderDtosWithSize1() {
+        return List.of(getSimpleOrderDto());
+    }
+
+    public static List<OrderDto> getEmptyListOrderDtos() {
+        return Collections.emptyList();
     }
 }

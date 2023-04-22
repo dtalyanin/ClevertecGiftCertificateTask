@@ -15,7 +15,6 @@ import ru.clevertec.ecl.models.responses.errors.ErrorResponse;
 import ru.clevertec.ecl.models.responses.errors.MultipleFieldsValidationErrorResponse;
 import ru.clevertec.ecl.models.responses.errors.SingleFieldValidationErrorResponse;
 
-import java.util.Collections;
 import java.util.List;
 
 import static generators.factories.certificates.GiftCertificateDtoFactory.*;
@@ -49,7 +48,7 @@ class GiftCertificatesControllerTest extends BaseIntegrationTest {
     @Test
     @SneakyThrows
     void checkGetGiftCertificatesWithFilteringShouldReturn2DtosWithPageSize2() {
-        List<GiftCertificateDto> certificateDtos = List.of(getSimpleGiftCertificateDtoWithTags(), getSimpleGiftCertificateDto2());
+        List<GiftCertificateDto> certificateDtos = getGiftCertificateDtosFromDbWithSize2();
         String jsonTagDtos = mapper.writeValueAsString(certificateDtos);
 
         mvc.perform(get("/certificates")
@@ -73,7 +72,7 @@ class GiftCertificatesControllerTest extends BaseIntegrationTest {
     @Test
     @SneakyThrows
     void checkGetGiftCertificatesWithFilteringShouldReturnDtosEmptyListOutOfPageRange() {
-        List<GiftCertificateDto> certificateDtos = Collections.emptyList();
+        List<GiftCertificateDto> certificateDtos = getEmptyListGiftCertificateDtos();
         String jsonTagDtos = mapper.writeValueAsString(certificateDtos);
 
         mvc.perform(get("/certificates")
@@ -85,7 +84,7 @@ class GiftCertificatesControllerTest extends BaseIntegrationTest {
     @Test
     @SneakyThrows
     void checkGetGiftCertificatesWithFilteringShouldReturn2DtosWithPageSize2AngIncludeFirstPage() {
-        List<GiftCertificateDto> certificateDtos = List.of(getSimpleGiftCertificateDtoWithTags(), getSimpleGiftCertificateDto2());
+        List<GiftCertificateDto> certificateDtos = getGiftCertificateDtosFromDbWithSize2();
         String jsonTagDtos = mapper.writeValueAsString(certificateDtos);
 
         mvc.perform(get("/certificates")
@@ -97,7 +96,7 @@ class GiftCertificatesControllerTest extends BaseIntegrationTest {
 
     @Test
     @SneakyThrows
-    void checkGetGiftCertificatesWithFilteringShouldReturn3DtosWithDefaultPaginationWhenNegativePageSize() {
+    void checkGetGiftCertificatesWithFilteringShouldReturn3DtosWithDefaultPaginationWhenNegativeSize() {
         List<GiftCertificateDto> certificateDtos = getGiftCertificateDtosFromDb();
         String jsonTagDtos = mapper.writeValueAsString(certificateDtos);
 
@@ -197,7 +196,7 @@ class GiftCertificatesControllerTest extends BaseIntegrationTest {
     @Test
     @SneakyThrows
     void checkGetGiftCertificatesWithFilteringShouldReturn1DtoWithFilterByFullName() {
-        List<GiftCertificateDto> certificateDtos = List.of(getSimpleGiftCertificateDto2());
+        List<GiftCertificateDto> certificateDtos = getOneGiftCertificateDtosAfterFiltering();
         String jsonTagDtos = mapper.writeValueAsString(certificateDtos);
 
         mvc.perform(get("/certificates")
@@ -233,7 +232,7 @@ class GiftCertificatesControllerTest extends BaseIntegrationTest {
     @Test
     @SneakyThrows
     void checkGetGiftCertificatesWithFilteringShouldReturn1DtoWithFilterByFullDescription() {
-        List<GiftCertificateDto> certificateDtos = List.of(getSimpleGiftCertificateDto2());
+        List<GiftCertificateDto> certificateDtos = getOneGiftCertificateDtosAfterFiltering();
         String jsonTagDtos = mapper.writeValueAsString(certificateDtos);
 
         mvc.perform(get("/certificates")
@@ -269,7 +268,7 @@ class GiftCertificatesControllerTest extends BaseIntegrationTest {
     @Test
     @SneakyThrows
     void checkGetGiftCertificatesWithFilteringShouldReturn2DtoWithFilterByOneTag() {
-        List<GiftCertificateDto> certificateDtos = List.of(getSimpleGiftCertificateDtoWithTags(), getSimpleGiftCertificateDto2());
+        List<GiftCertificateDto> certificateDtos = getGiftCertificateDtosFromDbWithSize2();
         String jsonTagDtos = mapper.writeValueAsString(certificateDtos);
 
         mvc.perform(get("/certificates")
@@ -281,7 +280,7 @@ class GiftCertificatesControllerTest extends BaseIntegrationTest {
     @Test
     @SneakyThrows
     void checkGetGiftCertificatesWithFilteringShouldReturn1DtoWithFilterByTwoTags() {
-        List<GiftCertificateDto> certificateDtos = List.of(getSimpleGiftCertificateDtoWithTags());
+        List<GiftCertificateDto> certificateDtos = getOneGiftCertificateDtosAfterFilteringByTags();
         String jsonTagDtos = mapper.writeValueAsString(certificateDtos);
 
         mvc.perform(get("/certificates")
@@ -294,7 +293,7 @@ class GiftCertificatesControllerTest extends BaseIntegrationTest {
     @Test
     @SneakyThrows
     void checkGetGiftCertificatesWithFilteringShouldReturnEmptyListUnknownTag() {
-        List<GiftCertificateDto> certificateDtos = Collections.emptyList();
+        List<GiftCertificateDto> certificateDtos = getEmptyListGiftCertificateDtos();
         String jsonTagDtos = mapper.writeValueAsString(certificateDtos);
 
         mvc.perform(get("/certificates")

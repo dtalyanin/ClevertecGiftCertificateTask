@@ -11,13 +11,11 @@ import ru.clevertec.ecl.dto.UserDto;
 import ru.clevertec.ecl.integration.BaseIntegrationTest;
 import ru.clevertec.ecl.models.responses.errors.ErrorResponse;
 
-import java.util.Collections;
 import java.util.List;
 
 import static generators.factories.responses.ErrorResponseFactory.getIncorrectIdResponse;
 import static generators.factories.responses.ErrorResponseFactory.getUserIdNotFoundResponse;
-import static generators.factories.users.UserDtoFactory.getSimpleUserDto;
-import static generators.factories.users.UserDtoFactory.getSimpleUsersDtos;
+import static generators.factories.users.UserDtoFactory.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -44,7 +42,7 @@ class UsersControllerTest extends BaseIntegrationTest {
     @Test
     @SneakyThrows
     void checkGetAllUsersShouldReturn1UserDtoWithPageSize1() {
-        List<UserDto> userDtos = List.of(getSimpleUserDto());
+        List<UserDto> userDtos = getUserDtosWithSize1();
         String jsonUserDtos = mapper.writeValueAsString(userDtos);
 
         mvc.perform(get("/users")
@@ -68,7 +66,7 @@ class UsersControllerTest extends BaseIntegrationTest {
     @Test
     @SneakyThrows
     void checkGetAllUsersShouldReturnUserDtosEmptyListOutOfPageRange() {
-        List<UserDto> userDtos = Collections.emptyList();
+        List<UserDto> userDtos = getEmptyListUserDtos();
         String jsonUserDtos = mapper.writeValueAsString(userDtos);
 
         mvc.perform(get("/users")
@@ -80,7 +78,7 @@ class UsersControllerTest extends BaseIntegrationTest {
     @Test
     @SneakyThrows
     void checkGetAllUsersShouldReturn1UserDtoWithPageSize1AngIncludeFirstPage() {
-        List<UserDto> userDtos = List.of(getSimpleUserDto());
+        List<UserDto> userDtos = getUserDtosWithSize1();
         String jsonUserDtos = mapper.writeValueAsString(userDtos);
 
         mvc.perform(get("/users")
@@ -92,7 +90,7 @@ class UsersControllerTest extends BaseIntegrationTest {
 
     @Test
     @SneakyThrows
-    void checkGetAllUsersShouldReturn2UserDtosWithDefaultPaginationWhenNegativePageSize() {
+    void checkGetAllUsersShouldReturn2UserDtosWithDefaultPaginationWhenNegativeSize() {
         List<UserDto> userDtos = getSimpleUsersDtos();
         String jsonUserDtos = mapper.writeValueAsString(userDtos);
 

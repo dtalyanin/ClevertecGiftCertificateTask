@@ -86,6 +86,23 @@ public class GiftCertificateDtoFactory {
         return List.of(getSimpleGiftCertificateDtoWithTags(), getSimpleGiftCertificateDto2(), getSimpleGiftCertificateDto3());
     }
 
+
+    public static List<GiftCertificateDto> getEmptyListGiftCertificateDtos() {
+        return Collections.emptyList();
+    }
+
+    public static List<GiftCertificateDto> getGiftCertificateDtosFromDbWithSize2() {
+        return List.of(getSimpleGiftCertificateDtoWithTags(), getSimpleGiftCertificateDto2());
+    }
+
+    public static List<GiftCertificateDto> getOneGiftCertificateDtosAfterFiltering() {
+        return List.of(getSimpleGiftCertificateDto2());
+    }
+
+    public static List<GiftCertificateDto> getOneGiftCertificateDtosAfterFilteringByTags() {
+        return List.of(getSimpleGiftCertificateDtoWithTags());
+    }
+
     public static GiftCertificateDto getSimpleGiftCertificateDtoToCreate() {
         return GiftCertificateDtoBuilder.builder()
                 .name("Test created")

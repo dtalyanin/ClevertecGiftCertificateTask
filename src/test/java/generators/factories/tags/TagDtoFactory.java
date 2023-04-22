@@ -2,6 +2,7 @@ package generators.factories.tags;
 
 import ru.clevertec.ecl.dto.TagDto;
 
+import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -34,6 +35,14 @@ public class TagDtoFactory {
 
     public static List<TagDto> getSimpleTagDtosList() {
         return List.of(getSimpleTagDto(), getSimpleTagDto2(), getSimpleTagDto3());
+    }
+
+    public static List<TagDto> getTagDtosWithSize2() {
+        return List.of(getSimpleTagDto(), getSimpleTagDto2());
+    }
+
+    public static List<TagDto> getEmptyListTagDtos() {
+        return Collections.emptyList();
     }
 
     public static Set<TagDto> getSimpleTagDtosSet() {

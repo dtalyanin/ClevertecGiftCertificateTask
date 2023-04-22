@@ -27,4 +27,8 @@ public class ModificationResponseFactory {
     public static ModificationResponse getTagDeletedResponse() {
         return new ModificationResponse(3L, "Tag deleted successfully");
     }
+
+    public static ModificationResponse getOrderAddedResponse() {
+        return new ModificationResponse(3L, "Order added successfully");
+    }
 }

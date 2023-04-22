@@ -25,7 +25,7 @@ SELECT SETVAL('users_id_seq', (SELECT MAX(id) FROM users));
 
 INSERT INTO orders (user_id, certificate_id, price, quantity, total_price, order_date)
 VALUES
-    (1, 1, 1000, 10, 5000, '2023-04-01 01:00:00.000000'),
-    (1, 1, 1000, 10, 10000, '2023-04-10 11:00:00.000000');
+    (1, 1, 1000, 5, 5000, '2023-04-01 01:00:00.000000'),
+    (1, 1, 1000, 10, 10000, '2023-04-01 01:00:00.000000');
 
 SELECT SETVAL('orders_id_seq', (SELECT MAX(id) FROM orders));

@@ -2,6 +2,7 @@ package generators.factories.users;
 
 import ru.clevertec.ecl.dto.UserDto;
 
+import java.util.Collections;
 import java.util.List;
 
 public class UserDtoFactory {
@@ -15,5 +16,13 @@ public class UserDtoFactory {
 
     public static List<UserDto> getSimpleUsersDtos() {
         return List.of(getSimpleUserDto(), getSimpleUserDto2());
+    }
+
+    public static List<UserDto> getUserDtosWithSize1() {
+        return List.of(getSimpleUserDto());
+    }
+
+    public static List<UserDto> getEmptyListUserDtos() {
+        return Collections.emptyList();
     }
 }

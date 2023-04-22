@@ -1,7 +1,6 @@
 package ru.clevertec.ecl.integration.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import generators.factories.tags.TagDtoFactory;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +13,6 @@ import ru.clevertec.ecl.models.responses.ModificationResponse;
 import ru.clevertec.ecl.models.responses.errors.ErrorResponse;
 import ru.clevertec.ecl.models.responses.errors.SingleFieldValidationErrorResponse;
 
-import java.util.Collections;
 import java.util.List;
 
 import static generators.factories.responses.ErrorResponseFactory.*;
@@ -47,7 +45,7 @@ class TagsControllerTest extends BaseIntegrationTest {
     @Test
     @SneakyThrows
     void checkGetAllTagsShouldReturn2TagDtosWithPageSize2() {
-        List<TagDto> tagDtos = List.of(getSimpleTagDto(), getSimpleTagDto2());
+        List<TagDto> tagDtos = getTagDtosWithSize2();
         String jsonTagDtos = mapper.writeValueAsString(tagDtos);
 
         mvc.perform(get("/tags")
@@ -71,7 +69,7 @@ class TagsControllerTest extends BaseIntegrationTest {
     @Test
     @SneakyThrows
     void checkGetAllTagsShouldReturnTagDtosEmptyListOutOfPageRange() {
-        List<TagDto> tagDtos = Collections.emptyList();
+        List<TagDto> tagDtos = getEmptyListTagDtos();
         String jsonTagDtos = mapper.writeValueAsString(tagDtos);
 
         mvc.perform(get("/tags")
@@ -83,7 +81,7 @@ class TagsControllerTest extends BaseIntegrationTest {
     @Test
     @SneakyThrows
     void checkGetAllTagsShouldReturnTag2DtosWithPageSize2AngIncludeFirstPage() {
-        List<TagDto> tagDtos = List.of(getSimpleTagDto(), getSimpleTagDto2());
+        List<TagDto> tagDtos = getTagDtosWithSize2();
         String jsonTagDtos = mapper.writeValueAsString(tagDtos);
 
         mvc.perform(get("/tags")
@@ -95,7 +93,7 @@ class TagsControllerTest extends BaseIntegrationTest {
 
     @Test
     @SneakyThrows
-    void checkGetAllTagsShouldReturn3TagDtosWithDefaultPaginationWhenNegativePageSize() {
+    void checkGetAllTagsShouldReturn3TagDtosWithDefaultPaginationWhenNegativeSize() {
         List<TagDto> tagDtos = getSimpleTagDtosList();
         String jsonTagDtos = mapper.writeValueAsString(tagDtos);
 
@@ -132,7 +130,7 @@ class TagsControllerTest extends BaseIntegrationTest {
     @Test
     @SneakyThrows
     void checkGetTagByIdShouldReturnTagDtoWithSpecifiedId() {
-        TagDto tagDto = TagDtoFactory.getSimpleTagDto();
+        TagDto tagDto = getSimpleTagDto();
         String jsonTagDto = mapper.writeValueAsString(tagDto);
 
         mvc.perform(get("/tags/{id}", 1L))

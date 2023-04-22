@@ -1,18 +1,20 @@
 package ru.clevertec.ecl.services;
 
-import ru.clevertec.ecl.dto.GiftCertificateDTO;
-import ru.clevertec.ecl.dto.ModGiftCertificateDTO;
+import org.springframework.data.domain.Pageable;
+import ru.clevertec.ecl.dto.certificates.GiftCertificateDto;
+import ru.clevertec.ecl.dto.certificates.UpdateGiftCertificateDto;
+import ru.clevertec.ecl.models.GiftCertificate;
 import ru.clevertec.ecl.models.criteries.FilterCriteria;
-import ru.clevertec.ecl.models.criteries.PaginationCriteria;
 import ru.clevertec.ecl.models.responses.ModificationResponse;
-import ru.clevertec.ecl.models.criteries.SortCriteria;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface GiftCertificatesService {
-    List<GiftCertificateDTO> getAllGiftCertificates(FilterCriteria filter, SortCriteria sorting, PaginationCriteria pagination);
-    GiftCertificateDTO getGiftCertificateById(long id);
-    ModificationResponse addGiftCertificate(GiftCertificateDTO dto);
-    ModificationResponse updateGiftCertificate(long id, ModGiftCertificateDTO dto);
-    ModificationResponse deleteGiftCertificate(long id);
+    List<GiftCertificateDto> getAllGiftCertificatesWithFiltering(FilterCriteria filter, Pageable pageable);
+    GiftCertificateDto getGiftCertificateById(long id);
+    Optional<GiftCertificate> getGiftCertificateByIdWithoutTags(long id);
+    ModificationResponse addGiftCertificate(GiftCertificateDto dto);
+    ModificationResponse updateGiftCertificate(long id, UpdateGiftCertificateDto dto);
+    ModificationResponse deleteGiftCertificateById(long id);
 }

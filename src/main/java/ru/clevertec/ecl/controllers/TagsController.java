@@ -2,16 +2,19 @@ package ru.clevertec.ecl.controllers;
 
 import jakarta.validation.constraints.Min;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-import ru.clevertec.ecl.dto.TagDTO;
+import ru.clevertec.ecl.dto.TagDto;
 import ru.clevertec.ecl.models.responses.ModificationResponse;
 import ru.clevertec.ecl.services.TagsService;
 
 import java.net.URI;
 import java.util.List;
+
+import static ru.clevertec.ecl.utils.constants.MessageConstants.MIN_ID_MESSAGE;
 
 /**
  * Controller for performing operations with tags for gift certificates
@@ -34,8 +37,8 @@ public class TagsController {
      * @return List of tags
      */
     @GetMapping
-    public ResponseEntity<List<TagDTO>> getAllTags() {
-        return ResponseEntity.ok(service.getAllTags());
+    public ResponseEntity<List<TagDto>> getAllTags(Pageable pageable) {
+        return ResponseEntity.ok(service.getAllTags(pageable));
     }
 
     /**
@@ -45,7 +48,7 @@ public class TagsController {
      * @return tag with specified id
      */
     @GetMapping("/{id}")
-    public ResponseEntity<TagDTO> getTagById(@PathVariable @Min(value = 1, message = "Min ID value is 1") long id) {
+    public ResponseEntity<TagDto> getTagById(@PathVariable @Min(value = 1, message = MIN_ID_MESSAGE) long id) {
         return ResponseEntity.ok(service.getTagById(id));
     }
 
@@ -56,7 +59,7 @@ public class TagsController {
      * @return response with generated ID,message about performing operation and location of new tag
      */
     @PostMapping
-    public ResponseEntity<ModificationResponse> addTag(@RequestBody TagDTO tag) {
+    public ResponseEntity<ModificationResponse> addTag(@RequestBody TagDto tag) {
         ModificationResponse response = service.addTag(tag);
         URI uri = ServletUriComponentsBuilder
                 .fromCurrentRequest()
@@ -74,7 +77,7 @@ public class TagsController {
      */
     @PutMapping("/{id}")
     public ResponseEntity<ModificationResponse> updateTag(
-            @PathVariable @Min(value = 1, message = "Min ID value is 1") long id, @RequestBody TagDTO tag) {
+            @PathVariable @Min(value = 1, message = MIN_ID_MESSAGE) long id, @RequestBody TagDto tag) {
         return ResponseEntity.ok(service.updateTag(id, tag));
     }
 
@@ -86,7 +89,12 @@ public class TagsController {
      */
     @DeleteMapping("/{id}")
     public ResponseEntity<ModificationResponse> deleteTagById(
-            @PathVariable @Min(value = 1, message = "Min ID value is 1") long id) {
+            @PathVariable @Min(value = 1, message = MIN_ID_MESSAGE) long id) {
         return ResponseEntity.ok(service.deleteTag(id));
+    }
+
+    @GetMapping("/mostWidelyUsedTagOfUserWithHighestOrdersCost")
+    public ResponseEntity<TagDto> getMostWidelyUsedTagOfUserWithHighestOrdersCost() {
+        return ResponseEntity.ok(service.getMostWidelyUsedTagOfUserWithHighestOrdersCost());
     }
 }

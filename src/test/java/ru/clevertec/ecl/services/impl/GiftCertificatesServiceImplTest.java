@@ -1,222 +1,201 @@
 package ru.clevertec.ecl.services.impl;
 
-import org.hibernate.exception.ConstraintViolationException;
+import jakarta.validation.ConstraintViolationException;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import ru.clevertec.ecl.dao.GiftCertificatesDAO;
-import ru.clevertec.ecl.dto.GiftCertificateDTO;
-import ru.clevertec.ecl.dto.ModGiftCertificateDTO;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
+import ru.clevertec.ecl.dao.GiftCertificatesRepository;
+import ru.clevertec.ecl.dto.certificates.GiftCertificateDto;
 import ru.clevertec.ecl.exceptions.EmptyItemException;
-import ru.clevertec.ecl.exceptions.InvalidItemException;
 import ru.clevertec.ecl.exceptions.ItemExistException;
 import ru.clevertec.ecl.exceptions.ItemNotFoundException;
 import ru.clevertec.ecl.models.GiftCertificate;
-import ru.clevertec.ecl.models.codes.ErrorCode;
-import ru.clevertec.ecl.models.criteries.FilterCriteria;
-import ru.clevertec.ecl.models.criteries.PaginationCriteria;
-import ru.clevertec.ecl.models.criteries.SortCriteria;
 import ru.clevertec.ecl.models.responses.ModificationResponse;
 import ru.clevertec.ecl.services.TagsService;
-import ru.clevertec.ecl.utils.mappers.GiftCertificateMapper;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import static generators.factories.FilterCriteriaFactory.getFilterByTag;
-import static generators.factories.GiftCertificateDTOFactory.getSimpleGiftCertificateDTO;
-import static generators.factories.GiftCertificateDTOFactory.getSimpleGiftCertificateDTOs;
-import static generators.factories.GiftCertificateFactory.getSimpleGiftCertificate;
-import static generators.factories.GiftCertificateFactory.getSimpleGiftCertificates;
-import static generators.factories.ModGiftCertificateDTOFactory.getModGiftCertificateDTOWithoutFields;
-import static generators.factories.ModGiftCertificateDTOFactory.getSimpleModGiftCertificateDTO;
-import static generators.factories.PaginationCriteriaFactory.getPaginationFrom0To10;
-import static generators.factories.SortCriteriaFactory.getSortByName;
+import static generators.factories.PageFactory.*;
+import static generators.factories.PageableFactory.*;
+import static generators.factories.certificates.GiftCertificateDtoFactory.*;
+import static generators.factories.certificates.GiftCertificateFactory.*;
+import static generators.factories.certificates.UpdateGiftCertificateDtoFactory.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
 
-@ExtendWith(MockitoExtension.class)
+
+@SpringBootTest
 class GiftCertificatesServiceImplTest {
 
-    @Mock
-    private GiftCertificatesDAO dao;
-    @Mock
+    @MockBean
+    private GiftCertificatesRepository repository;
+    @MockBean
     private TagsService tagsService;
-    @Mock
-    private GiftCertificateMapper mapper;
-    @InjectMocks
+    @Autowired
     private GiftCertificatesServiceImpl service;
 
     @Test
-    void getAllGiftCertificatesShouldReturnListOfDTOs() {
-        when(dao.getAllGiftCertificates(any(FilterCriteria.class), any(SortCriteria.class),
-                any(PaginationCriteria.class))).thenReturn(getSimpleGiftCertificates());
-        when(mapper.allGiftCertificateToDTO(anyList())).thenReturn(getSimpleGiftCertificateDTOs());
+    void getAllGiftCertificatesWithFilteringShouldReturnListOfDtos() {
+        when(repository.findAll(any(Specification.class), any(Pageable.class))).thenReturn(getCertificatePage());
 
-        List<GiftCertificateDTO> actual = service.getAllGiftCertificates(getFilterByTag(), getSortByName(),
-                getPaginationFrom0To10());
-        List<GiftCertificateDTO> expected = getSimpleGiftCertificateDTOs();
+        List<GiftCertificateDto> actual = service.getAllGiftCertificatesWithFiltering(null, getDefaultPageable());
+        List<GiftCertificateDto> expected = getSimpleGiftCertificateDtos();
 
         assertThat(actual).isEqualTo(expected);
-        verify(dao, times(1)).getAllGiftCertificates(any(FilterCriteria.class),
-                any(SortCriteria.class), any(PaginationCriteria.class));
+        verify(repository, times(1)).findAll(any(Specification.class), any(Pageable.class));
     }
 
     @Test
-    void getAllGiftCertificatesShouldReturnEmptyList() {
-        when(dao.getAllGiftCertificates(any(FilterCriteria.class), any(SortCriteria.class),
-                any(PaginationCriteria.class))).thenReturn(Collections.emptyList());
-        when(mapper.allGiftCertificateToDTO(anyList())).thenReturn(Collections.emptyList());
+    void checkGetGiftCertificateByIdShouldReturnCertificateDto() {
+        when(repository.findById(1L)).thenReturn(Optional.of(getSimpleGiftCertificate()));
 
-        List<GiftCertificateDTO> actual = service.getAllGiftCertificates(getFilterByTag(), getSortByName(),
-                getPaginationFrom0To10());
-        List<GiftCertificateDTO> expected = Collections.emptyList();
+        GiftCertificateDto actual = service.getGiftCertificateById(1L);
+        GiftCertificateDto expected = getSimpleGiftCertificateDto();
 
         assertThat(actual).isEqualTo(expected);
-        verify(dao, times(1)).getAllGiftCertificates(any(FilterCriteria.class),
-                any(SortCriteria.class), any(PaginationCriteria.class));
-    }
-
-    @Test
-    void checkGetGiftCertificateByIdShouldReturnCertificate() {
-        when(dao.getGiftCertificateById(1L)).thenReturn(Optional.of(getSimpleGiftCertificate()));
-        when(mapper.giftCertificateToDTO(any(GiftCertificate.class))).thenReturn(getSimpleGiftCertificateDTO());
-
-        GiftCertificateDTO actual = service.getGiftCertificateById(1L);
-        GiftCertificateDTO expected = getSimpleGiftCertificateDTO();
-
-        assertThat(actual).isEqualTo(expected);
-        verify(dao, times(1)).getGiftCertificateById(anyLong());
+        verify(repository, times(1)).findById(anyLong());
     }
 
     @Test
     void checkGetGiftCertificateByIdShouldThrowExceptionNotFoundId() {
-        when(dao.getGiftCertificateById(1L)).thenReturn(Optional.empty());
+        when(repository.findById(1L)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> service.getGiftCertificateById(1))
                 .isInstanceOf(ItemNotFoundException.class)
                 .hasMessage("Gift certificate with ID 1 not found in database");
-        verify(dao, times(1)).getGiftCertificateById(anyLong());
+        verify(repository, times(1)).findById(anyLong());
+    }
+
+    @Test
+    void checkGetGiftCertificateByIdByIdWithoutTagsShouldReturnCertificate() {
+        when(repository.findWithoutTagsById(1L)).thenReturn(Optional.of(getSimpleGiftCertificate()));
+
+        Optional<GiftCertificate> actual = service.getGiftCertificateByIdWithoutTags(1L);
+        Optional<GiftCertificate>expected = Optional.of(getSimpleGiftCertificate());
+
+        assertThat(actual).isEqualTo(expected);
+        verify(repository, times(1)).findWithoutTagsById(anyLong());
     }
 
     @Test
     void checkAddGiftCertificateShouldReturnResponseWithGeneratedId() {
-        when(dao.addGiftCertificate(any(GiftCertificate.class))).thenReturn(getSimpleGiftCertificate());
+        when(repository.exists(any(Example.class))).thenReturn(false);
         when(tagsService.addAllTagsIfNotExist(anySet())).thenReturn(Collections.emptySet());
-        when(mapper.dtoToGiftCertificate(any(GiftCertificateDTO.class))).thenReturn(getSimpleGiftCertificate());
+        when(repository.save(any(GiftCertificate.class))).thenReturn(getSimpleGiftCertificate());
 
-        ModificationResponse actual = service.addGiftCertificate(getSimpleGiftCertificateDTO());
+        ModificationResponse actual = service.addGiftCertificate(getSimpleGiftCertificateDto());
         ModificationResponse expected = new ModificationResponse(1L, "Gift certificate added successfully");
 
         assertThat(actual).isEqualTo(expected);
-        verify(dao, times(1)).addGiftCertificate(any(GiftCertificate.class));
+        verify(repository, times(1)).exists(any(Example.class));
         verify(tagsService, times(1)).addAllTagsIfNotExist(anySet());
+        verify(repository, times(1)).save(any(GiftCertificate.class));
     }
 
     @Test
-    void checkAddGiftCertificateShouldThrowExceptionInvalidDTO() {
-        when(mapper.dtoToGiftCertificate(any(GiftCertificateDTO.class)))
-                .thenThrow(new InvalidItemException("Message", ErrorCode.INVALID_CERTIFICATE_FIELD_VALUE));
-
-        assertThatThrownBy(() -> service.addGiftCertificate(getSimpleGiftCertificateDTO()))
-                .isInstanceOf(InvalidItemException.class);
-        verify(dao, times(0)).addGiftCertificate(any(GiftCertificate.class));
+    void checkAddGiftCertificateShouldThrowExceptionInvalidDto() {
+        assertThatThrownBy(() -> service.addGiftCertificate(getGiftCertificateDtoWithoutFields()))
+                .isInstanceOf(ConstraintViolationException.class);
+        verify(repository, times(0)).exists(any(Example.class));
         verify(tagsService, times(0)).addAllTagsIfNotExist(anySet());
+        verify(repository, times(0)).save(any(GiftCertificate.class));
     }
 
     @Test
     void checkAddGiftCertificateShouldThrowExceptionCertificateExist() {
-        when(tagsService.addAllTagsIfNotExist(anySet())).thenReturn(Collections.emptySet());
-        when(mapper.dtoToGiftCertificate(any(GiftCertificateDTO.class))).thenReturn(getSimpleGiftCertificate());
-        when(dao.addGiftCertificate(any(GiftCertificate.class)))
-                .thenThrow(new ConstraintViolationException("Message", null, null));
+        when(repository.exists(any(Example.class))).thenReturn(true);
 
-        assertThatThrownBy(() -> service.addGiftCertificate(getSimpleGiftCertificateDTO()))
+        assertThatThrownBy(() -> service.addGiftCertificate(getSimpleGiftCertificateDto()))
                 .isInstanceOf(ItemExistException.class)
                 .hasMessage("Cannot add: gift certificate with similar name, description, price and duration " +
                         "already exist in database");
-        verify(dao, times(1)).addGiftCertificate(any(GiftCertificate.class));
-        verify(tagsService, times(1)).addAllTagsIfNotExist(anySet());
+        verify(repository, times(1)).exists(any(Example.class));
+        verify(tagsService, times(0)).addAllTagsIfNotExist(anySet());
+        verify(repository, times(0)).save(any(GiftCertificate.class));
     }
 
     @Test
     void checkUpdateGiftCertificateShouldReturnResponseWithUpdatedId() {
-        when(dao.getGiftCertificateById(5L)).thenReturn(Optional.of(getSimpleGiftCertificate()));
-        when(mapper.modDTOToGiftCertificate(any(ModGiftCertificateDTO.class), any(GiftCertificate.class)))
-                .thenReturn(getSimpleGiftCertificate());
-        when(dao.updateGiftCertificate(anyLong(), any(GiftCertificate.class))).thenReturn(getSimpleGiftCertificate());
+        when(repository.findById(anyLong())).thenReturn(Optional.of(getSimpleGiftCertificate()));
+        when(repository.save(any(GiftCertificate.class))).thenReturn(getSimpleGiftCertificate());
         when(tagsService.addAllTagsIfNotExist(anySet())).thenReturn(Collections.emptySet());
+        when(repository.exists(any(Example.class))).thenReturn(false);
 
-        ModificationResponse actual = service.updateGiftCertificate(5L, getSimpleModGiftCertificateDTO());
-        ModificationResponse expected = new ModificationResponse(5L, "Gift certificate updated successfully");
+        ModificationResponse actual = service.updateGiftCertificate(1L, getSimpleUpdateGiftCertificateDto());
+        ModificationResponse expected = new ModificationResponse(1L, "Gift certificate updated successfully");
 
         assertThat(actual).isEqualTo(expected);
-        verify(dao, times(1)).updateGiftCertificate(anyLong(), any(GiftCertificate.class));
-        verify(dao, times(1)).getGiftCertificateById(anyLong());
+        verify(repository, times(1)).findById(anyLong());
+        verify(repository, times(1)).exists(any(Example.class));
+        verify(repository, times(1)).save(any(GiftCertificate.class));
         verify(tagsService, times(1)).addAllTagsIfNotExist(anySet());
     }
 
     @Test
     void checkUpdateGiftCertificateShouldThrowExceptionIdNotFound() {
-        when(dao.getGiftCertificateById(1L)).thenReturn(Optional.empty());
+        when(repository.findById(anyLong())).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> service.updateGiftCertificate(1L, getSimpleModGiftCertificateDTO()))
+        assertThatThrownBy(() -> service.updateGiftCertificate(1L, getSimpleUpdateGiftCertificateDto()))
                 .isInstanceOf(ItemNotFoundException.class)
-                .hasMessage("Cannot update: gift certificate with ID 1 not found");
-
-        verify(dao, times(0)).updateGiftCertificate(anyLong(), any(GiftCertificate.class));
-        verify(dao, times(1)).getGiftCertificateById(anyLong());
+                .hasMessage("Cannot update: gift certificate with ID 1 not found in database");
+        verify(repository, times(1)).findById(anyLong());
+        verify(repository, times(0)).exists(any(Example.class));
+        verify(repository, times(0)).save(any(GiftCertificate.class));
+        verify(tagsService, times(0)).addAllTagsIfNotExist(anySet());
     }
 
     @Test
     void checkUpdateGiftCertificateShouldThrowExceptionNoFieldsToUpdate() {
-        assertThatThrownBy(() -> service.updateGiftCertificate(1L, getModGiftCertificateDTOWithoutFields()))
+        assertThatThrownBy(() -> service.updateGiftCertificate(1L, getUpdateGiftCertificateDtoWithoutFields()))
                 .isInstanceOf(EmptyItemException.class)
                 .hasMessage("Cannot update: no fields to update");
-        verify(dao, times(0)).updateGiftCertificate(anyLong(), any(GiftCertificate.class));
+        verify(repository, times(0)).findById(anyLong());
+        verify(repository, times(0)).exists(any(Example.class));
+        verify(repository, times(0)).save(any(GiftCertificate.class));
+        verify(tagsService, times(0)).addAllTagsIfNotExist(anySet());
     }
 
     @Test
     void checkUpdateGiftCertificateShouldThrowExceptionCertificateExist() {
-        when(dao.getGiftCertificateById(1L)).thenReturn(Optional.of(getSimpleGiftCertificate()));
-        when(mapper.modDTOToGiftCertificate(any(ModGiftCertificateDTO.class), any(GiftCertificate.class)))
-                .thenReturn(getSimpleGiftCertificate());
+        when(repository.findById(anyLong())).thenReturn(Optional.of(getSimpleGiftCertificate()));
         when(tagsService.addAllTagsIfNotExist(anySet())).thenReturn(Collections.emptySet());
-        when(dao.updateGiftCertificate(anyLong(), any(GiftCertificate.class)))
-                .thenThrow(new ConstraintViolationException("Message", null, null));
+        when(repository.exists(any(Example.class))).thenReturn(true);
 
-        assertThatThrownBy(() -> service.updateGiftCertificate(1L, getSimpleModGiftCertificateDTO()))
+        assertThatThrownBy(() -> service.updateGiftCertificate(1L, getSimpleUpdateGiftCertificateDto()))
                 .isInstanceOf(ItemExistException.class)
                 .hasMessage("Cannot update: gift certificate with similar name, description, price and duration " +
                         "already exist in database");
-        verify(dao, times(1)).updateGiftCertificate(anyLong(), any(GiftCertificate.class));
-        verify(dao, times(1)).getGiftCertificateById(anyLong());
+        verify(repository, times(1)).findById(anyLong());
+        verify(repository, times(1)).exists(any(Example.class));
+        verify(repository, times(0)).save(any(GiftCertificate.class));
         verify(tagsService, times(1)).addAllTagsIfNotExist(anySet());
     }
 
     @Test
     void checkDeleteGiftCertificateShouldReturnResponseWithDeletedId() {
-        when(dao.deleteGiftCertificate(anyLong())).thenReturn(true);
+        when(repository.deleteById(anyLong())).thenReturn(1);
 
-        ModificationResponse actual = service.deleteGiftCertificate(5L);
+        ModificationResponse actual = service.deleteGiftCertificateById(5L);
         ModificationResponse expected = new ModificationResponse(5L, "Gift certificate deleted successfully");
 
         assertThat(actual).isEqualTo(expected);
-        verify(dao, times(1)).deleteGiftCertificate(anyLong());
+        verify(repository, times(1)).deleteById(anyLong());
     }
 
     @Test
     void checkDeleteGiftCertificateShouldThrowExceptionNotFound() {
-        when(dao.deleteGiftCertificate(anyLong())).thenReturn(false);
+        when(repository.deleteById(anyLong())).thenReturn(0);
 
-        assertThatThrownBy(() -> service.deleteGiftCertificate(1L))
+        assertThatThrownBy(() -> service.deleteGiftCertificateById(1L))
                 .isInstanceOf(ItemNotFoundException.class)
-                .hasMessage("Cannot delete: gift certificate with ID 1 not found");
-        verify(dao, times(1)).deleteGiftCertificate(anyLong());
+                .hasMessage("Cannot delete: gift certificate with ID 1 not found in database");
+        verify(repository, times(1)).deleteById(anyLong());
     }
 }

@@ -11,15 +11,15 @@ import java.util.Set;
 @NoArgsConstructor
 @Getter
 @Setter
-@Entity
 @ToString
 @EqualsAndHashCode
+@Entity
 @Table(name = "tags")
-public class Tag {
+public class Tag implements BaseEntity<Long> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private long id;
+    private Long id;
     @NotBlank(message = "Tag name must contain at least 1 character")
     @Column(name = "name")
     private String name;

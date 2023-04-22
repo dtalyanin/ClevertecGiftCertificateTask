@@ -52,3 +52,18 @@ VALUES (1, 4),
        (3, 11),
        (3, 12)
 ON CONFLICT DO NOTHING;
+
+INSERT INTO users (first_name, last_name, email)
+VALUES ('Ivan', 'Ivanov', 'ivan@ivanov.com'),
+       ('Petr', 'Petrov', 'petr@petrov.com'),
+       ('Alexandr', 'Alexandrov', 'alexandr@alexandrov.com'),
+       ('Nikolay', 'Nikolaev', 'nikolay@nikolaev.com')
+ON CONFLICT DO NOTHING;
+
+INSERT INTO orders (user_id, certificate_id, price, quantity, total_price, order_date)
+VALUES
+       (1, 1, 5000, 1, 5000, '2023-04-10 10:00:00.000000'),
+       (1, 1, 5000, 1, 5000, '2023-04-10 11:00:00.000000'),
+       (1, 2, 5000, 1, 5000, '2023-04-10 10:10:00.000000'),
+       (2, 3, 20000, 5, 100000, '2023-04-10 10:00:00.000000')
+ON CONFLICT DO NOTHING;

@@ -1,17 +1,18 @@
 package ru.clevertec.ecl.services.impl;
 
-import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.clevertec.ecl.dao.TagsDAO;
-import ru.clevertec.ecl.dto.TagDTO;
+import ru.clevertec.ecl.dao.TagsRepository;
+import ru.clevertec.ecl.dto.TagDto;
 import ru.clevertec.ecl.exceptions.ItemExistException;
 import ru.clevertec.ecl.exceptions.ItemNotFoundException;
 import ru.clevertec.ecl.models.Tag;
 import ru.clevertec.ecl.models.codes.ErrorCode;
 import ru.clevertec.ecl.models.responses.ModificationResponse;
 import ru.clevertec.ecl.services.TagsService;
+import ru.clevertec.ecl.utils.PageableHelper;
 import ru.clevertec.ecl.utils.mappers.TagMapper;
 
 import java.util.List;
@@ -19,46 +20,47 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static ru.clevertec.ecl.utils.constants.MessageConstants.*;
+
 @Service
 public class TagsServiceImpl implements TagsService {
-    private final TagsDAO dao;
+
+    private final TagsRepository repository;
     private final TagMapper mapper;
 
     @Autowired
-    public TagsServiceImpl(TagsDAO dao, TagMapper mapper) {
-        this.dao = dao;
+    public TagsServiceImpl(TagsRepository repository, TagMapper mapper) {
+        this.repository = repository;
         this.mapper = mapper;
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<TagDTO> getAllTags() {
-        List<Tag> allTags = dao.getAllTags();
-        return mapper.allTagsToDTO(allTags);
+    public List<TagDto> getAllTags(Pageable pageable) {
+        pageable = PageableHelper.setPageableUnsorted(pageable);
+        List<Tag> allTags = repository.findAll(pageable).getContent();
+        return mapper.convertTagsListToDtos(allTags);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public TagDTO getTagById(long id) {
-        Optional<Tag> tag = dao.getTagById(id);
+    public TagDto getTagById(long id) {
+        Optional<Tag> tag = repository.findById(id);
         if (tag.isEmpty()) {
-            throw new ItemNotFoundException("Tag with ID " + id + " not found in database",
-                    ErrorCode.TAG_ID_NOT_FOUND);
+            throw new ItemNotFoundException(TAG_ID_START + id + NOT_FOUND, ErrorCode.TAG_ID_NOT_FOUND);
         }
-        return mapper.tagToDTO(tag.get());
+        return mapper.convertTagToDto(tag.get());
     }
 
     @Override
     @Transactional
-    public ModificationResponse addTag(TagDTO dto) {
-        Tag tag = mapper.dtoToTag(dto);
-        try {
-            dao.addTag(tag);
-            return new ModificationResponse(tag.getId(), "Tag added successfully");
-        } catch (ConstraintViolationException e) {
-            throw new ItemExistException("Cannot add: tag with name '" + tag.getName() +
-                    "' already exist in database", ErrorCode.TAG_NAME_EXIST);
+    public ModificationResponse addTag(TagDto dto) {
+        if (repository.existsByName(dto.getName())) {
+            throw new ItemExistException(CANNOT_ADD +TAG_NAME_START+ dto.getName() + EXIST, ErrorCode.TAG_NAME_EXIST);
         }
+        Tag tag = mapper.convertDtoToTag(dto);
+        long generatedId = repository.save(tag).getId();
+        return new ModificationResponse(generatedId, TAG_ADDED);
     }
 
     @Override
@@ -70,39 +72,42 @@ public class TagsServiceImpl implements TagsService {
     }
 
     private Tag createTagIfNotExist(Tag tag) {
-        Optional<Tag> oTag = dao.getTagByName(tag.getName());
-        if (oTag.isEmpty()) {
-            return dao.addTag(tag);
-        } else {
-            return oTag.get();
-        }
+        Optional<Tag> oTag = repository.findByName(tag.getName());
+        return oTag.orElseGet(() -> repository.save(tag));
     }
 
     @Override
     @Transactional
-    public ModificationResponse updateTag(long id, TagDTO dto) {
-        Tag tag = mapper.dtoToTag(dto);
-        try {
-            boolean tagUpdated = dao.updateTag(id, tag);
-            if (!tagUpdated) {
-                throw new ItemNotFoundException("Cannot update: tag with ID " + id + " not found",
-                        ErrorCode.TAG_ID_NOT_FOUND);
-            }
-            return new ModificationResponse(id, "Tag updated successfully");
-        } catch (ConstraintViolationException e) {
-            throw new ItemExistException("Cannot update: tag with name '" + tag.getName() +
-                    "' already exist in database", ErrorCode.TAG_NAME_EXIST);
+    public ModificationResponse updateTag(long id, TagDto dto) {
+        if (repository.existsByName(dto.getName())) {
+            throw new ItemExistException(CANNOT_UPDATE + TAG_NAME_START + dto.getName() + EXIST,
+                    ErrorCode.TAG_NAME_EXIST);
         }
+        Optional<Tag> oTag = repository.findById(id);
+        if (oTag.isEmpty()) {
+            throw new ItemNotFoundException(CANNOT_UPDATE + TAG_ID_START_L + id + NOT_FOUND,
+                    ErrorCode.TAG_ID_NOT_FOUND);
+        }
+        Tag tag = oTag.get();
+        mapper.updateTag(dto, tag);
+        repository.save(tag);
+        return new ModificationResponse(id, TAG_UPDATED);
     }
 
     @Override
     @Transactional
     public ModificationResponse deleteTag(long id) {
-        boolean tagDeleted = dao.deleteTag(id);
-        if (!tagDeleted) {
-            throw new ItemNotFoundException("Cannot delete: tag with ID " + id + " not found",
+        int deletedCount = repository.deleteById(id);
+        if (deletedCount == 0) {
+            throw new ItemNotFoundException(CANNOT_DELETE + TAG_ID_START_L + id + NOT_FOUND,
                     ErrorCode.TAG_ID_NOT_FOUND);
         }
-        return new ModificationResponse(id, "Tag deleted successfully");
+        return new ModificationResponse(id, TAG_DELETED);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public TagDto getMostWidelyUsedTagOfUserWithHighestOrdersCost() {
+        return mapper.convertTagToDto(repository.findMostWidelyUsedTagOfUserWithHighestOrdersCost());
     }
 }

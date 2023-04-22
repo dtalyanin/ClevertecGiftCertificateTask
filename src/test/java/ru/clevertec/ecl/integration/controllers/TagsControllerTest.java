@@ -316,7 +316,7 @@ class TagsControllerTest extends BaseIntegrationTest {
 
     @Test
     @SneakyThrows
-    void getMostWidelyUsedTagOfUserWithHighestOrdersCost() {
+    void checkGetMostWidelyUsedTagOfUserWithHighestOrdersCostShouldReturnTag() {
         TagDto tagDto = getSimpleTagDto2();
         String jsonTagDto = mapper.writeValueAsString(tagDto);
 

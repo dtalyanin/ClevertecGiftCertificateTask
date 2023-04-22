@@ -14,6 +14,10 @@ public class PageableFactory {
         return PageRequest.of(0, 1);
     }
 
+    public static Pageable getPageableWithSize2() {
+        return PageRequest.of(0, 2);
+    }
+
     public static Pageable getPageableWithFirstPage() {
         return PageRequest.of(0, 20);
     }
@@ -24,6 +28,10 @@ public class PageableFactory {
 
     public static Pageable getPageableWithFirstPageAndSize1() {
         return PageRequest.of(0, 1);
+    }
+
+    public static Pageable getPageableWithFirstPageAndSize2() {
+        return PageRequest.of(0, 2);
     }
 
     public static Pageable getSortedByNamePageable() {

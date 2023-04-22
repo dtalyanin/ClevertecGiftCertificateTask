@@ -43,8 +43,16 @@ public class TagFactory {
         return Set.of(getSimpleTag(), getSimpleTag2(), getSimpleTag3());
     }
 
+    public static Set<Tag> getDifferentTagsSetWithOneNew() {
+        return Set.of(getSimpleTag(), getSimpleTag2(), getCreatedTag());
+    }
+
     public static List<Tag> getDifferentTagsList() {
         return List.of(getSimpleTag(), getSimpleTag2(), getSimpleTag3());
+    }
+
+    public static List<Tag> getDifferentTagsListWithCreatedTag() {
+        return List.of(getSimpleTag(), getSimpleTag2(), getSimpleTag3(), getCreatedTag());
     }
 
     public static   Set<Tag> getDifferentTagsWithoutId() {

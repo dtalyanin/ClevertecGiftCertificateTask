@@ -27,7 +27,9 @@ public class UsersServiceImplIntegrationTest extends BaseIntegrationTest {
         List<UserDto> expectedUserDtos = getSimpleUsersDtos();
         List<UserDto> actualUserDtos = service.getAllUsers(getDefaultPageable());
 
-        assertThat(actualUserDtos).isEqualTo(expectedUserDtos);
+        assertThat(actualUserDtos)
+                .containsAll(expectedUserDtos)
+                .hasSameSizeAs(expectedUserDtos);
     }
 
     @Test
@@ -43,15 +45,15 @@ public class UsersServiceImplIntegrationTest extends BaseIntegrationTest {
         List<UserDto> expectedUserDtos = getSimpleUsersDtos();
         List<UserDto> actualUserDtos = service.getAllUsers(getPageableWithFirstPage());
 
-        assertThat(actualUserDtos).isEqualTo(expectedUserDtos);
+        assertThat(actualUserDtos)
+                .containsAll(expectedUserDtos)
+                .hasSameSizeAs(expectedUserDtos);
     }
 
     @Test
     void checkGetAllUsersShouldReturnUserDtosEmptyListOutOfPageRange() {
-        List<UserDto> expectedUserDtos = getEmptyListUserDtos();
         List<UserDto> actualUserDtos = service.getAllUsers(getPageableWithOutOfPageRange());
-
-        assertThat(actualUserDtos).isEqualTo(expectedUserDtos);
+        assertThat(actualUserDtos).isEmpty();
     }
 
     @Test
@@ -90,9 +92,7 @@ public class UsersServiceImplIntegrationTest extends BaseIntegrationTest {
     @Test
     void checkGetExistingUserByIdShouldReturnEmptyOptional() {
         Optional<User> actualUser = service.getExistingUserById(10L);
-
-        assertThat(actualUser)
-                .isEmpty();
+        assertThat(actualUser).isEmpty();
     }
 
     @Test

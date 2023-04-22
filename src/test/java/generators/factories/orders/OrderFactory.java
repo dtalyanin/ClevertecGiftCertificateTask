@@ -5,8 +5,6 @@ import ru.clevertec.ecl.models.Order;
 
 import java.util.List;
 
-import static generators.factories.users.UserFactory.getSimpleUser3;
-
 public class OrderFactory {
 
     public static Order getSimpleOrder() {
@@ -18,16 +16,6 @@ public class OrderFactory {
                 .id(2L)
                 .quantity(10)
                 .totalPrice(10000L)
-                .build();
-    }
-
-    public static Order getSimpleOrder3() {
-        return OrderBuilder.builder()
-                .id(3L)
-                .user(getSimpleUser3())
-                .price(2000L)
-                .quantity(10)
-                .totalPrice(20000L)
                 .build();
     }
 

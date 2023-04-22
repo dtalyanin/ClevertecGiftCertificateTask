@@ -7,8 +7,6 @@ import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
 
-import static generators.factories.certificates.GiftCertificateDtoForOrderFactory.getSimpleGiftCertificateDtoForOrder2;
-
 public class OrderDtoFactory {
 
     public static OrderDto getSimpleOrderDto() {
@@ -19,15 +17,6 @@ public class OrderDtoFactory {
         return OrderDtoBuilder.builder()
                 .quantity(10)
                 .totalPrice(BigDecimal.valueOf(10000L, 2))
-                .build();
-    }
-
-    public static OrderDto getSimpleOrderDto3() {
-        return OrderDtoBuilder.builder()
-                .certificate(getSimpleGiftCertificateDtoForOrder2())
-                .quantity(10)
-                .price(BigDecimal.valueOf(2000L, 2))
-                .totalPrice(BigDecimal.valueOf(20000L, 2))
                 .build();
     }
 

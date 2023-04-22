@@ -36,7 +36,7 @@ class OrdersControllerTest extends BaseIntegrationTest {
 
     @Test
     @SneakyThrows
-    void checkGetAllOrdersByUserIdShouldReturn3OrderDtosWithDefaultPagination() {
+    void checkGetAllOrdersByUserIdShouldReturn2OrderDtosWithDefaultPagination() {
         List<OrderDto> orderDtos = getDifferentOrderDtos();
         String jsonOrderDtos = mapper.writeValueAsString(orderDtos);
 
@@ -59,7 +59,7 @@ class OrdersControllerTest extends BaseIntegrationTest {
 
     @Test
     @SneakyThrows
-    void checkGetAllOrdersByUserIdShouldReturn3OrderDtosWithFirstPage() {
+    void checkGetAllOrdersByUserIdShouldReturn2OrderDtosWithFirstPage() {
         List<OrderDto> orderDtos = getDifferentOrderDtos();
         String jsonOrderDtos = mapper.writeValueAsString(orderDtos);
 
@@ -96,7 +96,7 @@ class OrdersControllerTest extends BaseIntegrationTest {
 
     @Test
     @SneakyThrows
-    void checkGetAllOrdersByUserIdShouldReturn3OrderDtosWithDefaultPaginationWhenNegativeSize() {
+    void checkGetAllOrdersByUserIdShouldReturn2OrderDtosWithDefaultPaginationWhenNegativeSize() {
         List<OrderDto> orderDtos = getDifferentOrderDtos();
         String jsonOrderDtos = mapper.writeValueAsString(orderDtos);
 
@@ -108,7 +108,7 @@ class OrdersControllerTest extends BaseIntegrationTest {
 
     @Test
     @SneakyThrows
-    void checkGetAllOrdersByUserIdShouldReturn3OrderDtosWithDefaultPaginationWhenNegativePage() {
+    void checkGetAllOrdersByUserIdShouldReturn2OrderDtosWithDefaultPaginationWhenNegativePage() {
         List<OrderDto> orderDtos = getDifferentOrderDtos();
         String jsonOrderDtos = mapper.writeValueAsString(orderDtos);
 

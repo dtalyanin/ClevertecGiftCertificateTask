@@ -36,7 +36,7 @@ class OrdersControllerTest extends BaseIntegrationTest {
 
     @Test
     @SneakyThrows
-    void checkGetAllOrdersByUserIdShouldReturn2OrderDtosWithDefaultPagination() {
+    void checkGetAllOrdersByUserIdShouldReturn3OrderDtosWithDefaultPagination() {
         List<OrderDto> orderDtos = getDifferentOrderDtos();
         String jsonOrderDtos = mapper.writeValueAsString(orderDtos);
 
@@ -59,7 +59,7 @@ class OrdersControllerTest extends BaseIntegrationTest {
 
     @Test
     @SneakyThrows
-    void checkGetAllOrdersByUserIdShouldReturn2OrderDtosWithFirstPage() {
+    void checkGetAllOrdersByUserIdShouldReturn3OrderDtosWithFirstPage() {
         List<OrderDto> orderDtos = getDifferentOrderDtos();
         String jsonOrderDtos = mapper.writeValueAsString(orderDtos);
 
@@ -96,7 +96,7 @@ class OrdersControllerTest extends BaseIntegrationTest {
 
     @Test
     @SneakyThrows
-    void checkGetAllOrdersByUserIdShouldReturn2OrderDtosWithDefaultPaginationWhenNegativeSize() {
+    void checkGetAllOrdersByUserIdShouldReturn3OrderDtosWithDefaultPaginationWhenNegativeSize() {
         List<OrderDto> orderDtos = getDifferentOrderDtos();
         String jsonOrderDtos = mapper.writeValueAsString(orderDtos);
 
@@ -108,7 +108,7 @@ class OrdersControllerTest extends BaseIntegrationTest {
 
     @Test
     @SneakyThrows
-    void checkGetAllOrdersByUserIdShouldReturn2OrderDtosWithDefaultPaginationWhenNegativePage() {
+    void checkGetAllOrdersByUserIdShouldReturn3OrderDtosWithDefaultPaginationWhenNegativePage() {
         List<OrderDto> orderDtos = getDifferentOrderDtos();
         String jsonOrderDtos = mapper.writeValueAsString(orderDtos);
 
@@ -164,7 +164,7 @@ class OrdersControllerTest extends BaseIntegrationTest {
                         .content(jsonCreateOrderDto))
                 .andExpect(status().isCreated())
                 .andExpect(content().json(jsonModificationResponse))
-                .andExpect(header().string("Location", containsString("users/1/orders/3")));
+                .andExpect(header().string("Location", containsString("users/1/orders/4")));
     }
 
     @Test

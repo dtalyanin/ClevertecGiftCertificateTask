@@ -19,13 +19,15 @@ VALUES (1, 1),
 
 INSERT INTO users (first_name, last_name, email)
 VALUES ('Ivan', 'Ivanov', 'ivan@ivanov.com'),
-       ('Petr', 'Petrov', 'petr@petrov.com');
+       ('Petr', 'Petrov', 'petr@petrov.com'),
+       ('Alexandr', 'Alexandrov', 'alexandr@alexandrov.com');
 
 SELECT SETVAL('users_id_seq', (SELECT MAX(id) FROM users));
 
 INSERT INTO orders (user_id, certificate_id, price, quantity, total_price, order_date)
 VALUES
     (1, 1, 1000, 5, 5000, '2023-04-01 01:00:00.000000'),
-    (1, 1, 1000, 10, 10000, '2023-04-01 01:00:00.000000');
+    (1, 1, 1000, 10, 10000, '2023-04-01 01:00:00.000000'),
+    (2, 2, 2000, 10, 20000, '2023-04-01 01:00:00.000000');
 
 SELECT SETVAL('orders_id_seq', (SELECT MAX(id) FROM orders));

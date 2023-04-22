@@ -315,6 +315,13 @@ class TagsControllerTest extends BaseIntegrationTest {
     }
 
     @Test
+    @SneakyThrows
     void getMostWidelyUsedTagOfUserWithHighestOrdersCost() {
+        TagDto tagDto = getSimpleTagDto2();
+        String jsonTagDto = mapper.writeValueAsString(tagDto);
+
+        mvc.perform(get("/tags/mostWidelyUsedTagOfUserWithHighestOrdersCost"))
+                .andExpect(status().isOk())
+                .andExpect(content().json(jsonTagDto));
     }
 }

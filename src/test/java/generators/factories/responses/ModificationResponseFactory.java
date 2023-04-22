@@ -29,6 +29,6 @@ public class ModificationResponseFactory {
     }
 
     public static ModificationResponse getOrderAddedResponse() {
-        return new ModificationResponse(3L, "Order added successfully");
+        return new ModificationResponse(4L, "Order added successfully");
     }
 }

@@ -30,7 +30,7 @@ class UsersControllerTest extends BaseIntegrationTest {
 
     @Test
     @SneakyThrows
-    void checkGetAllUsersShouldReturnUserDtosWithDefaultPagination() {
+    void checkGetAllUsersShouldReturn3UserDtosWithDefaultPagination() {
         List<UserDto> userDtos = getSimpleUsersDtos();
         String jsonUserDtos = mapper.writeValueAsString(userDtos);
 
@@ -53,7 +53,7 @@ class UsersControllerTest extends BaseIntegrationTest {
 
     @Test
     @SneakyThrows
-    void checkGetAllUsersShouldReturn2UserDtosWithFirstPage() {
+    void checkGetAllUsersShouldReturn3UserDtosWithFirstPage() {
         List<UserDto> userDtos = getSimpleUsersDtos();
         String jsonUserDtos = mapper.writeValueAsString(userDtos);
 
@@ -90,7 +90,7 @@ class UsersControllerTest extends BaseIntegrationTest {
 
     @Test
     @SneakyThrows
-    void checkGetAllUsersShouldReturn2UserDtosWithDefaultPaginationWhenNegativeSize() {
+    void checkGetAllUsersShouldReturn3UserDtosWithDefaultPaginationWhenNegativeSize() {
         List<UserDto> userDtos = getSimpleUsersDtos();
         String jsonUserDtos = mapper.writeValueAsString(userDtos);
 
@@ -102,7 +102,7 @@ class UsersControllerTest extends BaseIntegrationTest {
 
     @Test
     @SneakyThrows
-    void checkGetAllUsersShouldReturnUserDtosWithDefaultPaginationWhenNegativePage() {
+    void checkGetAllUsersShouldReturn3UserDtosWithDefaultPaginationWhenNegativePage() {
         List<UserDto> userDtos = getSimpleUsersDtos();
         String jsonUserDtos = mapper.writeValueAsString(userDtos);
 

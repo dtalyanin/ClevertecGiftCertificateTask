@@ -38,11 +38,27 @@ public class PageableFactory {
         return PageRequest.of(0, 20, Sort.Direction.ASC, "name");
     }
 
+    public static Pageable getSortedByNameDescPageable() {
+        return PageRequest.of(0, 20, Sort.Direction.DESC, "name");
+    }
+
+    public static Pageable getSortedByCreateDatePageable() {
+        return PageRequest.of(0, 20, Sort.Direction.ASC, "createDate");
+    }
+
+    public static Pageable getSortedByCreateDateDescPageable() {
+        return PageRequest.of(0, 20, Sort.Direction.DESC, "createDate");
+    }
+
     public static Pageable getSortedByNameAndCreatedDatePageable() {
-        return PageRequest.of(0, 20, Sort.Direction.ASC, "name", "createdDate");
+        return PageRequest.of(0, 20, Sort.Direction.ASC, "name", "createDate");
+    }
+
+    public static Pageable getSortedByCreatedDateDescAndNameDescPageable() {
+        return PageRequest.of(0, 20, Sort.Direction.DESC, "createDate", "name");
     }
 
     public static Pageable getSortedByNameAndCreatedDateAndUnknownPageable() {
-        return PageRequest.of(0, 20, Sort.Direction.ASC, "name", "createdDate", "unknown");
+        return PageRequest.of(0, 20, Sort.Direction.ASC, "name", "createDate", "unknown");
     }
 }

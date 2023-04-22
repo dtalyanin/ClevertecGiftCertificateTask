@@ -46,9 +46,9 @@ public class UpdateGiftCertificateDtoFactory {
                 .build();
     }
 
-    public static UpdateGiftCertificateDto getUpdateGiftCertificateDtoWithNullDuration() {
+    public static UpdateGiftCertificateDto getUpdateGiftCertificateDtoWithZeroDuration() {
         return UpdateGiftCertificateDtoBuilder.builder()
-                .duration(null)
+                .duration(0L)
                 .build();
     }
 

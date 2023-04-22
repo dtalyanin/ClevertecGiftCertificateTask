@@ -506,13 +506,13 @@ class GiftCertificatesControllerTest extends BaseIntegrationTest {
     @SneakyThrows
     void checkUpdateGiftCertificateShouldReturnErrorResponseWithEmptyCertificateName() {
         UpdateGiftCertificateDto updateCertificateDto = getUpdateGiftCertificateDtoWithEmptyName();
-        String jsonCertificateToCreate = mapper.writeValueAsString(updateCertificateDto);
+        String jsonCertificateToUpdate = mapper.writeValueAsString(updateCertificateDto);
         SingleFieldValidationErrorResponse errorResponse = getCertificateEmptyNameResponse();
         String jsonErrorResponse = mapper.writeValueAsString(errorResponse);
 
-        mvc.perform(post("/certificates")
+        mvc.perform(patch("/certificates/{id}", 1L)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(jsonCertificateToCreate))
+                        .content(jsonCertificateToUpdate))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().json(jsonErrorResponse));
     }
@@ -521,13 +521,13 @@ class GiftCertificatesControllerTest extends BaseIntegrationTest {
     @SneakyThrows
     void checkUpdateGiftCertificateShouldReturnErrorResponseWithEmptyCertificateDescription() {
         UpdateGiftCertificateDto updateCertificateDto = getUpdateGiftCertificateDtoWithEmptyDescription();
-        String jsonCertificateToCreate = mapper.writeValueAsString(updateCertificateDto);
+        String jsonCertificateToUpdate = mapper.writeValueAsString(updateCertificateDto);
         SingleFieldValidationErrorResponse errorResponse = getCertificateEmptyDescriptionResponse();
         String jsonErrorResponse = mapper.writeValueAsString(errorResponse);
 
-        mvc.perform(post("/certificates")
+        mvc.perform(patch("/certificates/{id}", 1L)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(jsonCertificateToCreate))
+                        .content(jsonCertificateToUpdate))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().json(jsonErrorResponse));
     }
@@ -536,13 +536,13 @@ class GiftCertificatesControllerTest extends BaseIntegrationTest {
     @SneakyThrows
     void checkUpdateGiftCertificateShouldReturnErrorResponseWithZeroPrice() {
         UpdateGiftCertificateDto updateCertificateDto = getUpdateGiftCertificateDtoWithZeroPrice();
-        String jsonCertificateToCreate = mapper.writeValueAsString(updateCertificateDto);
+        String jsonCertificateToUpdate = mapper.writeValueAsString(updateCertificateDto);
         SingleFieldValidationErrorResponse errorResponse = getCertificateZeroPriceResponse();
         String jsonErrorResponse = mapper.writeValueAsString(errorResponse);
 
-        mvc.perform(post("/certificates")
+        mvc.perform(patch("/certificates/{id}", 1L)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(jsonCertificateToCreate))
+                        .content(jsonCertificateToUpdate))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().json(jsonErrorResponse));
     }
@@ -550,12 +550,12 @@ class GiftCertificatesControllerTest extends BaseIntegrationTest {
     @Test
     @SneakyThrows
     void checkUpdateGiftCertificateShouldReturnErrorResponseWithZeroDuration() {
-        GiftCertificateDto certificateDtoToCreate = getGiftCertificateDtoWithZeroDuration();
-        String jsonCertificateToCreate = mapper.writeValueAsString(certificateDtoToCreate);
+        UpdateGiftCertificateDto updateCertificateDto = getUpdateGiftCertificateDtoWithZeroDuration();
+        String jsonCertificateToCreate = mapper.writeValueAsString(updateCertificateDto);
         SingleFieldValidationErrorResponse errorResponse = getCertificateZeroDurationResponse();
         String jsonErrorResponse = mapper.writeValueAsString(errorResponse);
 
-        mvc.perform(post("/certificates")
+        mvc.perform(patch("/certificates/{id}", 1L)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonCertificateToCreate))
                 .andExpect(status().isBadRequest())

@@ -23,4 +23,25 @@ public class SortCriteriaFactory {
     public static SortCriteria getSortByDateDESCNameDESC() {
         return new SortCriteria(List.of("date:desc", "name:desc"));
     }
+
+    public static SortCriteria getSortByNameDate() {
+        return new SortCriteria(List.of("name", "date"));
+    }
+
+    public static SortCriteria getSortByNameWithInvalidDateParam() {
+        return new SortCriteria(List.of("name", "datee"));
+    }
+
+    public static SortCriteria getSortByNameDateWithInvalidDESCParam() {
+        return new SortCriteria(List.of("name", "date:descc"));
+    }
+
+    public static SortCriteria getEmptySort() {
+        return new SortCriteria(Collections.emptyList());
+    }
+
+    public static SortCriteria getEmptySortIgnoringUnknownParam() {
+        return new SortCriteria(List.of("description"));
+    }
+
 }

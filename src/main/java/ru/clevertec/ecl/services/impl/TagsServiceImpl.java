@@ -1,20 +1,23 @@
 package ru.clevertec.ecl.services.impl;
 
+import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.clevertec.ecl.dao.TagsDAO;
 import ru.clevertec.ecl.dto.TagDTO;
 import ru.clevertec.ecl.exceptions.ItemExistException;
 import ru.clevertec.ecl.exceptions.ItemNotFoundException;
+import ru.clevertec.ecl.models.Tag;
 import ru.clevertec.ecl.models.codes.ErrorCode;
 import ru.clevertec.ecl.models.responses.ModificationResponse;
-import ru.clevertec.ecl.models.Tag;
 import ru.clevertec.ecl.services.TagsService;
 import ru.clevertec.ecl.utils.mappers.TagMapper;
 
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class TagsServiceImpl implements TagsService {
@@ -50,9 +53,9 @@ public class TagsServiceImpl implements TagsService {
     public ModificationResponse addTag(TagDTO dto) {
         Tag tag = mapper.dtoToTag(dto);
         try {
-            long generatedId = dao.addTag(tag);
-            return new ModificationResponse(generatedId, "Tag added successfully");
-        } catch (DuplicateKeyException e) {
+            dao.addTag(tag);
+            return new ModificationResponse(tag.getId(), "Tag added successfully");
+        } catch (ConstraintViolationException e) {
             throw new ItemExistException("Cannot add: tag with name '" + tag.getName() +
                     "' already exist in database", ErrorCode.TAG_NAME_EXIST);
         }
@@ -60,22 +63,19 @@ public class TagsServiceImpl implements TagsService {
 
     @Override
     @Transactional
-    public List<Long> addAllTagsIfNotExist(List<Tag> tags) {
-        Set<Tag> tagsSet = new HashSet<>(tags);
-        List<Long> ids = new ArrayList<>();
-        tagsSet.stream()
-                .filter(tag -> {
-                    Optional<Tag> oTag = dao.getTagByName(tag.getName());
-                    if (oTag.isEmpty()) {
-                        return true;
-                    } else {
-                        ids.add(oTag.get().getId());
-                        return false;
-                    }
-                })
-                .map(dao::addTag)
-                .forEach(ids::add);
-        return ids;
+    public Set<Tag> addAllTagsIfNotExist(Set<Tag> tagsToAdd) {
+        return tagsToAdd.stream()
+                .map(this::createTagIfNotExist)
+                .collect(Collectors.toSet());
+    }
+
+    private Tag createTagIfNotExist(Tag tag) {
+        Optional<Tag> oTag = dao.getTagByName(tag.getName());
+        if (oTag.isEmpty()) {
+            return dao.addTag(tag);
+        } else {
+            return oTag.get();
+        }
     }
 
     @Override
@@ -83,13 +83,13 @@ public class TagsServiceImpl implements TagsService {
     public ModificationResponse updateTag(long id, TagDTO dto) {
         Tag tag = mapper.dtoToTag(dto);
         try {
-            int updatedRows = dao.updateTag(id, tag);
-            if (updatedRows == 0) {
+            boolean tagUpdated = dao.updateTag(id, tag);
+            if (!tagUpdated) {
                 throw new ItemNotFoundException("Cannot update: tag with ID " + id + " not found",
                         ErrorCode.TAG_ID_NOT_FOUND);
             }
             return new ModificationResponse(id, "Tag updated successfully");
-        } catch (DuplicateKeyException e) {
+        } catch (ConstraintViolationException e) {
             throw new ItemExistException("Cannot update: tag with name '" + tag.getName() +
                     "' already exist in database", ErrorCode.TAG_NAME_EXIST);
         }
@@ -98,8 +98,8 @@ public class TagsServiceImpl implements TagsService {
     @Override
     @Transactional
     public ModificationResponse deleteTag(long id) {
-        int deletedRows = dao.deleteTag(id);
-        if (deletedRows == 0) {
+        boolean tagDeleted = dao.deleteTag(id);
+        if (!tagDeleted) {
             throw new ItemNotFoundException("Cannot delete: tag with ID " + id + " not found",
                     ErrorCode.TAG_ID_NOT_FOUND);
         }

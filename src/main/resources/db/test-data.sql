@@ -1,7 +1,7 @@
 INSERT INTO gift_certificates (name, description, price, duration, create_date, last_update_date)
-VALUES ('Test', 'Test description', 1000, 1, '2023-01-01 01:00:00.000000', '2023-02-22 06:00:00.000000'),
-       ('Test 2', 'Test description 2', 2000, 2, '2023-01-01 01:00:00.000000', '2023-02-22 06:00:00.000000'),
-       ('Test 3', 'Test description 3', 3000, 3, '2023-01-03 01:00:00.000000', '2023-02-22 06:00:00.000000');
+VALUES ('Test', 'Test description', 1000, 86400000000000, '2023-01-01 01:00:00.000000', '2023-02-22 06:00:00.000000'),
+       ('Test 2', 'Test description 2', 2000, 172800000000000, '2023-01-01 01:00:00.000000', '2023-02-22 06:00:00.000000'),
+       ('Test 3', 'Test description 3', 3000, 259200000000000, '2023-01-03 01:00:00.000000', '2023-02-22 06:00:00.000000');
 
 INSERT INTO tags (name)
 VALUES ('Test tag'),

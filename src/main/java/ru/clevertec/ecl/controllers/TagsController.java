@@ -72,7 +72,7 @@ public class TagsController {
      * @param tag tag with new values for update
      * @return response with updated ID and message about performing operation
      */
-    @PatchMapping("/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<ModificationResponse> updateTag(
             @PathVariable @Min(value = 1, message = "Min ID value is 1") long id, @RequestBody TagDTO tag) {
         return ResponseEntity.ok(service.updateTag(id, tag));

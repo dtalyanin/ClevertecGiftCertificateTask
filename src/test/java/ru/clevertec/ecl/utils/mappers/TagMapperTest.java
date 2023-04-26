@@ -1,19 +1,23 @@
 package ru.clevertec.ecl.utils.mappers;
 
-import jakarta.validation.ConstraintViolationException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mapstruct.factory.Mappers;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import ru.clevertec.ecl.dto.TagDTO;
+import ru.clevertec.ecl.exceptions.InvalidItemException;
 import ru.clevertec.ecl.models.Tag;
 
+import java.util.Collections;
 import java.util.List;
 
 import static generators.factories.TagDTOFactory.*;
 import static generators.factories.TagFactory.*;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.*;
 
+
+@ExtendWith(SpringExtension.class)
 class TagMapperTest {
 
     private TagMapper mapper;
@@ -49,7 +53,7 @@ class TagMapperTest {
     void checkDTOtoTagShouldThrowExceptionIncorrectName() {
         TagDTO dto = getTagDTOWithoutName();
         assertThatThrownBy(() -> mapper.dtoToTag(dto))
-                .isInstanceOf(ConstraintViolationException.class);
+                .isInstanceOf(InvalidItemException.class);
     }
 
     @Test
@@ -84,12 +88,30 @@ class TagMapperTest {
     void checkAllDTOToTagsShouldThrowExceptionBecauseContainInvalidValue() {
         List<TagDTO> dtoList = List.of(getSimpleTagDTO(), getTagDTOWithoutName());
         assertThatThrownBy(() -> mapper.allDTOToTags(dtoList))
-                .isInstanceOf(ConstraintViolationException.class);
+                .isInstanceOf(InvalidItemException.class);
     }
 
     @Test
     void checkAllDTOToTagsShouldReturnNull() {
         List<Tag> actual = mapper.allDTOToTags(null);
         assertThat(actual).isNull();
+    }
+
+    @Test
+    void checkValidateTagShouldBeValid() {
+        Tag tag = getSimpleTag();
+        assertThatCode(() -> mapper.validateTag(tag)).doesNotThrowAnyException();
+    }
+
+    @Test
+    void checkValidateTagShouldThrowExceptionNullName() {
+        Tag tag = new Tag();
+        assertThatThrownBy(() -> mapper.validateTag(tag)).isInstanceOf(InvalidItemException.class);
+    }
+
+    @Test
+    void checkValidateTagShouldThrowExceptionBlankName() {
+        Tag tag = new Tag(1, "", Collections.emptySet());
+        assertThatThrownBy(() -> mapper.validateTag(tag)).isInstanceOf(InvalidItemException.class);
     }
 }

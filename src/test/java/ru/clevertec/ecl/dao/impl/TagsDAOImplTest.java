@@ -2,7 +2,7 @@ package ru.clevertec.ecl.dao.impl;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DuplicateKeyException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
@@ -11,6 +11,7 @@ import ru.clevertec.ecl.configuration.TestConfig;
 import ru.clevertec.ecl.dao.TagsDAO;
 import ru.clevertec.ecl.models.Tag;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -71,54 +72,50 @@ class TagsDAOImplTest {
 
     @Test
     void checkAddTagShouldReturnGeneratedId4() {
-        long actual = dao.addTag(new Tag(0, "Test"));
+        long actual = dao.addTag(new Tag(0, "Test new", Collections.emptySet())).getId();
         assertThat(actual).isNotZero();
     }
 
     @Test
     void checkAddTagShouldThrowExceptionTagWithNameExist() {
-        assertThatThrownBy(() -> dao.addTag(getSimpleTag()))
-                .isInstanceOf(DuplicateKeyException.class);
+        assertThatThrownBy(() -> dao.addTag(new Tag(0, "Test tag", Collections.emptySet())))
+                .isInstanceOf(DataIntegrityViolationException.class);
     }
 
     @Test
-    void checkUpdateTagShouldReturnUpdatedRowsCount1() {
-        Tag expectedTag = new Tag(1, "Test tag updated");
-        int actualUpdatedRows = dao.updateTag(1, expectedTag);
+    void checkUpdateTagShouldUpdateTagAndReturnTrue() {
+        Tag expectedTag = new Tag(1, "Test tag updated", Collections.emptySet());
+        boolean tagUpdated = dao.updateTag(1, expectedTag);
         Tag actualTag = dao.getTagById(1L).get();
-        int expectedUpdatedRows = 1;
-        assertThat(actualUpdatedRows).isEqualTo(expectedUpdatedRows);
+        assertThat(tagUpdated).isTrue();
         assertThat(actualTag).isEqualTo(expectedTag);
     }
 
     @Test
-    void checkUpdateTagShouldReturnNoUpdatedRows() {
-        Tag expectedTag = new Tag(1, "Test tag updated");
-        int actualUpdatedRows = dao.updateTag(4L, expectedTag);
-        int expectedUpdatedRows = 0;
-        assertThat(actualUpdatedRows).isEqualTo(expectedUpdatedRows);
+    void checkUpdateTagShouldNotUpdateAndReturnFalse() {
+        Tag expectedTag = new Tag(1, "Test tag updated", Collections.emptySet());
+        boolean tagUpdated = dao.updateTag(4L, expectedTag);
+        assertThat(tagUpdated).isFalse();
     }
 
     @Test
     void checkUpdateTagShouldThrowExceptionTagWithNameExist() {
         Tag updatedValue = getSimpleTag();
         assertThatThrownBy(() -> dao.updateTag(2L, updatedValue))
-                .isInstanceOf(DuplicateKeyException.class);
+                .isInstanceOf(DataIntegrityViolationException.class);
     }
 
     @Test
-    void checkDeleteTagReturnDeletedRowsCount1() {
-        int actualDeletedRows = dao.deleteTag(1L);
-        int expectedDeletedRows = 1;
+    void checkDeleteTagShouldDeleteSuccessfulAndReturnTrue() {
+        boolean actualDeletedRows = dao.deleteTag(1L);
         Optional<Tag> tagAfterDeleting = dao.getTagById(1L);
-        assertThat(actualDeletedRows).isEqualTo(expectedDeletedRows);
+        assertThat(actualDeletedRows).isTrue();
         assertThat(tagAfterDeleting).isEmpty();
     }
 
     @Test
-    void checkDeleteTagReturnNoDeletedRows() {
-        int actualDeletedRows = dao.deleteTag(4L);
-        int expectedDeletedRows = 0;
-        assertThat(actualDeletedRows).isEqualTo(expectedDeletedRows);
+    void checkDeleteTagShouldNotDeleteAndReturnFalse() {
+        boolean actualDeletedRows = dao.deleteTag(4L);
+        assertThat(actualDeletedRows).isFalse();
     }
 }

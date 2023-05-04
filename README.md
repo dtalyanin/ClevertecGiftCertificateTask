@@ -30,7 +30,7 @@
 10.	Database: PostgreSQL, latest version.
 11.	Testing: JUnit 5.+, Mockito.
 12.	Service layer should be covered with unit tests not less than 80%.
-13.	Repository layer should be tested using integration tests with an in-memory embedded database (all operations with certificates).
+13.	Repository layer should be tested using ru.clevertec.ecl.integration tests with an in-memory embedded database (all operations with certificates).
 14.	As a mapper use Mapstruct.
 15.	Use lombok.
 

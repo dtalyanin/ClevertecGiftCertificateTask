@@ -14,3 +14,14 @@ VALUES (1, 1),
        (1, 3),
        (2, 1),
        (2, 2);
+
+INSERT INTO users (first_name, last_name, email)
+VALUES ('Ivan', 'Ivanov', 'ivan@ivanov.com'),
+       ('Petr', 'Petrov', 'petr@petrov.com'),
+       ('Alexandr', 'Alexandrov', 'alexandr@alexandrov.com');
+
+INSERT INTO orders (user_id, certificate_id, price, quantity, total_price, order_date)
+VALUES
+    (1, 1, 1000, 5, 5000, '2023-04-01 01:00:00.000000'),
+    (1, 1, 1000, 10, 10000, '2023-04-01 01:00:00.000000'),
+    (2, 2, 2000, 10, 20000, '2023-04-01 01:00:00.000000');

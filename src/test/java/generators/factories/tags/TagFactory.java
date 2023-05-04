@@ -19,6 +19,14 @@ public class TagFactory {
         return new Tag(3L, "Test tag 3", Collections.emptySet());
     }
 
+    public static Tag getCreatedTag() {
+        return new Tag(4L, "Test tag created", Collections.emptySet());
+    }
+
+    public static Tag getUpdatedTag() {
+        return new Tag(1L, "Test tag updated", Collections.emptySet());
+    }
+
     public static Tag getSimpleTagWithoutId() {
         return new Tag(null, "Test tag", Collections.emptySet());
     }
@@ -35,8 +43,16 @@ public class TagFactory {
         return Set.of(getSimpleTag(), getSimpleTag2(), getSimpleTag3());
     }
 
+    public static Set<Tag> getDifferentTagsSetWithOneNew() {
+        return Set.of(getSimpleTag(), getSimpleTag2(), getCreatedTag());
+    }
+
     public static List<Tag> getDifferentTagsList() {
         return List.of(getSimpleTag(), getSimpleTag2(), getSimpleTag3());
+    }
+
+    public static List<Tag> getDifferentTagsListWithCreatedTag() {
+        return List.of(getSimpleTag(), getSimpleTag2(), getSimpleTag3(), getCreatedTag());
     }
 
     public static   Set<Tag> getDifferentTagsWithoutId() {

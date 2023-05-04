@@ -5,6 +5,7 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
+import org.hibernate.validator.constraints.time.DurationMin;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -38,6 +39,7 @@ public class GiftCertificate implements BaseEntity<Long> {
     @Min(value = 1, message = "Min price is 1 coin")
     private Long price;
     @NotNull(message = "Duration cannot be null")
+    @DurationMin(days = 1L, message = "Min duration is 1 day")
     private Duration duration;
     @Column(name = "create_date")
     private LocalDateTime createDate;

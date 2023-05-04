@@ -14,7 +14,13 @@ public class FilterCriteriaFactory {
 
     public static FilterCriteria getFilterByTwoTags() {
         return FilterCriteria.builder()
-                .tags(List.of("Test tag", "Test tag 2"))
+                .tags(List.of("Test tag", "Test tag 3"))
+                .build();
+    }
+
+    public static FilterCriteria getFilterByUnknownTag() {
+        return FilterCriteria.builder()
+                .tags(List.of("Test tag unknown"))
                 .build();
     }
 
@@ -24,9 +30,45 @@ public class FilterCriteriaFactory {
                 .build();
     }
 
+    public static FilterCriteria getFilterByFullName() {
+        return FilterCriteria.builder()
+                .name("Test 2")
+                .build();
+    }
+
+    public static FilterCriteria getFilterByPartOfName() {
+        return FilterCriteria.builder()
+                .name("Test")
+                .build();
+    }
+
+    public static FilterCriteria getFilterByPartOfNameIgnoreCase() {
+        return FilterCriteria.builder()
+                .name("tEsT")
+                .build();
+    }
+
     public static FilterCriteria getFilterByDescription() {
         return FilterCriteria.builder()
                 .description("ion 2")
+                .build();
+    }
+
+    public static FilterCriteria getFilterByFullDescription() {
+        return FilterCriteria.builder()
+                .description("Test description 2")
+                .build();
+    }
+
+    public static FilterCriteria getFilterByPartOfDescription() {
+        return FilterCriteria.builder()
+                .description("Test")
+                .build();
+    }
+
+    public static FilterCriteria getFilterByPartOfDescriptionIgnoreCase() {
+        return FilterCriteria.builder()
+                .description("tEsT")
                 .build();
     }
 
